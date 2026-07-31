@@ -1,0 +1,100 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#004ac6",
+        "primary-container": "#2563eb",
+        "on-primary": "#ffffff",
+        "on-primary-container": "#eeefff",
+        "on-primary-fixed-variant": "#003ea8",
+        "primary-fixed": "#dbe1ff",
+        "primary-fixed-dim": "#b4c5ff",
+        "on-primary-fixed": "#00174b",
+        "inverse-primary": "#b4c5ff",
+
+        "secondary": "#545f73",
+        "on-secondary": "#ffffff",
+        "secondary-container": "#d5e0f8",
+        "on-secondary-container": "#586377",
+        "secondary-fixed": "#d8e3fb",
+        "secondary-fixed-dim": "#bcc7de",
+        "on-secondary-fixed": "#111c2d",
+        "on-secondary-fixed-variant": "#3c475a",
+
+        "tertiary": "#943700",
+        "on-tertiary": "#ffffff",
+        "tertiary-container": "#bc4800",
+        "on-tertiary-container": "#ffede6",
+        "tertiary-fixed": "#ffdbcd",
+        "tertiary-fixed-dim": "#ffb596",
+        "on-tertiary-fixed": "#360f00",
+        "on-tertiary-fixed-variant": "#7d2d00",
+
+        "background": "#f8f9ff",
+        "on-background": "#0b1c30",
+
+        "surface": "#f8f9ff",
+        "on-surface": "#0b1c30",
+        "surface-variant": "#d3e4fe",
+        "on-surface-variant": "#434655",
+        "inverse-surface": "#213145",
+        "inverse-on-surface": "#eaf1ff",
+        "surface-dim": "#cbdbf5",
+        "surface-bright": "#f8f9ff",
+        "surface-container": "#e5eeff",
+        "surface-container-low": "#eff4ff",
+        "surface-container-high": "#dce9ff",
+        "surface-container-highest": "#d3e4fe",
+        "surface-container-lowest": "#ffffff",
+        "surface-tint": "#0053db",
+
+        "error": "#ba1a1a",
+        "on-error": "#ffffff",
+        "error-container": "#ffdad6",
+        "on-error-container": "#93000a",
+
+        "outline": "#737686",
+        "outline-variant": "#c3c6d7",
+
+        // Custom branding colors from Stitch screens
+        "brand-cream": "#FFF8EC",
+        "hub-cream": "#FFF7E8",
+        "hub-navy": "#243447",
+        "hub-blue": "#2563EB",
+        "hub-yellow": "#FBBF24",
+        "hub-green": "#D1E8E2",
+      },
+      borderRadius: {
+        "custom": "20px",
+      },
+      spacing: {
+        "section-gap-lg": "120px",
+        "section-gap-md": "80px",
+        "container-max": "1280px",
+        "gutter": "24px",
+        "margin-mobile": "20px",
+        "base": "8px",
+      },
+      fontFamily: {
+        "poppins": ["Poppins", "sans-serif"],
+        "label-lg": ["Poppins", "sans-serif"],
+        "display-lg": ["Poppins", "sans-serif"],
+        "button": ["Poppins", "sans-serif"],
+        "headline-md": ["Poppins", "sans-serif"],
+        "body-md": ["Poppins", "sans-serif"],
+        "body-lg": ["Poppins", "sans-serif"],
+        "display-lg-mobile": ["Poppins", "sans-serif"],
+        "headline-lg": ["Poppins", "sans-serif"],
+      },
+    },
+  },
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/container-queries'),
+  ],
+}

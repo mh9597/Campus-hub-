@@ -1,0 +1,105 @@
+// src/routes/public.routes.js
+// All unauthenticated student-facing routes.
+'use strict';
+
+const { Router } = require('express');
+const { body, query } = require('express-validator');
+const rateLimit = require('express-rate-limit');
+
+const publicController = require('../controllers/public.controller');
+const { handleValidationErrors } = require('../middlewares/validate.middleware');
+const { upload } = require('../config/multer');
+
+const router = Router();
+
+// ─── Rate Limiter: Submission Endpoints ──────────────────────
+// Allow 10 upload/request submissions per 15 minutes per IP.
+// Protects against spam without impacting normal student usage.
+const submissionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  standardHeaders: true,  // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many submissions from this device. Please try again in 15 minutes.',
+  },
+});
+
+// ─── GET /api/categories/semesters ───────────────────────────
+router.get('/categories/semesters', publicController.getSemesters);
+
+// ─── GET /api/resources ───────────────────────────────────────
+router.get(
+  '/resources',
+  [
+    query('subjectCode').optional().isString().trim(),
+    query('resourceType').optional().isString().trim(),
+  ],
+  handleValidationErrors,
+  publicController.getResources
+);
+
+// ─── GET /api/resources/:id ───────────────────────────────────
+router.get('/resources/:id', publicController.getResourceById);
+
+// ─── GET /api/opportunities ───────────────────────────────────
+router.get('/opportunities', publicController.getOpportunities);
+
+// ─── POST /api/submissions/upload ────────────────────────────
+// Accepts multipart/form-data with an optional 'file' field
+router.post(
+  '/submissions/upload',
+  submissionLimiter,
+  upload.single('file'),
+  [
+    body('subjectCode')
+      .notEmpty().withMessage('subjectCode is required')
+      .isString().trim(),
+    body('resourceType')
+      .notEmpty().withMessage('resourceType is required')
+      .isString().trim(),
+    body('title')
+      .notEmpty().withMessage('title is required')
+      .isString().trim()
+      .isLength({ max: 255 }),
+    body('description').optional().isString().trim(),
+  ],
+  handleValidationErrors,
+  publicController.submitUpload
+);
+
+// ─── POST /api/submissions/request ───────────────────────────
+router.post(
+  '/submissions/request',
+  submissionLimiter,
+  [
+    body('subjectCode')
+      .notEmpty().withMessage('subjectCode is required')
+      .isString().trim(),
+    body('resourceType')
+      .notEmpty().withMessage('resourceType is required')
+      .isString().trim(),
+    body('message')
+      .notEmpty().withMessage('message is required')
+      .isString().trim()
+      .isLength({ min: 10, max: 1000 }),
+  ],
+  handleValidationErrors,
+  publicController.submitRequest
+);
+
+// ─── POST /api/subscribers ────────────────────────────────────
+router.post(
+  '/subscribers',
+  [
+    body('email')
+      .notEmpty().withMessage('email is required')
+      .isEmail().withMessage('Must be a valid email')
+      .normalizeEmail(),
+  ],
+  handleValidationErrors,
+  publicController.subscribe
+);
+
+module.exports = router;

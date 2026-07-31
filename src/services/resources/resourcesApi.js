@@ -1,0 +1,95 @@
+import { fetchFromApi } from '../../lib/api';
+import { semestersData } from '../../data/semestersData';
+
+const TIMEOUT_MS = 8000;
+
+function withTimeout(promise, ms = TIMEOUT_MS) {
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Request timed out')), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+
+export async function getSemesters() {
+  try {
+    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    const dept = data.find(d => d.code === 'CE') || data[0];
+    if (dept && dept.semesters) {
+      return dept.semesters.map(sem => {
+        const count = sem.subjects?.reduce((acc, subj) => acc + (subj._count?.resources || 0), 0) || 0;
+        return { ...sem, resourcesCount: `${count}+ Resources` };
+      });
+    }
+    return [];
+  } catch (err) {
+    console.warn('[resourcesApi] getSemesters failed, falling back to static data:', err.message);
+    return semestersData;
+  }
+}
+
+export async function getSemesterById(semesterId) {
+  try {
+    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    for (const dept of data) {
+      const sem = dept.semesters?.find((s) => s.id === parseInt(semesterId));
+      if (sem) {
+        const count = sem.subjects?.reduce((acc, subj) => acc + (subj._count?.resources || 0), 0) || 0;
+        const mappedSubjects = sem.subjects?.map(subj => ({
+          ...subj,
+          resourcesCount: `${subj._count?.resources || 0}+ Resources`
+        })) || [];
+        return { ...sem, subjects: mappedSubjects, resourcesCount: `${count}+ Resources` };
+      }
+    }
+    return null;
+  } catch (err) {
+    console.warn(`[resourcesApi] getSemesterById(${semesterId}) failed, using static fallback:`, err.message);
+    return semestersData.find((s) => s.id === parseInt(semesterId)) ?? null;
+  }
+}
+
+export async function getResourcesBySubject(subjectCode) {
+  if (!subjectCode) return [];
+  try {
+    const data = await withTimeout(fetchFromApi(`resources?subjectCode=${subjectCode}`));
+    return data;
+  } catch (err) {
+    console.error(`[resourcesApi] getResourcesBySubject(${subjectCode}) failed:`, err.message);
+    throw err;
+  }
+}
+
+export async function getResourceById(id) {
+  if (!id) return null;
+  try {
+    const data = await withTimeout(fetchFromApi(`resources/${id}`));
+    return data;
+  } catch (err) {
+    console.error(`[resourcesApi] getResourceById(${id}) failed:`, err.message);
+    return null;
+  }
+}
+
+export async function getSubjectByCode(subjectCode) {
+  try {
+    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    // Find the subject across all departments and semesters
+    for (const dept of data) {
+      if (!dept.semesters) continue;
+      for (const sem of dept.semesters) {
+        if (!sem.subjects) continue;
+        const subject = sem.subjects.find((s) => 
+          s.code.toLowerCase() === subjectCode.toLowerCase() ||
+          s.path === `/subject/${subjectCode.toLowerCase()}`
+        );
+        if (subject) {
+          return { ...subject, semester: sem, department: dept };
+        }
+      }
+    }
+    return null;
+  } catch (err) {
+    console.warn(`[resourcesApi] getSubjectByCode(${subjectCode}) failed:`, err.message);
+    return null;
+  }
+}
