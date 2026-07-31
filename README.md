@@ -22,6 +22,21 @@ A clean, scalable, production-ready React + Vite application structure designed 
 
 ---
 
+## Dependencies
+
+### Frontend (`frontend/package.json`)
+- **Core:** `react`, `react-dom`, `react-router-dom`
+- **Build/Styling:** `vite`, `tailwindcss` (v4), `postcss`
+- **Linting:** `oxlint`
+
+### Backend (`backend/package.json`)
+- **Core:** `express`, `dotenv`, `cors`, `helmet`
+- **Database:** `@prisma/client`, `prisma` (CLI)
+- **Security & Auth:** `bcryptjs`, `jsonwebtoken`, `express-rate-limit`, `express-validator`
+- **Uploads & Logging:** `multer`, `morgan`, `uuid`
+
+---
+
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
