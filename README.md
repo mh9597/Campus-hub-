@@ -42,10 +42,12 @@ You'll need to install dependencies for both the frontend and the backend.
 
 ```bash
 # Install frontend dependencies
+cd frontend
 npm install
+cd ..
 
 # Install backend dependencies
-cd server
+cd backend
 npm install
 cd ..
 ```
@@ -53,13 +55,13 @@ cd ..
 ### 3. Environment Setup
 
 **Backend Configuration:**
-Create a `.env` file inside the `server/` directory:
+Create a `.env` file inside the `backend/` directory:
 
 ```bash
-cd server
+cd backend
 cp .env.example .env
 ```
-Update `server/.env` with your MySQL credentials and JWT secrets:
+Update `backend/.env` with your MySQL credentials and JWT secrets:
 ```env
 DATABASE_URL="mysql://root:password@localhost:3306/student_resource_hub"
 JWT_ACCESS_SECRET="your_secure_access_secret"
@@ -68,14 +70,14 @@ CLIENT_ORIGIN="http://localhost:5173"
 ```
 
 **Frontend Configuration:**
-Ensure your frontend connects to the backend properly. By default, it uses `http://localhost:3000` (set in `vite.config.ts` or via env variables).
+Ensure your frontend connects to the backend properly. By default, it uses `http://localhost:3000` (set in `frontend/vite.config.ts` or via env variables).
 
 ### 4. Database Setup
 
 Navigate to the backend directory and run the Prisma migrations to create the database schema:
 
 ```bash
-cd server
+cd backend
 npx prisma migrate dev --name init
 ```
 *(Optional) Seed the database if a seed script is available:*
@@ -89,7 +91,7 @@ You need to run both the backend API and the frontend application concurrently.
 
 **Terminal 1: Start the Backend (Express)**
 ```bash
-cd server
+cd backend
 npm run dev
 ```
 *The API will start on `http://localhost:3000`.*
@@ -146,7 +148,7 @@ User Action → React Component (Vite) → Axios Request → Express Router → 
 | `npm run build` | Build the application for production |
 | `npm run preview` | Locally preview the production build |
 
-### Backend (`server/` Directory)
+### Backend (`backend/` Directory)
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start the Express server with nodemon |
@@ -160,9 +162,9 @@ User Action → React Component (Vite) → Axios Request → Express Router → 
 ### Database Connection Refused
 If the backend crashes immediately with a database error:
 - Ensure MySQL is running on your machine.
-- Verify the username, password, and port in `server/.env`.
+- Verify the username, password, and port in `backend/.env`.
 - Ensure the database `student_resource_hub` actually exists (Prisma migrations will try to create it, but sometimes manual creation is required depending on your MySQL setup).
 
 ### API Calls Failing (CORS or 404)
 - Ensure the backend server is running on port `3000`.
-- Verify that `CLIENT_ORIGIN` in `server/.env` exactly matches your frontend URL (e.g., `http://localhost:5173`).
+- Verify that `CLIENT_ORIGIN` in `backend/.env` exactly matches your frontend URL (e.g., `http://localhost:5173`).
