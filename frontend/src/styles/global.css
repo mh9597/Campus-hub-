@@ -161,3 +161,25 @@ body {
 .animate-placeholder::placeholder {
   animation: placeholder-fade 3s infinite;
 }
+
+/* Infinite Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    /* If the content is duplicated exactly once, moving -50% shifts it perfectly */
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+  /* Required to prevent flicker in some browsers during hardware acceleration */
+  will-change: transform;
+}
+
+/* Hover to pause */
+.pause-marquee-on-hover:hover .animate-marquee {
+  animation-play-state: paused;
+}

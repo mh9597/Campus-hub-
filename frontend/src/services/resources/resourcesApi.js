@@ -93,3 +93,62 @@ export async function getSubjectByCode(subjectCode) {
     return null;
   }
 }
+
+export async function searchAllSubjects(query) {
+  if (!query || query.trim() === '') return [];
+  const lowerQuery = query.toLowerCase().trim();
+  
+  try {
+    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    const allSubjects = [];
+
+    for (const dept of data) {
+      if (!dept.semesters) continue;
+      for (const sem of dept.semesters) {
+        if (!sem.subjects) continue;
+        for (const subject of sem.subjects) {
+          allSubjects.push({ ...subject, semester: sem, department: dept });
+        }
+      }
+    }
+
+    return allSubjects.filter(s => {
+      const codeMatch = s.code.toLowerCase().includes(lowerQuery);
+      const titleMatch = s.title.toLowerCase().includes(lowerQuery);
+      
+      // Attempt alias matching (e.g. Design and Analysis of Algorithms -> DAA)
+      const words = s.title.split(' ');
+      const acronym = words.map(w => w[0]).join('').toLowerCase();
+      // Also filter out 'and', 'of' for acronyms like DAA
+      const filteredWords = words.filter(w => !['and', 'of', '&'].includes(w.toLowerCase()));
+      const strictAcronym = filteredWords.map(w => w[0]).join('').toLowerCase();
+      
+      const aliasMatch = acronym.includes(lowerQuery) || strictAcronym.includes(lowerQuery);
+
+      return codeMatch || titleMatch || aliasMatch;
+    });
+  } catch (err) {
+    console.warn(`[resourcesApi] searchAllSubjects failed, using fallback:`, err.message);
+    const allSubjects = [];
+    for (const sem of semestersData) {
+      if (!sem.subjects) continue;
+      for (const subject of sem.subjects) {
+        allSubjects.push({ ...subject, semester: sem, department: { code: 'CE', name: 'Computer Engineering' } });
+      }
+    }
+    
+    return allSubjects.filter(s => {
+      const codeMatch = s.code.toLowerCase().includes(lowerQuery);
+      const titleMatch = s.title.toLowerCase().includes(lowerQuery);
+      
+      const words = s.title.split(' ');
+      const acronym = words.map(w => w[0]).join('').toLowerCase();
+      const filteredWords = words.filter(w => !['and', 'of', '&'].includes(w.toLowerCase()));
+      const strictAcronym = filteredWords.map(w => w[0]).join('').toLowerCase();
+      
+      const aliasMatch = acronym.includes(lowerQuery) || strictAcronym.includes(lowerQuery);
+
+      return codeMatch || titleMatch || aliasMatch;
+    });
+  }
+}

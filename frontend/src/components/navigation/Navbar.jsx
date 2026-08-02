@@ -1,20 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-
-const phrases = ["Search notes...", "Search subjects...", "Find PYQs...", "Explore resources..."];
+import HomeSearchBar from '../HomeSearchBar';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [placeholder, setPlaceholder] = useState(phrases[0]);
-
-  useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      i = (i + 1) % phrases.length;
-      setPlaceholder(phrases[i]);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -67,14 +56,7 @@ function Navbar() {
         {/* Right Section: Search Bar */}
         <div className="flex items-center gap-3">
           <div className="relative hidden sm:block w-52 lg:w-64">
-            <input
-              type="text"
-              placeholder={placeholder}
-              className="w-full bg-[#F3EFE6] border border-amber-200/80 rounded-full py-2.5 pl-10 pr-4 text-xs focus:ring-2 focus:ring-amber-400 focus:border-amber-400 focus:bg-white outline-none transition-all text-hub-navy placeholder:text-gray-400 font-medium"
-            />
-            <span className="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-lg">
-              search
-            </span>
+            <HomeSearchBar size="small" />
           </div>
 
           {/* Search Mobile Toggle */}
@@ -117,11 +99,7 @@ function Navbar() {
               </NavLink>
             ))}
             <div className="pt-2">
-              <input
-                type="text"
-                placeholder={placeholder}
-                className="w-full bg-white border border-amber-200 rounded-full py-2 pl-9 pr-4 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
+              <HomeSearchBar size="small" />
             </div>
           </div>
         </div>

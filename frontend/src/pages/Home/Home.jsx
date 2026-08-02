@@ -1,6 +1,6 @@
 import React from 'react';
 import HeroSection from './components/HeroSection';
-import CategorySection from './components/CategorySection';
+import CategoryMarquee from './components/CategoryMarquee';
 import LearningPlatformsSection from './components/Free Courses Platforms Section';
 import VideoSection from './components/VideoSection';
 import FeatureStrip from './components/FeatureStrip';
@@ -16,7 +16,7 @@ function Home() {
       {/* Main Page Sections */}
       <div className="relative z-10">
         <HeroSection />
-        <CategorySection />
+        <CategoryMarquee />
         <LearningPlatformsSection />
         <VideoSection />
         <FeatureStrip />
