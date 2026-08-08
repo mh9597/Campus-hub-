@@ -161,7 +161,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                 <input
                   type="text"
                   value={form.subjectCode}
-                  onChange={(e) => setForm(f => ({ ...f, subjectCode: e.target.value.toUpperCase() }))}
+                  onChange={(e) => setForm(f => ({ ...f, subjectCode: e.target.value }))}
                   disabled={isLoading || !!subjectCode}
                   placeholder="e.g. CE0516 or Machine Learning"
                   className={`w-full px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold text-black outline-none ${
