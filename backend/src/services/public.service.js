@@ -122,7 +122,7 @@ async function createUpload(data) {
 
 /**
  * Create a ResourceRequest (status defaults to PENDING).
- * @param {{ subjectCode: string, resourceType: string, message: string }} data
+ * @param {{ subjectCode: string, resourceType: string, description: string, email: string }} data
  */
 async function createRequest(data) {
   return prisma.resourceRequest.create({ data });

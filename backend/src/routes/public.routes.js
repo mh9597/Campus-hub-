@@ -40,6 +40,12 @@ router.get(
   publicController.getResources
 );
 
+// ─── GET /api/resources/:id/view ─────────────────────────────
+// Streams local files inline with correct Content-Type so the browser
+// renders them instead of downloading. Redirects cloud URLs.
+// Must be registered BEFORE /resources/:id to avoid route shadowing.
+router.get('/resources/:id/view', publicController.viewResource);
+
 // ─── GET /api/resources/:id ───────────────────────────────────
 router.get('/resources/:id', publicController.getResourceById);
 
@@ -75,15 +81,26 @@ router.post(
   submissionLimiter,
   [
     body('subjectCode')
-      .notEmpty().withMessage('subjectCode is required')
+      .optional({ checkFalsy: true })
       .isString().trim(),
     body('resourceType')
       .notEmpty().withMessage('resourceType is required')
       .isString().trim(),
-    body('message')
-      .notEmpty().withMessage('message is required')
+    body('description')
+      .notEmpty().withMessage('description is required')
       .isString().trim()
       .isLength({ min: 10, max: 1000 }),
+    body('email')
+      .exists()
+      .withMessage('Email is required')
+      .isEmail()
+      .withMessage('Must be a valid email address')
+      .custom((value) => {
+        if (!value.endsWith('@gmail.com')) {
+          throw new Error('Email must be a @gmail.com address');
+        }
+        return true;
+      }),
   ],
   handleValidationErrors,
   publicController.submitRequest

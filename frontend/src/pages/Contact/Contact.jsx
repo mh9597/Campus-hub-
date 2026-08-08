@@ -135,15 +135,15 @@ function Contact() {
                     </div>
                   </div>
 
-                  {/* Message */}
+                  {/* Description */}
                   <div>
-                    <label htmlFor="message" className="block font-semibold text-sm mb-2 text-on-surface">
+                    <label htmlFor="description" className="block font-semibold text-sm mb-2 text-on-surface">
                       Describe What You Need <span className="text-red-500">*</span>
                     </label>
                     <textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) => handleChange('message', e.target.value)}
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => handleChange('description', e.target.value)}
                       placeholder="e.g. I need handwritten notes for Unit 3 of Data Structures (CE0417) — specifically trees and graphs..."
                       rows={5}
                       className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md resize-none"
@@ -156,17 +156,21 @@ function Contact() {
 
                   {/* Email */}
                   <div>
-                    <label htmlFor="requesterEmail" className="block font-semibold text-sm mb-2 text-on-surface">
-                      Your Email <span className="text-gray-400 font-normal">(optional — we'll notify you when ready)</span>
+                    <label htmlFor="email" className="block font-semibold text-sm mb-2 text-on-surface">
+                      Your Email <span className="text-red-500">*</span>
                     </label>
                     <input
-                      id="requesterEmail"
+                      id="email"
                       type="email"
-                      value={formData.requesterEmail}
-                      onChange={(e) => handleChange('requesterEmail', e.target.value)}
-                      placeholder="student@example.com"
+                      value={formData.email}
+                      onChange={(e) => handleChange('email', e.target.value)}
+                      placeholder="student@gmail.com"
                       className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md"
                       disabled={isLoading}
+                      required
+                      aria-required="true"
+                      pattern=".*@gmail\.com$"
+                      title="Email must be a @gmail.com address"
                     />
                   </div>
 

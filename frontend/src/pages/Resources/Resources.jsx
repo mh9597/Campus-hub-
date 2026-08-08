@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useResourceUpload } from '../../hooks/useResourceRequest';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
+import UploadResourceModal from '../../components/resources/UploadResourceModal';
 
 function Resources() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -407,155 +408,17 @@ function Resources() {
 
       {/* ─── UPLOAD MODAL ─── */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full border border-amber-200 shadow-2xl relative animate-scale-up max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <button
-              onClick={() => { setIsModalOpen(false); resetForm(); }}
-              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-gray-100 transition-colors text-gray-500 cursor-pointer"
-              aria-label="Close modal"
-            >
-              <span className="material-symbols-outlined text-[20px]">close</span>
-            </button>
-
-            <h3 className="font-bold text-2xl text-hub-navy mb-2 flex items-center gap-2">
-              <span className="material-symbols-outlined text-amber-500">upload</span>
-              Upload Resource
-            </h3>
-            <p className="text-gray-500 text-sm mb-6 leading-relaxed">
-              Help the community by sharing notes, past papers, or other academic resources. All submissions are reviewed by admins before going live.
-            </p>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="res-subject" className="block font-semibold text-sm mb-1.5 text-hub-navy">
-                    Subject Code <span className="text-gray-400 font-normal">(optional)</span>
-                  </label>
-                  <input
-                    id="res-subject"
-                    type="text"
-                    value={formData.subjectCode}
-                    onChange={(e) => handleChange('subjectCode', e.target.value)}
-                    placeholder="e.g. CE0516"
-                    className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50/20 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none transition-all text-sm"
-                    disabled={submitStatus === 'loading'}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="res-type" className="block font-semibold text-sm mb-1.5 text-hub-navy">
-                    Type <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      id="res-type"
-                      value={formData.resourceType}
-                      onChange={(e) => handleChange('resourceType', e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50/20 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none transition-all text-sm appearance-none cursor-pointer"
-                      disabled={submitStatus === 'loading'}
-                    >
-                      {RESOURCE_TYPES.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none text-[18px]">expand_more</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="res-title" className="block font-semibold text-sm mb-1.5 text-hub-navy">
-                  Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="res-title"
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => handleChange('title', e.target.value)}
-                  placeholder="e.g. Unit 3 Trees and Graphs Notes"
-                  className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50/20 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none transition-all text-sm"
-                  disabled={submitStatus === 'loading'}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="res-url" className="block font-semibold text-sm mb-1.5 text-hub-navy">
-                  Link / URL <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="res-url"
-                  type="url"
-                  value={formData.url}
-                  onChange={(e) => handleChange('url', e.target.value)}
-                  placeholder="https://drive.google.com/..."
-                  className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50/20 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none transition-all text-sm"
-                  disabled={submitStatus === 'loading'}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="res-desc" className="block font-semibold text-sm mb-1.5 text-hub-navy">
-                  Description <span className="text-red-500">*</span>
-                </label>
-                <textarea
-                  id="res-desc"
-                  value={formData.description}
-                  onChange={(e) => handleChange('description', e.target.value)}
-                  placeholder="Briefly describe what this resource contains..."
-                  rows={3}
-                  className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50/20 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none transition-all text-sm resize-none"
-                  disabled={submitStatus === 'loading'}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="res-email" className="block font-semibold text-sm mb-1.5 text-hub-navy">
-                  Your Email <span className="text-gray-400 font-normal">(optional)</span>
-                </label>
-                <input
-                  id="res-email"
-                  type="email"
-                  value={formData.contributorEmail}
-                  onChange={(e) => handleChange('contributorEmail', e.target.value)}
-                  placeholder="student@example.com"
-                  className="w-full px-4 py-2.5 rounded-xl border border-amber-200 bg-amber-50/20 focus:ring-2 focus:ring-amber-400 focus:border-amber-400 outline-none transition-all text-sm"
-                  disabled={submitStatus === 'loading'}
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => { setIsModalOpen(false); resetForm(); }}
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold border border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
-                  disabled={submitStatus === 'loading'}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl text-sm font-semibold bg-amber-400 hover:bg-amber-500 text-hub-navy transition-all shadow-md flex items-center gap-2 cursor-pointer"
-                  disabled={submitStatus === 'loading'}
-                >
-                  {submitStatus === 'loading' ? (
-                    <>
-                      <span className="w-4 h-4 border-2 border-hub-navy/30 border-t-hub-navy rounded-full animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <span className="material-symbols-outlined text-[18px]">publish</span>
-                      Upload
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <UploadResourceModal
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            setIsModalOpen(false);
+            addToast({
+              message: '✅ Resource submitted for review.',
+              type: 'success',
+              duration: 5000,
+            });
+          }}
+        />
       )}
 
       {/* Toast Notifications */}

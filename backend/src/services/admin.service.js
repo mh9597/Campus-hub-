@@ -161,10 +161,16 @@ async function getOpportunities() {
  * @param {'PENDING'|'APPROVED'|'REJECTED'|undefined} status
  */
 async function getRequests(status = 'PENDING') {
-  return prisma.resourceRequest.findMany({
+  const requests = await prisma.resourceRequest.findMany({
     where: status ? { status } : undefined,
     orderBy: { createdAt: 'desc' },
   });
+  
+  // Map description back to message for frontend compatibility
+  return requests.map(req => ({
+    ...req,
+    message: req.description || '',
+  }));
 }
 
 /**

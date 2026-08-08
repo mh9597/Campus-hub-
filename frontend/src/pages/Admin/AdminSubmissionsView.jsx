@@ -91,12 +91,17 @@ function UploadCard({ item, onAction }) {
 // ── Request Card ──────────────────────────────────────────────
 function RequestCard({ item, onAction }) {
   const [busy, setBusy] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const isPending = item.status === 'PENDING';
 
   async function handle(action) {
     setBusy(true);
     try { await onAction(item.id, action); } finally { setBusy(false); }
   }
+
+  const messageText = item.message || '';
+  const isLong = messageText.length > 100;
+  const displayMessage = expanded || !isLong ? messageText : `${messageText.slice(0, 100)}...`;
 
   return (
     <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 flex flex-col gap-3">
@@ -107,14 +112,28 @@ function RequestCard({ item, onAction }) {
           </p>
           <p className="text-xs text-on-surface-variant mt-0.5">
             Subject: <span className="font-medium">{item.subjectCode}</span>
+            {item.email && (
+              <>
+                <span className="mx-1.5 opacity-50">•</span>
+                From: <a href={`mailto:${item.email}`} className="font-medium hover:underline text-primary">{item.email}</a>
+              </>
+            )}
           </p>
         </div>
         <StatusBadge status={item.status} />
       </div>
 
-      <p className="text-sm text-on-surface-variant leading-relaxed bg-surface-container rounded-xl p-3">
-        "{item.message}"
-      </p>
+      <div className="text-sm text-on-surface-variant leading-relaxed bg-surface-container rounded-xl p-3 whitespace-pre-wrap">
+        "{displayMessage}"
+        {isLong && (
+          <button 
+            onClick={() => setExpanded(!expanded)} 
+            className="ml-2 text-primary font-semibold hover:underline text-xs"
+          >
+            {expanded ? 'View Less' : 'View More'}
+          </button>
+        )}
+      </div>
 
       <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10">
         <p className="text-xs text-on-surface-variant">
