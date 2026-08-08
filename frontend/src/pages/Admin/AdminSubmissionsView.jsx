@@ -7,6 +7,16 @@ import {
   getAdminRequests, reviewRequest,
 } from '../../services/admin/adminApi';
 
+const API_ORIGIN = import.meta.env.VITE_API_BASE_URL
+  ? new URL(import.meta.env.VITE_API_BASE_URL).origin
+  : 'http://localhost:3001';
+
+function resolveFileUrl(raw) {
+  if (!raw) return '#';
+  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+  return `${API_ORIGIN}${raw.startsWith('/') ? '' : '/'}${raw}`;
+}
+
 const STATUS_TABS = ['PENDING', 'APPROVED', 'REJECTED'];
 
 function StatusBadge({ status }) {
@@ -71,7 +81,7 @@ function UploadCard({ item, onAction }) {
         </p>
         <div className="flex gap-2">
           {item.fileUrl && (
-            <a href={item.fileUrl} target="_blank" rel="noopener noreferrer"
+            <a href={resolveFileUrl(item.fileUrl)} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline">
               <span className="material-symbols-outlined text-[13px]">open_in_new</span> View File
             </a>
@@ -105,8 +115,14 @@ function RequestCard({ item, onAction }) {
           <p className="font-semibold text-on-surface">
             {item.resourceType} request
           </p>
-          <p className="text-xs text-on-surface-variant mt-0.5">
-            Subject: <span className="font-medium">{item.subjectCode}</span>
+          <p className="text-xs text-on-surface-variant mt-0.5 flex flex-wrap items-center gap-1.5">
+            <span>Subject: <span className="font-medium">{item.subjectCode || 'N/A'}</span></span>
+            {item.email && (
+              <>
+                <span>•</span>
+                <span>By: <a href={`mailto:${item.email}`} className="font-medium text-primary hover:underline">{item.email}</a></span>
+              </>
+            )}
           </p>
         </div>
         <StatusBadge status={item.status} />

@@ -87,9 +87,11 @@ router.post(
       .notEmpty().withMessage('resourceType is required')
       .isString().trim(),
     body('description')
-      .notEmpty().withMessage('description is required')
-      .isString().trim()
-      .isLength({ min: 10, max: 1000 }),
+      .optional()
+      .isString().trim(),
+    body('message')
+      .optional()
+      .isString().trim(),
     body('email')
       .exists()
       .withMessage('Email is required')
@@ -102,6 +104,15 @@ router.post(
         return true;
       }),
   ],
+  (req, res, next) => {
+    // Manually ensure at least one of message or description is provided
+    const desc = req.body.description || req.body.message;
+    if (!desc || desc.trim().length === 0) {
+      return res.status(400).json({ success: false, error: 'description or message is required' });
+    }
+    req.body.description = desc; // normalize to description for controller
+    next();
+  },
   handleValidationErrors,
   publicController.submitRequest
 );

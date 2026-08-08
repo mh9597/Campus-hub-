@@ -122,7 +122,7 @@ function Contact() {
                         id="resourceType"
                         value={formData.resourceType}
                         onChange={(e) => handleChange('resourceType', e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer"
+                        className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white bg-none focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer"
                         disabled={isLoading}
                       >
                         {RESOURCE_TYPES.map((type) => (
@@ -157,16 +157,18 @@ function Contact() {
                   {/* Email */}
                   <div>
                     <label htmlFor="requesterEmail" className="block font-bold text-sm mb-2 text-black">
-                      Your Email <span className="text-gray-400 font-normal">(optional — we'll notify you when ready)</span>
+                      Your Email <span className="text-red-500">*</span> <span className="text-gray-400 font-normal">(must be @gmail.com)</span>
                     </label>
                     <input
                       id="requesterEmail"
                       type="email"
                       value={formData.requesterEmail}
                       onChange={(e) => handleChange('requesterEmail', e.target.value)}
-                      placeholder="student@example.com"
+                      placeholder="student@gmail.com"
                       className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black"
                       disabled={isLoading}
+                      required
+                      aria-required="true"
                     />
                   </div>
 
