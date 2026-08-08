@@ -9,10 +9,17 @@ import { API_BASE_URL } from '../../lib/api';
 // ─── Helpers ──────────────────────────────────────────────────
 const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
+// Used for the Download button — resolves raw /uploads/ path to full URL
 function resolveFileUrl(rawUrl) {
   if (!rawUrl) return '';
   if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) return rawUrl;
   return `${API_ORIGIN}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
+}
+
+// Used for viewing — routes through the backend streaming controller which
+// sets Content-Type + Content-Disposition: inline, so browsers render inline
+function buildViewUrl(id) {
+  return `${API_BASE_URL}/resources/${id}/view`;
 }
 
 function isPdf(url) {
@@ -74,7 +81,8 @@ function ResourceViewer() {
 
   if (!resource) return null;
 
-  const fileUrl = resolveFileUrl(resource.fileUrl || resource.url);
+  const fileUrl = resolveFileUrl(resource.fileUrl || resource.url); // used for download only
+  const viewUrl = buildViewUrl(resource.id);                        // used for iframe & open-in-new-tab
   const subject = resource.subject;
   const semester = subject?.semester;
   const department = semester?.department;
@@ -133,9 +141,9 @@ function ResourceViewer() {
           <span className="hidden sm:inline">Download</span>
         </a>
 
-        {/* Open in new tab */}
+        {/* Open in new tab — via streaming controller for correct Content-Type */}
         <a
-          href={fileUrl}
+          href={viewUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="shrink-0 flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/80 text-xs font-semibold px-3 py-1.5 rounded-lg transition"
@@ -223,7 +231,7 @@ function ResourceViewer() {
 
           <div className="mt-auto space-y-2">
             <a
-              href={fileUrl}
+              href={viewUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold py-2.5 rounded-xl transition"
@@ -257,11 +265,11 @@ function ResourceViewer() {
                 </div>
               )}
               {iframeError ? (
-                <FallbackViewer fileUrl={fileUrl} />
+                <FallbackViewer fileUrl={viewUrl} />
               ) : (
                 <iframe
-                  key={fileUrl}
-                  src={fileUrl}
+                  key={viewUrl}
+                  src={viewUrl}
                   title={resource.title}
                   className="w-full h-full border-0"
                   onLoad={() => setIframeLoading(false)}
