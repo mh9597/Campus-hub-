@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import HomeSearchBar from '../HomeSearchBar';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -14,9 +24,15 @@ function Navbar() {
   ];
 
   return (
-    <header className="w-full sticky top-0 z-50 bg-[#FDFBF7]/95 backdrop-blur-md border-b border-amber-100/60 shadow-xs transition-all duration-300">
+    <header 
+      className={`w-full sticky top-0 z-50 transition-all duration-300 border-b ${
+        isScrolled 
+          ? 'bg-[#FDFBF7]/90 backdrop-blur-md shadow-sm border-amber-200/50' 
+          : 'bg-transparent border-transparent'
+      }`}
+    >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-        
+
         {/* Left Section: Brand Logo */}
         <div className="flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2.5 group">
@@ -41,10 +57,9 @@ function Navbar() {
               key={link.name}
               to={link.path}
               className={({ isActive }) =>
-                `text-sm font-semibold transition-all duration-200 hover:text-amber-500 relative py-1 ${
-                  isActive
-                    ? 'text-hub-navy font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-amber-400 after:rounded-full'
-                    : 'text-gray-600'
+                `text-sm font-semibold transition-all duration-200 hover:text-amber-500 relative py-1 ${isActive
+                  ? 'text-hub-navy font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-amber-400 after:rounded-full'
+                  : 'text-gray-600'
                 }`
               }
             >
@@ -60,14 +75,23 @@ function Navbar() {
           </div>
 
           {/* Search Mobile Toggle */}
-          <button className="sm:hidden w-9 h-9 rounded-full bg-[#F3EFE6] border border-amber-200 flex items-center justify-center text-hub-navy shadow-xs">
-            <span className="material-symbols-outlined text-lg">search</span>
+          <button
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className="sm:hidden w-9 h-9 rounded-full bg-[#F3EFE6] border border-amber-200 flex items-center justify-center text-hub-navy shadow-xs active-press cursor-pointer"
+            aria-label="Toggle search"
+          >
+            <span className="material-symbols-outlined text-lg">
+              {isSearchOpen ? 'close' : 'search'}
+            </span>
           </button>
 
           {/* Mobile hamburger menu */}
           <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-hub-navy focus:outline-none"
+            onClick={() => {
+              setIsOpen(!isOpen);
+              if (!isOpen) setIsSearchOpen(false);
+            }}
+            className="lg:hidden p-2 text-hub-navy focus:outline-none cursor-pointer"
             aria-label="Toggle menu"
           >
             <span className="material-symbols-outlined text-2xl">
@@ -78,9 +102,16 @@ function Navbar() {
 
       </nav>
 
+      {/* Mobile Inline Search Bar */}
+      {isSearchOpen && (
+        <div className="sm:hidden bg-[#FDFBF7] border-b border-amber-200/80 px-4 py-3 shadow-md animate-fade-in z-50">
+          <HomeSearchBar size="small" />
+        </div>
+      )}
+
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="lg:hidden bg-[#FDFBF7] border-b border-amber-200 px-4 py-4 shadow-lg animate-fade-in">
+        <div className="lg:hidden bg-[#FDFBF7] border-b border-amber-200 px-4 py-4 shadow-lg animate-fade-in z-40">
           <div className="flex flex-col gap-3">
             {navLinks.map((link) => (
               <NavLink
@@ -88,10 +119,9 @@ function Navbar() {
                 to={link.path}
                 onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
-                  `px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    isActive
-                      ? 'bg-amber-100 text-hub-navy font-bold'
-                      : 'text-gray-600 hover:bg-amber-50'
+                  `px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${isActive
+                    ? 'bg-amber-100 text-hub-navy font-bold'
+                    : 'text-gray-600 hover:bg-amber-50'
                   }`
                 }
               >

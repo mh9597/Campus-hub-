@@ -5,18 +5,15 @@ import { fetchFromApi } from '../../lib/api';
 
 // ─── Resource Request ────────────────────────────────────────
 // POST /api/submissions/request
-export async function submitResourceRequest({ subjectCode, resourceType, description, email }) {
-  if (!description?.trim()) {
+export async function submitResourceRequest({ subjectCode, resourceType, message }) {
+  if (!message?.trim()) {
     return { success: false, error: 'Please describe what resource you need.' }; 
-  }
-  if (!email?.trim() || !email.endsWith('@gmail.com')) {
-    return { success: false, error: 'A valid @gmail.com email is required.' };
   }
 
   try {
     await fetchFromApi('submissions/request', {
       method: 'POST',
-      body: JSON.stringify({ subjectCode, resourceType, description, email }),
+      body: JSON.stringify({ subjectCode, resourceType, message }),
     });
     return { success: true };
   } catch (err) {

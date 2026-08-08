@@ -78,7 +78,7 @@ export async function getSubjectByCode(subjectCode) {
       if (!dept.semesters) continue;
       for (const sem of dept.semesters) {
         if (!sem.subjects) continue;
-        const subject = sem.subjects.find((s) => 
+        const subject = sem.subjects.find((s) =>
           s.code.toLowerCase() === subjectCode.toLowerCase() ||
           s.path === `/subject/${subjectCode.toLowerCase()}`
         );
@@ -97,7 +97,7 @@ export async function getSubjectByCode(subjectCode) {
 export async function searchAllSubjects(query) {
   if (!query || query.trim() === '') return [];
   const lowerQuery = query.toLowerCase().trim();
-  
+
   try {
     const data = await withTimeout(fetchFromApi('categories/semesters'));
     const allSubjects = [];
@@ -115,14 +115,14 @@ export async function searchAllSubjects(query) {
     return allSubjects.filter(s => {
       const codeMatch = s.code.toLowerCase().includes(lowerQuery);
       const titleMatch = s.title.toLowerCase().includes(lowerQuery);
-      
+
       // Attempt alias matching (e.g. Design and Analysis of Algorithms -> DAA)
       const words = s.title.split(' ');
       const acronym = words.map(w => w[0]).join('').toLowerCase();
       // Also filter out 'and', 'of' for acronyms like DAA
       const filteredWords = words.filter(w => !['and', 'of', '&'].includes(w.toLowerCase()));
       const strictAcronym = filteredWords.map(w => w[0]).join('').toLowerCase();
-      
+
       const aliasMatch = acronym.includes(lowerQuery) || strictAcronym.includes(lowerQuery);
 
       return codeMatch || titleMatch || aliasMatch;
@@ -136,16 +136,16 @@ export async function searchAllSubjects(query) {
         allSubjects.push({ ...subject, semester: sem, department: { code: 'CE', name: 'Computer Engineering' } });
       }
     }
-    
+
     return allSubjects.filter(s => {
       const codeMatch = s.code.toLowerCase().includes(lowerQuery);
       const titleMatch = s.title.toLowerCase().includes(lowerQuery);
-      
+
       const words = s.title.split(' ');
       const acronym = words.map(w => w[0]).join('').toLowerCase();
       const filteredWords = words.filter(w => !['and', 'of', '&'].includes(w.toLowerCase()));
       const strictAcronym = filteredWords.map(w => w[0]).join('').toLowerCase();
-      
+
       const aliasMatch = acronym.includes(lowerQuery) || strictAcronym.includes(lowerQuery);
 
       return codeMatch || titleMatch || aliasMatch;

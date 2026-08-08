@@ -4,9 +4,9 @@ function VideoSection() {
   return (
     <section className="py-16 md:py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          
+
           {/* Left Column Text & CTA */}
           <div className="lg:col-span-4 space-y-6">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 border border-amber-300/60 shadow-sm text-hub-navy text-xs font-extrabold uppercase tracking-wide">
@@ -38,14 +38,14 @@ function VideoSection() {
 
           {/* Right Column: Dark Navy Video Card with Yellow Blob Background */}
           <div className="lg:col-span-8 relative">
-            
+
             {/* Background Yellow Blob behind video card */}
             <div className="absolute -inset-4 bg-amber-400 rounded-[40px] transform rotate-1 scale-105 opacity-90 blur-sm z-0" />
-            
+
             {/* Video Container Frame */}
             <div className="relative z-10 bg-hub-navy rounded-[32px] overflow-hidden shadow-2xl border-4 border-hub-navy group cursor-pointer">
               <div className="aspect-video relative bg-slate-900 overflow-hidden">
-                
+
                 {/* Video Image Thumbnail */}
                 <img
                   alt="Platform Tour Preview"
@@ -58,11 +58,11 @@ function VideoSection() {
 
                 {/* Center Play Button Overlay with Circular Badge */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  
+
                   {/* Rotating Outer Ring Badge ("CHECK THIS OUT") */}
                   <div className="relative flex items-center justify-center">
                     <div className="absolute w-28 h-28 sm:w-32 sm:h-32 rounded-full border-2 border-dashed border-amber-400 animate-[spin_12s_linear_infinite] opacity-90" />
-                    
+
                     {/* Golden Play Button */}
                     <div className="w-16 h-16 sm:w-20 sm:h-20 bg-amber-400 hover:bg-amber-300 text-hub-navy rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-300 z-10 border-4 border-white">
                       <span className="material-symbols-outlined text-3xl sm:text-4xl translate-x-0.5 fill-current font-bold">

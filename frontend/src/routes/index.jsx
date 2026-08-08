@@ -13,7 +13,18 @@ import About from '../pages/About/About';
 import Contact from '../pages/Contact/Contact';
 import NotFound from '../pages/NotFound/NotFound';
 import SubjectDetails from '../pages/Subject/SubjectDetails';
+import ComingSoon from '../pages/ComingSoon/ComingSoon';
 import ResourceViewer from '../pages/ResourceViewer/ResourceViewer';
+import { useParams, Navigate as RouterNavigate } from 'react-router-dom';
+
+function DepartmentRouteHandler() {
+  const { code } = useParams();
+  const normalized = (code || '').toUpperCase();
+  if (normalized === 'CE') {
+    return <RouterNavigate to="/semesters" replace />;
+  }
+  return <RouterNavigate to={`/coming-soon?dept=${normalized}`} replace />;
+}
 
 // ─── Admin pages ──────────────────────────────────────────────
 import AdminLogin from '../pages/Admin/AdminLogin';
@@ -38,6 +49,8 @@ export const router = createBrowserRouter([
       { path: 'community', element: <Community /> },
       { path: 'contact', element: <Contact /> },
       { path: 'about', element: <About /> },
+      { path: 'coming-soon', element: <ComingSoon /> },
+      { path: 'department/:code', element: <DepartmentRouteHandler /> },
       { path: '*', element: <NotFound /> },
     ],
   },

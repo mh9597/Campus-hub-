@@ -61,17 +61,17 @@ function Contact() {
 
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 mb-8 text-secondary font-label-lg text-label-lg">
-          <Link className="hover:text-primary opacity-60" to="/">Home</Link>
+          <Link className="hover:text-amber-600 opacity-70 transition-colors font-medium" to="/">Home</Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-primary font-bold">Request a Resource</span>
+          <span className="text-black font-extrabold">Request a Resource</span>
         </nav>
 
         {/* Page Header */}
         <div className="mb-12">
-          <h1 className="font-bold text-4xl text-navy-accent mb-4">
+          <h1 className="font-black text-4xl text-black mb-4">
             Can't Find What You Need?
           </h1>
-          <p className="text-on-surface-variant max-w-2xl leading-relaxed">
+          <p className="text-gray-600 max-w-2xl leading-relaxed font-medium">
             Fill in the form below and our student community will track down the resource for you. Most requests are fulfilled within 24 hours.
           </p>
         </div>
@@ -79,14 +79,14 @@ function Contact() {
         <div className="flex flex-col lg:flex-row gap-12">
           {/* Form Column */}
           <div className="lg:w-2/3">
-            <div className="bg-white rounded-[24px] p-8 md:p-10 shadow-sm border border-orange-100/50">
+            <div className="bg-white rounded-[24px] p-8 md:p-10 shadow-md border-2 border-amber-300/80">
               {/* Success message */}
               {isSuccess && (
-                <div className="mb-8 p-6 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-start gap-4">
+                <div className="mb-8 p-6 bg-emerald-50 border-2 border-emerald-300 rounded-2xl flex items-start gap-4">
                   <span className="material-symbols-outlined text-emerald-600 text-3xl shrink-0">check_circle</span>
                   <div>
-                    <p className="font-bold text-emerald-800 text-lg">Request Submitted!</p>
-                    <p className="text-emerald-700 text-sm mt-1">
+                    <p className="font-extrabold text-emerald-800 text-lg">Request Submitted!</p>
+                    <p className="text-emerald-700 text-sm mt-1 font-medium">
                       Thank you! Our community will review your request and upload the resource as soon as possible.
                       If you provided your email, we'll notify you when it's ready.
                     </p>
@@ -98,7 +98,7 @@ function Contact() {
                 <div className="space-y-6">
                   {/* Subject Code */}
                   <div>
-                    <label htmlFor="subjectCode" className="block font-semibold text-sm mb-2 text-on-surface">
+                    <label htmlFor="subjectCode" className="block font-bold text-sm mb-2 text-black">
                       Subject Code <span className="text-gray-400 font-normal">(optional)</span>
                     </label>
                     <input
@@ -107,14 +107,14 @@ function Contact() {
                       value={formData.subjectCode}
                       onChange={(e) => handleChange('subjectCode', e.target.value)}
                       placeholder="e.g. CE0516, MA0311"
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black"
                       disabled={isLoading}
                     />
                   </div>
 
                   {/* Resource Type */}
                   <div>
-                    <label htmlFor="resourceType" className="block font-semibold text-sm mb-2 text-on-surface">
+                    <label htmlFor="resourceType" className="block font-bold text-sm mb-2 text-black">
                       Resource Type <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -122,31 +122,31 @@ function Contact() {
                         id="resourceType"
                         value={formData.resourceType}
                         onChange={(e) => handleChange('resourceType', e.target.value)}
-                        className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md appearance-none cursor-pointer"
+                        className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer"
                         disabled={isLoading}
                       >
                         {RESOURCE_TYPES.map((type) => (
                           <option key={type} value={type}>{type}</option>
                         ))}
                       </select>
-                      <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
+                      <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
                         expand_more
                       </span>
                     </div>
                   </div>
 
-                  {/* Description */}
+                  {/* Message */}
                   <div>
-                    <label htmlFor="description" className="block font-semibold text-sm mb-2 text-on-surface">
+                    <label htmlFor="message" className="block font-bold text-sm mb-2 text-black">
                       Describe What You Need <span className="text-red-500">*</span>
                     </label>
                     <textarea
-                      id="description"
-                      value={formData.description}
-                      onChange={(e) => handleChange('description', e.target.value)}
+                      id="message"
+                      value={formData.message}
+                      onChange={(e) => handleChange('message', e.target.value)}
                       placeholder="e.g. I need handwritten notes for Unit 3 of Data Structures (CE0417) — specifically trees and graphs..."
                       rows={5}
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md resize-none"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black resize-none"
                       disabled={isLoading}
                       required
                       aria-required="true"
@@ -156,21 +156,17 @@ function Contact() {
 
                   {/* Email */}
                   <div>
-                    <label htmlFor="email" className="block font-semibold text-sm mb-2 text-on-surface">
-                      Your Email <span className="text-red-500">*</span>
+                    <label htmlFor="requesterEmail" className="block font-bold text-sm mb-2 text-black">
+                      Your Email <span className="text-gray-400 font-normal">(optional — we'll notify you when ready)</span>
                     </label>
                     <input
-                      id="email"
+                      id="requesterEmail"
                       type="email"
-                      value={formData.email}
-                      onChange={(e) => handleChange('email', e.target.value)}
-                      placeholder="student@gmail.com"
-                      className="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md"
+                      value={formData.requesterEmail}
+                      onChange={(e) => handleChange('requesterEmail', e.target.value)}
+                      placeholder="student@example.com"
+                      className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black"
                       disabled={isLoading}
-                      required
-                      aria-required="true"
-                      pattern=".*@gmail\.com$"
-                      title="Email must be a @gmail.com address"
                     />
                   </div>
 
@@ -178,11 +174,11 @@ function Contact() {
                   <button
                     type="submit"
                     disabled={isLoading || isSuccess}
-                    className="w-full bg-primary text-on-primary py-4 rounded-xl font-button font-semibold text-base hover:bg-primary/90 transition-all hover:scale-[1.01] shadow-md disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
+                    className="w-full btn-black-yellow py-4 rounded-xl font-extrabold text-base transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer active-press"
                   >
                     {isLoading ? (
                       <>
-                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        <span className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
                         Submitting...
                       </>
                     ) : isSuccess ? (
@@ -206,13 +202,13 @@ function Contact() {
           <aside className="lg:w-1/3 space-y-6">
             {/* Info Cards */}
             {INFO_CARDS.map((card) => (
-              <div key={card.icon} className="bg-white rounded-[20px] p-6 border border-orange-100/50 shadow-sm flex gap-4 items-start">
-                <div className="bg-primary/10 w-11 h-11 rounded-xl flex items-center justify-center shrink-0">
-                  <span className="material-symbols-outlined text-primary text-[24px]">{card.icon}</span>
+              <div key={card.icon} className="bg-white rounded-[20px] p-6 border-2 border-amber-300/80 hover:border-black shadow-sm flex gap-4 items-start transition-all">
+                <div className="bg-[#FEF3D6] border border-amber-400 w-11 h-11 rounded-xl flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-black text-[24px]">{card.icon}</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-on-surface text-sm mb-1">{card.title}</h3>
-                  <p className="text-on-surface-variant text-xs leading-relaxed">{card.desc}</p>
+                  <h3 className="font-extrabold text-black text-sm mb-1">{card.title}</h3>
+                  <p className="text-gray-600 text-xs leading-relaxed font-medium">{card.desc}</p>
                 </div>
               </div>
             ))}

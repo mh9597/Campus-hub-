@@ -91,39 +91,39 @@ function SubjectDetails() {
   if (!subject) return null;
 
   return (
-    <div className="min-h-screen bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-white">
+    <div className="pt-20 min-h-screen bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-white">
       <main className="relative py-12 max-w-container-max mx-auto px-margin-mobile md:px-gutter">
-        
+
         {/* Breadcrumb Navigation */}
         <div className="relative z-10 mb-12">
-          <nav className="flex items-center gap-2 mb-4 font-label-lg text-label-lg text-secondary overflow-x-auto whitespace-nowrap">
-            <Link to="/" className="hover:text-primary opacity-60">Home</Link>
+          <nav className="flex items-center gap-2 mb-4 font-label-lg text-label-lg text-secondary overflow-x-auto whitespace-nowrap no-scrollbar">
+            <Link to="/" className="hover:text-amber-600 opacity-70 transition-colors font-medium">Home</Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <Link to="/resources" className="hover:text-primary opacity-60">Resources</Link>
+            <Link to="/resources" className="hover:text-amber-600 opacity-70 transition-colors font-medium">Resources</Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <Link to="/semesters" className="hover:text-primary opacity-60">
+            <Link to="/semesters" className="hover:text-amber-600 opacity-70 transition-colors font-medium">
               {subject.department?.code || 'CE'}
             </Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <Link to={`/semesters/${subject.semester?.id || ''}`} className="hover:text-primary opacity-60">
+            <Link to={`/semesters/${subject.semester?.id || ''}`} className="hover:text-amber-600 opacity-70 transition-colors font-medium">
               Semester {subject.semester?.semesterNumber || ''}
             </Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">{subject.title}</span>
+            <span className="text-black font-extrabold">{subject.title}</span>
           </nav>
-          
-          <div className="flex items-center gap-6 mb-4">
-             <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-primary-container/10 text-primary shrink-0">
-                <span className="material-symbols-outlined text-[36px]">{subject.icon || 'folder'}</span>
-             </div>
-             <div>
-                <h1 className="font-display-lg text-display-lg md:text-display-lg-mobile text-on-surface mb-2 font-bold text-4xl">
-                  {subject.title} {subject.code ? `(${subject.code})` : ''}
-                </h1>
-                <p className="font-body-lg text-body-lg text-on-surface-variant max-w-3xl leading-relaxed">
-                  Select a resource category below to explore study materials for this subject.
-                </p>
-             </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 mb-4">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-[#FEF3D6] text-black border-2 border-amber-400 shrink-0 shadow-sm">
+              <span className="material-symbols-outlined text-[36px] text-black">{subject.icon || 'folder'}</span>
+            </div>
+            <div>
+              <h1 className="font-display-lg text-display-lg md:text-display-lg-mobile text-black mb-2 font-black text-3xl sm:text-4xl">
+                {subject.title} {subject.code ? `(${subject.code})` : ''}
+              </h1>
+              <p className="font-body-lg text-body-lg text-gray-600 max-w-3xl leading-relaxed font-medium">
+                Select a resource category below to explore study materials for this subject.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -137,34 +137,30 @@ function SubjectDetails() {
               <button
                 key={idx}
                 onClick={() => selectCategory(cat.dbType)}
-                className={`premium-card p-6 rounded-[20px] bg-surface-container-lowest border text-left flex flex-col relative overflow-hidden group shadow-sm hover-lift transition-all cursor-pointer ${
-                  isSelected
-                    ? 'border-primary ring-2 ring-primary/10 shadow-md'
-                    : 'border-outline-variant/20 hover:border-primary/20'
-                }`}
+                className={`glass-card p-6 rounded-[24px] border-2 text-left flex flex-col relative overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer active-press ${isSelected
+                    ? 'border-black ring-4 ring-amber-400/30 shadow-md bg-black text-white'
+                    : 'border-amber-300/80 hover:border-black bg-white'
+                  }`}
               >
-                <div className={`w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-colors duration-300 ${
-                  isSelected
-                    ? 'bg-primary text-white'
-                    : 'bg-surface-container text-primary group-hover:bg-primary group-hover:text-white'
-                }`}>
+                <div className={`w-12 h-12 mb-4 rounded-xl flex items-center justify-center transition-all duration-300 shadow-xs border ${isSelected
+                    ? 'bg-amber-400 text-black border-black scale-105'
+                    : 'bg-[#FEF3D6] text-black border-amber-300 group-hover:bg-amber-400 group-hover:scale-105'
+                  }`}>
                   <span className="material-symbols-outlined text-[24px]">{cat.icon}</span>
                 </div>
-                <h3 className="font-bold text-xl text-on-surface mb-2">{cat.title}</h3>
-                <p className="text-on-surface-variant text-sm mb-6 flex-grow">{cat.desc}</p>
-                <div className={`flex items-center justify-between font-button text-sm transition-all font-semibold mt-auto w-full pt-4 border-t border-outline-variant/10 ${
-                  isSelected ? 'text-primary' : 'text-primary opacity-80 group-hover:opacity-100'
-                }`}>
+                <h3 className={`font-bold text-xl mb-2 tracking-tight ${isSelected ? 'text-white' : 'text-black'}`}>{cat.title}</h3>
+                <p className={`text-sm mb-6 flex-grow leading-relaxed ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>{cat.desc}</p>
+                <div className={`flex items-center justify-between font-button text-sm transition-all font-bold mt-auto w-full pt-4 border-t ${isSelected ? 'border-white/15 text-amber-400' : 'border-amber-200/80 text-black group-hover:text-amber-600'
+                  }`}>
                   <span>View Materials</span>
                   <div className="flex items-center gap-2">
                     {catCount > 0 && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                        isSelected ? 'bg-primary/10 text-primary' : 'bg-surface-container text-on-surface-variant'
-                      }`}>
+                      <span className={`text-xs px-2.5 py-0.5 rounded-full font-extrabold shadow-2xs border ${isSelected ? 'bg-amber-400 text-black border-amber-400' : 'bg-[#FEF3D6] text-black border-amber-300'
+                        }`}>
                         {catCount}
                       </span>
                     )}
-                    <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1.5 transition-transform duration-200">arrow_forward</span>
                   </div>
                 </div>
               </button>
@@ -173,21 +169,21 @@ function SubjectDetails() {
         </div>
 
         {/* Resources Subsection */}
-        <div ref={resourcesPanelRef} className="scroll-mt-6 bg-white rounded-[24px] p-8 md:p-10 border border-outline-variant/20 shadow-sm min-h-[300px]">
-          <div className="flex items-center justify-between mb-8 pb-4 border-b border-outline-variant/10">
-            <h2 className="text-2xl font-bold text-navy-accent flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">folder_open</span>
+        <div ref={resourcesPanelRef} className="scroll-mt-6 glass-card rounded-[28px] p-6 sm:p-10 border-2 border-amber-300/80 shadow-md min-h-[300px]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-amber-200">
+            <h2 className="text-2xl font-black text-black flex items-center gap-2 tracking-tight">
+              <span className="material-symbols-outlined text-amber-500 text-3xl">folder_open</span>
               {selectedCategory}
             </h2>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
               <button
                 onClick={() => setShowUpload(true)}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary/10 text-primary text-sm font-semibold hover:bg-primary/20 transition"
+                className="btn-black-yellow px-4 py-2 rounded-xl text-sm font-extrabold cursor-pointer active-press"
               >
-                <span className="material-symbols-outlined text-[16px]">upload_file</span>
+                <span className="material-symbols-outlined text-[16px] mr-1">upload_file</span>
                 Contribute
               </button>
-              <span className="text-sm bg-primary/10 text-primary px-3 py-1 rounded-full font-semibold">
+              <span className="text-sm bg-black text-amber-400 border border-amber-400 px-3.5 py-1 rounded-full font-extrabold shadow-2xs">
                 {resourcesLoading ? '...' : filteredResources.length} {filteredResources.length === 1 ? 'Resource' : 'Resources'}
               </span>
             </div>
@@ -197,7 +193,7 @@ function SubjectDetails() {
           {resourcesLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="border border-outline-variant/20 p-6 rounded-2xl animate-pulse space-y-4">
+                <div key={i} className="border-2 border-amber-200 p-6 rounded-2xl animate-pulse space-y-4">
                   <div className="h-6 bg-gray-200 rounded w-3/4"></div>
                   <div className="h-4 bg-gray-200 rounded w-5/6"></div>
                   <div className="h-10 bg-gray-200 rounded-xl w-1/3 mt-4"></div>
@@ -220,27 +216,27 @@ function SubjectDetails() {
                 return (
                   <div
                     key={res.id}
-                    className="border border-outline-variant/20 p-6 rounded-2xl bg-surface-container-lowest hover:border-primary/20 hover:shadow-md transition-all flex flex-col justify-between"
+                    className="border-2 border-amber-300/80 hover:border-black p-6 rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between group active-press"
                   >
                     <div>
-                      <h3 className="font-bold text-lg text-on-surface mb-2 flex items-start gap-2">
-                        <span className="material-symbols-outlined text-primary text-[20px] mt-0.5">{fileIcon}</span>
+                      <h3 className="font-black text-lg text-black mb-2 flex items-start gap-2">
+                        <span className="material-symbols-outlined text-amber-500 text-[20px] mt-0.5">{fileIcon}</span>
                         {res.title}
                       </h3>
                       {res.description && (
-                        <p className="text-on-surface-variant text-sm mb-3 leading-relaxed">
+                        <p className="text-gray-600 text-sm mb-3 leading-relaxed font-medium">
                           {res.description}
                         </p>
                       )}
                       <div className="flex items-center flex-wrap gap-2 mb-4">
                         {res.source && (
-                          <span className="inline-flex items-center gap-1 text-xs text-secondary font-medium bg-secondary-container/20 px-2 py-1 rounded-lg">
+                          <span className="inline-flex items-center gap-1 text-xs text-black font-semibold bg-[#FEF3D6] border border-amber-300 px-2.5 py-1 rounded-lg">
                             <span className="material-symbols-outlined text-[14px]">person</span>
                             {res.source}
                           </span>
                         )}
                         {res.createdAt && (
-                          <span className="text-xs text-on-surface-variant">
+                          <span className="text-xs text-gray-500 font-medium">
                             {new Date(res.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                           </span>
                         )}
@@ -250,7 +246,7 @@ function SubjectDetails() {
                       <Link
                         to={`/resource/${res.id}`}
                         state={{ resource: res }}
-                        className="inline-flex items-center justify-center gap-2 bg-primary text-on-primary hover:bg-primary/95 px-5 py-2.5 rounded-xl text-sm font-button font-semibold transition-all shadow-sm hover:scale-[1.01]"
+                        className="btn-black-yellow px-5 py-2.5 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 active-press"
                       >
                         <span className="material-symbols-outlined text-[18px]">visibility</span>
                         View Material
@@ -258,7 +254,7 @@ function SubjectDetails() {
                       <a
                         href={href}
                         download
-                        className="inline-flex items-center justify-center gap-1.5 bg-surface-container border border-outline-variant/30 text-on-surface hover:bg-surface-container-high px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
+                        className="inline-flex items-center justify-center gap-1.5 bg-[#FEF3D6] border-2 border-amber-400 text-black hover:bg-amber-400 px-4 py-2.5 rounded-xl text-sm font-bold transition-all active-press"
                       >
                         <span className="material-symbols-outlined text-[18px]">download</span>
                       </a>

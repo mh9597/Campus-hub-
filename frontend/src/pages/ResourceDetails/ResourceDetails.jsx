@@ -1,16 +1,16 @@
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useSemesterById } from '../../hooks/useSemesterById';
 import { SubjectCardSkeleton } from '../../components/ui/LoadingSkeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
+import { motion } from 'framer-motion';
+
 
 function SemesterDetails() {
   const { id } = useParams();
   const semesterId = parseInt(id, 10);
+  const navigate = useNavigate();
 
   const { semester, loading, error, refetch } = useSemesterById(semesterId);
-
-  // Check if it's Semester 5 (renders modern grid style instead of bulletin board)
-  const isModernGrid = semesterId === 5;
 
   // Hard redirect for invalid numeric ids (not loading, not error, no semester found)
   if (!loading && !error && !semester) {
@@ -18,40 +18,29 @@ function SemesterDetails() {
   }
 
   return (
-    <div className={`min-h-screen ${isModernGrid ? 'bg-background' : 'bulletin-board-bg'} text-on-surface font-body-md selection:bg-primary-container selection:text-white`}>
-      <main className="relative py-12 max-w-container-max mx-auto px-margin-mobile md:px-gutter">
-        
-        {/* Subtle Connector Lines SVG for Pin Boards */}
-        {!isModernGrid && (
-          <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-20 hidden md:block" preserveAspectRatio="none" style={{ transform: 'translate(12px, 10px)' }}>
-            <path className="connector-path" d="M 200,200 Q 400,100 600,300 T 1000,500" fill="none" stroke="#1E293B" strokeWidth="2"></path>
-            <path className="connector-path" d="M 800,200 Q 600,400 400,200 T 100,600" fill="none" stroke="#1E293B" strokeWidth="2"></path>
-            <path className="connector-path" d="M 1000,800 Q 800,1000 600,800 T 200,1000" fill="none" stroke="#1E293B" strokeWidth="2"></path>
-          </svg>
-        )}
-
-        {/* Breadcrumb Navigation */}
-        <div className="relative z-10 mb-12">
+    <div className="pt-20 min-h-screen bulletin-board-bg text-on-surface font-body-md selection:bg-primary-container selection:text-white">
+      <main>
+        {/* Header Section */}
+        <section className="relative pt-12 pb-6 max-w-container-max mx-auto px-margin-mobile md:px-gutter">
+          {/* Breadcrumb Navigation */}
+          <div className="relative z-10 mb-8">
           <nav className="flex items-center gap-2 mb-4 font-label-lg text-label-lg text-secondary">
-            <Link to="/" className="hover:text-primary opacity-60">Home</Link>
+            <Link to="/" className="hover:text-amber-600 opacity-70 transition-colors font-medium">Home</Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <Link to="/resources" className="hover:text-primary opacity-60">Resources</Link>
+            <Link to="/resources" className="hover:text-amber-600 opacity-70 transition-colors font-medium">Resources</Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <Link to="/semesters" className="hover:text-primary opacity-60">Computer Engineering</Link>
+            <Link to="/semesters" className="hover:text-amber-600 opacity-70 transition-colors font-medium">Computer Engineering</Link>
             <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-            <span className="text-primary font-bold">
+            <span className="text-black font-extrabold">
               {loading ? '...' : (semester?.name ?? `Semester ${semesterId}`)}
             </span>
           </nav>
           
-          <h1 className="font-display-lg text-display-lg md:text-display-lg-mobile text-on-surface mb-4 font-bold text-4xl">
+          <h1 className="font-display-lg text-display-lg md:text-display-lg-mobile text-black mb-4 font-black text-4xl">
             {loading ? <span className="inline-block w-48 h-9 rounded bg-gray-200 animate-pulse" /> : semester?.name}
           </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
-            {isModernGrid 
-              ? 'Choose a subject to access notes, previous year papers, practical files, viva questions, question banks, and syllabus. Everything you need for academic excellence in one place.'
-              : 'Choose a subject to access Notes, Previous Year Papers, Practical Files, Viva Questions, Question Banks, and Syllabus.'
-            }
+          <p className="font-body-lg text-body-lg text-gray-600 max-w-2xl leading-relaxed font-medium">
+            Choose a subject to access Notes, Previous Year Papers, Practical Files, Viva Questions, Question Banks, and Syllabus.
           </p>
         </div>
 
@@ -60,8 +49,14 @@ function SemesterDetails() {
           <ErrorState message={error} onRetry={refetch} className="my-8" />
         )}
 
-        {/* Subjects Grid */}
-        <div className={`relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 ${isModernGrid ? '' : 'max-w-7xl'}`}>
+        </section>
+
+        {/* The "Bulletin Board" Grid Section */}
+        <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-12 relative">
+
+
+          {/* Subjects Grid */}
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-16 lg:gap-x-16 lg:gap-y-24 relative z-10 max-w-7xl mx-auto">
           {/* Loading skeletons */}
           {loading && Array.from({ length: 6 }).map((_, i) => (
             <SubjectCardSkeleton key={i} />
@@ -69,142 +64,111 @@ function SemesterDetails() {
 
           {/* Loaded subjects */}
           {!loading && !error && semester?.subjects.map((sub, index) => {
-            // Check card type
-            if (isModernGrid || sub.cardType === 'premium-card') {
-              // Renders modern grid card (like Semester 5)
-              const borderColors = {
-                primary: 'group-hover:bg-primary text-primary bg-primary-container/10',
-                tertiary: 'group-hover:bg-tertiary text-tertiary bg-tertiary-container/10',
-                blue: 'group-hover:bg-blue-600 text-blue-600 bg-blue-500/10',
-                emerald: 'group-hover:bg-emerald-600 text-emerald-600 bg-emerald-500/10',
-              };
+                const folderColors = {
+                  green: { frontBg: 'bg-[#00c07f]', badgeBg: 'bg-[#009b66]', btnText: '#00c07f' },
+                  blue: { frontBg: 'bg-[#2b7cff]', badgeBg: 'bg-[#185adb]', btnText: '#2b7cff' },
+                  yellow: { frontBg: 'bg-[#f78b00]', badgeBg: 'bg-[#cf7400]', btnText: '#f78b00' }, 
+                  purple: { frontBg: 'bg-[#a335ff]', badgeBg: 'bg-[#811bd6]', btnText: '#a335ff' },
+                  orange: { frontBg: 'bg-[#f78b00]', badgeBg: 'bg-[#cf7400]', btnText: '#f78b00' },
+                  pink: { frontBg: 'bg-[#f4268a]', badgeBg: 'bg-[#cd106d]', btnText: '#f4268a' },
+                  rose: { frontBg: 'bg-[#f4268a]', badgeBg: 'bg-[#cd106d]', btnText: '#f4268a' },
+                  cyan: { frontBg: 'bg-[#00c07f]', badgeBg: 'bg-[#009b66]', btnText: '#00c07f' },
+                };
+                
+                const c = folderColors[sub.pinColor] || folderColors['blue'];
+                
+                const countStr = sub.resourcesCount || '0+ Resources';
+                const countParts = countStr.split(' ');
+                const resNum = countParts[0] || '0+';
+                const resText = countParts.slice(1).join(' ') || 'Resources';
 
-              const codeColors = {
-                primary: 'text-primary',
-                tertiary: 'text-tertiary',
-                blue: 'text-blue-600',
-                emerald: 'text-emerald-600',
-              };
+                return (
+                  <motion.div
+                    key={sub.code || index}
+                    drag
+                    dragConstraints={{ left: -300, right: 300, top: -300, bottom: 300 }}
+                    dragElastic={0.2}
+                    whileHover={{ scale: 1.02, y: -4, zIndex: 30 }}
+                    whileDrag={{ scale: 1.05, rotate: 2, zIndex: 50, cursor: 'grabbing' }}
+                    onClick={(e) => {
+                      if (!e.defaultPrevented) navigate(`/subject/${sub.code.toLowerCase()}`);
+                    }}
+                    className="group relative w-full sm:w-[calc(50%-16px)] lg:w-[32%] max-w-[420px] h-[240px] cursor-grab active:cursor-grabbing flex flex-col items-center justify-end mt-12 mb-4"
+                  >
+                    <div className="file relative w-full h-full cursor-pointer origin-bottom [perspective:1500px] z-50">
+                      
+                      {/* BACK FOLDER (work-5) */}
+                      <div className={`work-5 absolute inset-0 ${c.frontBg} rounded-[20px] rounded-tl-none origin-bottom transition-all ease duration-300 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)]`}>
+                        {/* Tab */}
+                        <div className={`absolute bottom-[99%] left-0 w-[35%] h-[28px] ${c.frontBg} rounded-t-xl`} />
+                      </div>
 
-              // Map color scheme based on code/index
-              let colorScheme = 'primary';
-              if (index % 4 === 1) colorScheme = 'tertiary';
-              if (index % 4 === 2) colorScheme = 'blue';
-              if (index % 4 === 3) colorScheme = 'emerald';
+                      {/* LEFT PAPER (work-4) */}
+                      <div className="work-4 absolute top-[12%] bottom-[15%] left-[4%] w-[34%] bg-[#f8f9fa] rounded-t-xl transition-all ease duration-300 origin-bottom group-hover:-translate-y-8 flex flex-col pt-3 pl-4 pr-3 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] border border-gray-200 border-b-0">
+                         <span className="text-[10px] text-gray-800 font-extrabold tracking-wide mb-0.5">Code</span>
+                         <span className="text-[17px] text-gray-900 font-black tracking-tighter leading-none">{sub.code}</span>
+                      </div>
+                      
+                      {/* RIGHT PAPER (work-3) */}
+                      <div className="work-3 absolute top-[15%] bottom-[15%] right-[4%] w-[56%] bg-[#f8f9fa] rounded-t-xl transition-all ease duration-300 origin-bottom group-hover:-translate-y-12 flex flex-col pt-3 pl-4 pr-3 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] border border-gray-200 border-b-0">
+                         <span className="text-[10px] text-gray-800 font-extrabold tracking-wide mb-0.5">Details</span>
+                         <span className="text-[14px] text-gray-900 font-black tracking-tight leading-[1.1] line-clamp-2 pr-2">{sub.title}</span>
+                      </div>
 
-              const iconClass = borderColors[colorScheme];
-              const codeClass = codeColors[colorScheme];
+                      {/* FRONT COVER (work-1) */}
+                      <div className={`work-1 absolute bottom-0 left-0 w-full h-[80%] ${c.frontBg} rounded-[20px] transition-all ease duration-300 origin-bottom group-hover:[transform:rotateX(-46deg)_translateY(2px)] flex flex-col pt-3 pb-3 px-4 overflow-hidden shadow-[0_-4px_12px_rgba(0,0,0,0.15)]`}>
+                        
+                        {/* Resource Badge (Top Right) */}
+                        <div className={`absolute top-0 right-0 w-[90px] h-[65px] ${c.badgeBg} rounded-bl-[24px] flex flex-col items-center justify-center pt-1 z-30`}>
+                           <span className="text-white font-black text-[22px] leading-none drop-shadow-sm">{resNum}</span>
+                           <span className="text-white font-black text-[11px] leading-tight tracking-wide mt-0.5 drop-shadow-sm">{resText}</span>
+                           <span className="text-white/90 font-black text-[7px] uppercase tracking-widest mt-0.5 drop-shadow-sm">ITEMS</span>
+                        </div>
 
-              return (
-                <div key={sub.code || index} className="premium-card p-8 rounded-[20px] bg-surface-container-lowest border border-outline-variant/20 flex flex-col h-full relative overflow-hidden group shadow-sm premium-card-hover hover:border-primary/20">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:text-white transition-colors duration-300 ${iconClass}`}>
-                    <span className="material-symbols-outlined text-[32px]">
-                      {sub.icon || 'book'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`font-label-lg text-label-lg tracking-widest uppercase font-semibold ${codeClass}`}>
-                      {sub.code}
-                    </span>
-                  </div>
-                  <h3 className="font-headline-md text-headline-md text-on-surface font-bold text-lg mb-4">
-                    {sub.title}
-                  </h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant mb-8 flex-grow leading-relaxed">
-                    {sub.description}
-                  </p>
-                  <div className="flex items-center justify-between mt-auto pt-6 border-t border-outline-variant/10">
-                    <span className="font-label-lg text-label-lg text-secondary px-3 py-1 bg-secondary-container/30 rounded-lg">
-                      {sub.resourcesCount}
-                    </span>
-                    <Link to={`/subject/${sub.code.toLowerCase()}`} className="flex items-center gap-2 text-primary font-button text-button hover:gap-4 transition-all duration-300 font-semibold">
-                      Open Subject <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-                    </Link>
-                  </div>
-                </div>
-              );
-            } else {
-              // Renders pin board pinned-card (Semesters 1-4, 6-7)
-              const pinColors = {
-                green: 'text-green-600',
-                blue: 'text-blue-500',
-                yellow: 'text-yellow-600',
-                purple: 'text-purple-500',
-                orange: 'text-orange-500',
-                pink: 'text-pink-500',
-                rose: 'text-rose-500',
-                cyan: 'text-cyan-500',
-              };
+                        {/* Content */}
+                        <h3 className="text-white font-black text-[20px] mb-1 pr-20 line-clamp-2 tracking-tight drop-shadow-sm leading-tight shrink-0">
+                          {sub.title}
+                        </h3>
+                        
+                        <div className="flex gap-2 flex-wrap mt-1">
+                          {/* Default "Badge" Style (White background) */}
+                          <span className={`px-2.5 py-[3px] rounded-full text-[10px] font-bold bg-white shadow-sm tracking-wide`} style={{ color: c.btnText }}>
+                            {sub.code}
+                          </span>
+                          {/* "Secondary" Style (Translucent dark background) */}
+                          <span className={`px-2.5 py-[3px] rounded-full text-[10px] font-bold text-white bg-black/20 shadow-sm tracking-wide line-clamp-1 max-w-[200px] border border-white/10 backdrop-blur-sm`}>
+                            {sub.description}
+                          </span>
+                        </div>
 
-              const codeColors = {
-                green: 'text-green-700 bg-green-100',
-                blue: 'text-blue-700 bg-blue-100',
-                yellow: 'text-yellow-700 bg-yellow-100',
-                purple: 'text-purple-700 bg-purple-100',
-                orange: 'text-orange-700 bg-orange-100',
-                pink: 'text-pink-700 bg-pink-100',
-                rose: 'text-rose-700 bg-rose-100',
-                cyan: 'text-cyan-700 bg-cyan-100',
-              };
+                        {/* Resource Badges */}
+                        <div className="flex gap-1 mt-auto mb-1 overflow-x-auto w-full pb-1 -mb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                           {[
+                             { label: "Notes", icon: "📄" },
+                             { label: "PYQs", icon: "🔗" },
+                             { label: "Practicals", icon: "⚗" },
+                             { label: "Viva", icon: "💬" },
+                             { label: "Syllabus", icon: "▣" },
+                           ].map((item) => (
+                             <span key={item.label} className="shrink-0 bg-white/20 border border-white/10 backdrop-blur-md text-white rounded-full flex items-center px-2 py-[3px] text-[9px] font-bold gap-[3px] shadow-sm">
+                               <span className="text-[10px] opacity-90">{item.icon}</span>
+                               <span className="opacity-90 tracking-wide">{item.label}</span>
+                             </span>
+                           ))}
+                         </div>
 
-              const borderColors = {
-                green: 'border-green-200',
-                blue: 'border-blue-200',
-                yellow: 'border-yellow-200',
-                purple: 'border-purple-200',
-                orange: 'border-orange-200',
-                pink: 'border-pink-200',
-                rose: 'border-rose-200',
-                cyan: 'border-cyan-200',
-              };
+                        {/* Open Subject Button */}
+                        <div className="w-full bg-white font-black text-[13px] py-2 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.1)] text-center mt-2 shrink-0 tracking-wide transition-transform active:scale-[0.98]" style={{ color: c.btnText }}>
+                          Open Subject
+                        </div>
 
-              const pinColor = pinColors[sub.pinColor] || 'text-red-500';
-              const codeClass = codeColors[sub.pinColor] || 'text-red-700 bg-red-100';
-              const borderClass = borderColors[sub.pinColor] || 'border-gray-200';
-
-              return (
-                <div
-                  key={sub.code || index}
-                  className="pinned-card bg-white p-8 rounded-[20px] shadow-sm relative flex flex-col items-center text-center group h-full"
-                  style={{
-                    transform: `rotate(${sub.rotate || '0deg'})`,
-                    backgroundColor: sub.bgColor || '#ffffff',
-                  }}
-                >
-                  {/* Push Pin */}
-                  <div className="push-pin absolute -top-5 left-1/2 -translate-x-1/2">
-                    <span className={`material-symbols-outlined text-4xl ${pinColor}`} style={{ fontVariationSettings: '"FILL" 1' }}>
-                      push_pin
-                    </span>
-                  </div>
-                  
-                  {/* Subject Code */}
-                  <span className={`font-label-lg text-label-lg px-3 py-1 rounded-full mb-6 font-semibold ${codeClass}`}>
-                    {sub.code}
-                  </span>
-
-                  {/* Content */}
-                  <h3 className="font-headline-md text-headline-md text-on-surface font-bold text-lg mb-3">
-                    {sub.title}
-                  </h3>
-                  <p className="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
-                    {sub.description}
-                  </p>
-
-                  {/* Open Link */}
-                  <div className={`mt-auto pt-6 border-t ${borderClass} w-full flex justify-between items-center`}>
-                    <span className="text-xs font-semibold text-gray-400">
-                      {sub.resourcesCount}
-                    </span>
-                    <Link to={`/subject/${sub.code.toLowerCase()}`} className="flex items-center gap-2 font-button text-button text-primary hover:gap-3 transition-all font-semibold">
-                      Open Subject <span className="material-symbols-outlined text-sm">arrow_forward</span>
-                    </Link>
-                  </div>
-                </div>
-              );
-            }
+                      </div>
+                    </div>
+                  </motion.div>
+                );
           })}
-        </div>
+          </div>
+        </section>
       </main>
     </div>
   );

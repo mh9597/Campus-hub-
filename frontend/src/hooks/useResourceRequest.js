@@ -10,8 +10,8 @@ export function useResourceRequest() {
   const [formData, setFormData] = useState({
     subjectCode: '',
     resourceType: 'Notes',
-    description: '',
-    email: '',
+    message: '',
+    requesterEmail: '',
   });
   const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
   const [errorMessage, setErrorMessage] = useState(null);
@@ -29,7 +29,7 @@ export function useResourceRequest() {
 
     if (success) {
       setStatus('success');
-      setFormData({ subjectCode: '', resourceType: 'Notes', description: '', email: '' });
+      setFormData({ subjectCode: '', resourceType: 'Notes', message: '', requesterEmail: '' });
     } else {
       setStatus('error');
       setErrorMessage(error);

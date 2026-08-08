@@ -9,7 +9,7 @@ import BackgroundDecorations from './components/BackgroundDecorations';
 
 function Home() {
   return (
-    <div className="bg-[#FDFBF7] text-hub-navy font-poppins min-h-screen relative overflow-hidden selection:bg-amber-300 selection:text-hub-navy">
+    <div className="pt-20 bg-[#FDFBF7] text-hub-navy font-poppins min-h-screen relative overflow-hidden selection:bg-amber-300 selection:text-hub-navy">
       {/* Background Decor SVG Vector Layers */}
       <BackgroundDecorations />
 

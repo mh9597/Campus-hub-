@@ -58,13 +58,13 @@ function Opportunities() {
   });
 
   return (
-    <div className="bg-[#fffcf0] text-on-surface font-body-md min-h-screen pb-12 bulletin-board-bg">
+    <div className="pt-20 bg-[#fffcf0] text-on-surface font-body-md min-h-screen pb-12 bulletin-board-bg">
       <main className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-12">
         {/* Breadcrumb */}
         <nav className="flex mb-8 items-center gap-2 text-on-surface-variant font-body-md text-sm">
-          <Link className="hover:text-primary opacity-60" to="/">Home</Link>
+          <Link className="hover:text-black opacity-60 transition-colors" to="/">Home</Link>
           <span className="material-symbols-outlined text-sm">chevron_right</span>
-          <span className="text-primary font-bold">Opportunities</span>
+          <span className="text-black font-bold">Opportunities</span>
         </nav>
 
         <div className="flex flex-col lg:flex-row gap-gutter">
@@ -81,7 +81,7 @@ function Opportunities() {
               {/* Search & Filter */}
               <div className="mt-8 space-y-6">
                 <div className="relative max-w-xl">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-black font-bold">
                     search
                   </span>
                   <input
@@ -89,21 +89,21 @@ function Opportunities() {
                     id="opportunity-search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 rounded-full border border-outline-variant bg-white shadow-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-body-md"
+                    className="w-full pl-12 pr-4 py-3.5 rounded-full border-2 border-amber-400/90 bg-white shadow-sm focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all font-semibold text-black"
                     placeholder="Search opportunities..."
                     aria-label="Search opportunities"
                   />
                 </div>
-                <div className="flex flex-wrap gap-2" role="group" aria-label="Filter opportunities">
+                <div className="flex flex-wrap gap-2.5" role="group" aria-label="Filter opportunities">
                   {FILTERS.map((filter) => (
                     <button
                       key={filter}
                       onClick={() => setActiveFilter(filter)}
                       aria-pressed={activeFilter === filter}
-                      className={`px-4 py-1.5 rounded-full text-sm font-button transition-all shadow-sm ${
+                      className={`px-4 py-2 rounded-full text-sm font-bold transition-all shadow-sm active-press cursor-pointer ${
                         activeFilter === filter
-                          ? 'bg-primary text-on-primary font-semibold'
-                          : 'bg-white border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary'
+                          ? 'bg-black text-amber-400 border-2 border-amber-400 shadow-md'
+                          : 'bg-white border-2 border-amber-300/80 text-black hover:border-black hover:bg-amber-50'
                       }`}
                     >
                       {filter}
@@ -131,16 +131,16 @@ function Opportunities() {
                 {/* Loaded opportunities */}
                 {!oppLoading && !oppError && filteredOpportunities.map((opp) => {
                   const badgeClasses = {
-                    primary: 'bg-primary-container/10 text-primary',
-                    tertiary: 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
-                    error: 'bg-error-container text-on-error-container',
+                    primary: 'bg-[#FEF3D6] text-black border-2 border-amber-400 font-bold',
+                    tertiary: 'bg-amber-100 text-amber-900 border-2 border-amber-500 font-bold',
+                    error: 'bg-red-100 text-red-800 border-2 border-red-400 font-bold',
                   };
                   const badgeClass = badgeClasses[opp.tagType] || badgeClasses.primary;
 
                   return (
                     <div
                       key={opp.id}
-                      className="paper-card p-8 rounded-xl border border-outline-variant hover:rotate-0 transition-transform duration-300"
+                      className="outlined-card p-8 rounded-2xl hover:rotate-0 transition-all duration-300 relative group"
                       style={{
                         '--rotate': opp.rotate,
                         transform: `rotate(${opp.rotate})`,
@@ -158,20 +158,21 @@ function Opportunities() {
                       <div className="flex items-start justify-between mb-6">
                         <span className="text-4xl">{opp.emoji}</span>
                         {opp.tag && (
-                          <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider ${badgeClass}`}>
+                          <span className={`px-3 py-1 rounded-lg text-xs tracking-wider shadow-2xs ${badgeClass}`}>
                             {opp.tag}
                           </span>
                         )}
                       </div>
 
-                      <h3 className="font-headline-md text-headline-md mb-4 text-on-surface font-bold text-lg">
+                      <h3 className="font-headline-md text-headline-md mb-4 text-black font-extrabold text-xl leading-snug">
                         {opp.title}
                       </h3>
-                      <p className="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
+                      <p className="font-body-md text-body-md text-gray-600 mb-6 leading-relaxed font-medium">
                         {opp.description}
                       </p>
-                      <Link to="/resources" className="flex items-center gap-2 text-primary font-button group font-semibold">
-                        Explore <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                      <Link to="/resources" className="inline-flex items-center gap-2 text-black hover:text-amber-600 font-extrabold text-sm group/link">
+                        <span>Explore</span>
+                        <span className="group-hover/link:translate-x-1.5 transition-transform font-bold">&rarr;</span>
                       </Link>
                     </div>
                   );
@@ -180,8 +181,8 @@ function Opportunities() {
                 {/* Empty state */}
                 {!oppLoading && !oppError && filteredOpportunities.length === 0 && (
                   <div className="col-span-2 text-center py-12 text-gray-500 space-y-2">
-                    <span className="material-symbols-outlined text-5xl text-gray-300 block">search_off</span>
-                    <p className="font-semibold">No opportunities match your search.</p>
+                    <span className="material-symbols-outlined text-5xl text-amber-400 block">search_off</span>
+                    <p className="font-bold text-black">No opportunities match your search.</p>
                     <p className="text-sm">Try a different search term or filter.</p>
                   </div>
                 )}
@@ -195,12 +196,12 @@ function Opportunities() {
           <div className="w-full lg:w-1/4">
             <div className="sidebar-sticky space-y-6">
               {/* Announcements Widget */}
-              <div className="bg-white p-6 rounded-[20px] shadow-[0_40px_80px_rgba(30,41,59,0.08)] border border-surface-container">
+              <div className="bg-white p-6 rounded-[24px] shadow-md border-2 border-amber-300/70 hover:border-black transition-all">
                 <div className="flex items-center gap-2 mb-6">
-                  <span className="material-symbols-outlined text-primary text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  <span className="material-symbols-outlined text-black text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
                     campaign
                   </span>
-                  <h2 className="font-headline-md text-headline-md text-on-surface font-bold text-lg">
+                  <h2 className="font-headline-md text-headline-md text-black font-extrabold text-lg">
                     Latest Announcements
                   </h2>
                 </div>
@@ -217,18 +218,18 @@ function Opportunities() {
                         <span className={`w-3 h-3 rounded-full ${ann.color} mt-1.5 shrink-0`}></span>
                         <div>
                           <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <p className="font-body-md text-on-surface leading-snug group-hover:text-primary transition-colors text-sm font-medium">
+                            <p className="font-body-md text-black leading-snug group-hover:text-amber-600 transition-colors text-sm font-semibold">
                               {ann.text}
                             </p>
                             {ann.badge && (
-                              <span className="bg-primary text-on-primary text-[9px] font-bold px-1.5 py-0.5 rounded uppercase">
+                              <span className="bg-black text-amber-400 text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase border border-amber-400">
                                 {ann.badge}
                               </span>
                             )}
                           </div>
-                          <p className="text-[11px] text-on-surface-variant flex justify-between">
+                          <p className="text-[11px] text-gray-500 flex justify-between">
                             <span>{formatRelativeTime(ann.created_at)}</span>
-                            {ann.deadline && <span className="text-error font-semibold">Deadline: {ann.deadline}</span>}
+                            {ann.deadline && <span className="text-red-600 font-bold">Deadline: {ann.deadline}</span>}
                           </p>
                         </div>
                       </div>
@@ -237,45 +238,45 @@ function Opportunities() {
 
                   {/* Announcement error */}
                   {annError && !annLoading && (
-                    <p className="text-xs text-red-500 text-center">Could not load announcements.</p>
+                    <p className="text-xs text-red-500 text-center font-semibold">Could not load announcements.</p>
                   )}
                 </div>
-                <Link to="/resources" className="block text-center text-primary font-button border-t border-outline-variant/10 pt-4 hover:translate-x-1 transition-transform text-sm font-semibold">
+                <Link to="/resources" className="block text-center text-black font-extrabold border-t border-amber-200/80 pt-4 hover:translate-x-1 transition-transform text-sm">
                   View All Announcements &rarr;
                 </Link>
               </div>
 
               {/* Closing This Week Widget */}
-              <div className="bg-white p-6 rounded-[20px] shadow-[0_40px_80px_rgba(30,41,59,0.08)] border border-surface-container">
-                <h3 className="font-headline-sm text-headline-sm text-on-surface font-bold text-md mb-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-error text-xl">alarm</span> Closing This Week
+              <div className="bg-white p-6 rounded-[24px] shadow-md border-2 border-amber-300/70 hover:border-black transition-all">
+                <h3 className="font-headline-sm text-headline-sm text-black font-extrabold text-md mb-4 flex items-center gap-2">
+                  <span className="material-symbols-outlined text-red-600 text-xl">alarm</span> Closing This Week
                 </h3>
                 <div className="space-y-4">
                   {CLOSING_THIS_WEEK.map((item) => (
-                    <div key={item.id} className="pb-3 border-b border-outline-variant/10 last:border-b-0 last:pb-0">
-                      <p className="font-body-md text-on-surface font-semibold text-sm">{item.name}</p>
-                      <p className="text-xs text-error font-medium">{item.daysLeft}</p>
+                    <div key={item.id} className="pb-3 border-b border-amber-100 last:border-b-0 last:pb-0">
+                      <p className="font-body-md text-black font-extrabold text-sm">{item.name}</p>
+                      <p className="text-xs text-red-600 font-bold">{item.daysLeft}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Featured Opportunity Widget */}
-              <div className="bg-primary text-on-primary p-6 rounded-[20px] shadow-lg relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-2 opacity-20">
+              <div className="bg-[#0F172A] text-white p-6 rounded-[24px] shadow-xl border-2 border-amber-400 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-2 opacity-25 text-amber-400">
                   <span className="material-symbols-outlined text-6xl">star</span>
                 </div>
-                <h3 className="font-label-lg text-label-lg uppercase tracking-widest mb-2 opacity-80 text-xs font-semibold">
-                  Featured Opportunity
+                <h3 className="font-label-lg text-label-lg uppercase tracking-widest mb-2 text-xs font-extrabold text-amber-400 flex items-center gap-1">
+                  <span>★</span> Featured Opportunity
                 </h3>
-                <h4 className="font-headline-md text-headline-md mb-1 font-bold text-lg">
+                <h4 className="font-headline-md text-headline-md mb-1 font-black text-xl text-white">
                   Summer Research Intern
                 </h4>
-                <p className="font-body-md mb-4 opacity-90 text-sm">Stanford University &bull; Remote</p>
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                  <span className="text-xs font-semibold">Deadline: Nov 15</span>
-                  <button className="bg-white text-primary px-5 py-1.5 rounded-full font-button text-xs hover:bg-surface-container-low transition-colors font-semibold shadow-sm">
-                    Apply
+                <p className="font-body-md mb-4 text-gray-300 text-sm font-medium">Stanford University &bull; Remote</p>
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/15">
+                  <span className="text-xs font-bold text-gray-300">Deadline: Nov 15</span>
+                  <button className="btn-yellow-black px-6 py-2 rounded-full text-xs font-extrabold shadow-md cursor-pointer active-press">
+                    Apply Now
                   </button>
                 </div>
               </div>
@@ -286,21 +287,21 @@ function Opportunities() {
 
       {/* CTA Bottom Section */}
       <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter mb-section-gap-md">
-        <div className="bg-surface-container-high rounded-[32px] p-12 text-center border border-primary/10 shadow-sm max-w-7xl mx-auto space-y-6">
-          <h2 className="font-display-lg-mobile md:font-headline-lg text-on-surface font-bold text-2xl">Can't find the right opportunity?</h2>
-          <p className="font-body-lg text-on-surface-variant mb-8 max-w-xl mx-auto leading-relaxed">
+        <div className="bg-white rounded-[32px] p-10 md:p-14 text-center border-2 border-black shadow-lg max-w-7xl mx-auto space-y-6">
+          <h2 className="font-display-lg-mobile md:font-headline-lg text-black font-black text-2xl sm:text-3xl">Can't find the right opportunity?</h2>
+          <p className="font-body-lg text-gray-600 mb-8 max-w-xl mx-auto leading-relaxed font-medium">
             Help us grow the community by requesting a specific resource or submitting one you've found.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-primary text-on-primary px-8 py-3 rounded-full font-button hover:scale-105 transition-transform shadow-lg font-semibold inline-block text-center cursor-pointer"
+              className="btn-black-yellow px-8 py-3.5 rounded-full font-extrabold shadow-lg inline-block text-center cursor-pointer active-press text-sm"
             >
               Submit Opportunity
             </button>
             <Link
               to="/contact"
-              className="bg-white text-primary border-2 border-primary px-8 py-3 rounded-full font-button hover:scale-105 transition-transform font-semibold cursor-pointer text-center inline-block"
+              className="btn-yellow-black px-8 py-3.5 rounded-full font-extrabold shadow-md cursor-pointer text-center inline-block active-press text-sm"
             >
               Request a Resource
             </Link>
@@ -323,18 +324,18 @@ function Opportunities() {
               <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
 
-            <h3 className="font-bold text-2xl text-navy-accent mb-2 flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">publish</span>
+            <h3 className="font-bold text-2xl text-black mb-2 flex items-center gap-2">
+              <span className="material-symbols-outlined text-amber-500">publish</span>
               Submit an Opportunity
             </h3>
-            <p className="text-on-surface-variant text-sm mb-6 leading-relaxed">
+            <p className="text-gray-600 text-sm mb-6 leading-relaxed font-medium">
               Share internships, hackathons, scholarships, or other opportunities with the student community. Submissions will go live after admin moderation.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Title */}
               <div>
-                <label htmlFor="opp-title" className="block font-semibold text-sm mb-1.5 text-on-surface">
+                <label htmlFor="opp-title" className="block font-bold text-sm mb-1.5 text-black">
                   Opportunity Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -343,7 +344,7 @@ function Opportunities() {
                   value={formData.title}
                   onChange={(e) => handleChange('title', e.target.value)}
                   placeholder="e.g. Google STEP Internship 2026"
-                  className="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black"
                   disabled={submitStatus === 'loading'}
                   required
                 />
@@ -352,7 +353,7 @@ function Opportunities() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Category */}
                 <div>
-                  <label htmlFor="opp-category" className="block font-semibold text-sm mb-1.5 text-on-surface">
+                  <label htmlFor="opp-category" className="block font-bold text-sm mb-1.5 text-black">
                     Category <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -360,14 +361,14 @@ function Opportunities() {
                       id="opp-category"
                       value={formData.category}
                       onChange={(e) => handleChange('category', e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md appearance-none cursor-pointer"
+                      className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer"
                       disabled={submitStatus === 'loading'}
                     >
                       {FILTERS.filter(f => f !== 'All').map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">
+                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none text-[18px]">
                       expand_more
                     </span>
                   </div>
@@ -375,7 +376,7 @@ function Opportunities() {
 
                 {/* Submitter Email */}
                 <div>
-                  <label htmlFor="opp-email" className="block font-semibold text-sm mb-1.5 text-on-surface">
+                  <label htmlFor="opp-email" className="block font-bold text-sm mb-1.5 text-black">
                     Your Email <span className="text-gray-400 font-normal">(optional)</span>
                   </label>
                   <input
@@ -384,7 +385,7 @@ function Opportunities() {
                     value={formData.submitterEmail}
                     onChange={(e) => handleChange('submitterEmail', e.target.value)}
                     placeholder="student@example.com"
-                    className="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md"
+                    className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black"
                     disabled={submitStatus === 'loading'}
                   />
                 </div>
@@ -392,7 +393,7 @@ function Opportunities() {
 
               {/* Description */}
               <div>
-                <label htmlFor="opp-desc" className="block font-semibold text-sm mb-1.5 text-on-surface">
+                <label htmlFor="opp-desc" className="block font-bold text-sm mb-1.5 text-black">
                   Description <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -401,33 +402,33 @@ function Opportunities() {
                   onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Describe the opportunity, eligibility, deadlines, and how to apply..."
                   rows={4}
-                  className="w-full px-4 py-2.5 rounded-xl border border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm font-body-md resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black resize-none"
                   disabled={submitStatus === 'loading'}
                   required
                 />
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-outline-variant/10">
+              <div className="flex justify-end gap-3 pt-4 border-t border-amber-200">
                 <button
                   type="button"
                   onClick={() => {
                     setIsModalOpen(false);
                     resetForm();
                   }}
-                  className="px-5 py-2.5 rounded-xl text-sm font-button font-semibold border border-outline hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-sm font-bold border-2 border-gray-300 hover:border-black transition-colors cursor-pointer"
                   disabled={submitStatus === 'loading'}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl text-sm font-button font-semibold bg-primary text-on-primary hover:bg-primary/95 transition-all shadow flex items-center gap-2 cursor-pointer"
+                  className="btn-black-yellow px-6 py-2.5 rounded-xl text-sm font-extrabold shadow-md flex items-center gap-2 cursor-pointer active-press"
                   disabled={submitStatus === 'loading'}
                 >
                   {submitStatus === 'loading' ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
                       Submitting...
                     </>
                   ) : (

@@ -262,6 +262,58 @@ function IconPicker({ value, onChange }) {
   );
 }
 
+// ─── Color Picker ──────────────────────────────────────────────
+const SUBJECT_COLORS = [
+  { id: 'blue', color: 'bg-blue-500' },
+  { id: 'green', color: 'bg-green-500' },
+  { id: 'yellow', color: 'bg-yellow-500' },
+  { id: 'purple', color: 'bg-purple-500' },
+  { id: 'orange', color: 'bg-orange-500' },
+  { id: 'pink', color: 'bg-pink-500' },
+  { id: 'rose', color: 'bg-rose-500' },
+  { id: 'cyan', color: 'bg-cyan-500' },
+];
+
+function ColorPicker({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const activeColor = SUBJECT_COLORS.find(c => c.id === value) || SUBJECT_COLORS[0];
+  
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-surface-container border border-outline-variant/40 text-sm text-on-surface hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10 transition"
+      >
+        <div className="flex items-center gap-2">
+          <div className={`w-4 h-4 rounded-full shadow-sm ${activeColor.color}`} />
+          <span className="font-mono text-xs opacity-70 capitalize">{value}</span>
+        </div>
+        <span className="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform" style={{ transform: open ? 'rotate(180deg)' : 'none' }}>
+          expand_more
+        </span>
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="absolute top-full right-0 md:left-0 mt-2 p-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl z-50 grid grid-cols-4 gap-2 w-48 animate-fade-in">
+            {SUBJECT_COLORS.map(c => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { onChange(c.id); setOpen(false); }}
+                title={c.id}
+                className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center transition-all hover:scale-110 ${c.color} ${value === c.id ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Subject Modal ────────────────────────────────────────────
 function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
   const [form, setForm] = useState({
@@ -269,6 +321,7 @@ function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
     title: initial?.title || '',
     description: initial?.description || '',
     icon: initial?.icon || 'menu_book',
+    pinColor: initial?.pinColor || 'blue',
   });
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState({});
@@ -293,7 +346,7 @@ function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
   return (
     <ModalShell title={mode === 'create' ? `Add Subject — ${semesterName}` : 'Edit Subject'} icon="book_2" onClose={onClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Field label="Subject Code" required error={errors.code}>
             <Input
               value={form.code}
@@ -306,6 +359,12 @@ function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
             <IconPicker
               value={form.icon}
               onChange={(icon) => setForm(f => ({ ...f, icon }))}
+            />
+          </Field>
+          <Field label="Folder Color">
+            <ColorPicker
+              value={form.pinColor}
+              onChange={(pinColor) => setForm(f => ({ ...f, pinColor }))}
             />
           </Field>
         </div>

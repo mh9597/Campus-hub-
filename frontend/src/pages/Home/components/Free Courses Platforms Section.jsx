@@ -88,7 +88,7 @@ function LearningPlatformsSection() {
   return (
     <section className="py-16 md:py-24 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header matching Image 1 */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div className="space-y-3 max-w-2xl">
@@ -96,7 +96,7 @@ function LearningPlatformsSection() {
               <span className="text-amber-500 text-sm">★</span>
               <span>POPULAR</span>
             </div>
-            
+
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-hub-navy leading-tight tracking-tight">
               Discover Free <br className="hidden sm:inline" />
               <span className="relative inline-block text-amber-500">
@@ -106,7 +106,7 @@ function LearningPlatformsSection() {
                 </svg>
               </span>
             </h2>
-            
+
             <p className="text-sm sm:text-base text-gray-600 font-medium pt-1">
               Explore free certifications, industry-recognized courses, career opportunities and trusted learning resources.
             </p>
@@ -143,11 +143,10 @@ function LearningPlatformsSection() {
                 href={p.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold transition-all ${
-                  p.isLight
+                className={`inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold transition-all ${p.isLight
                     ? 'bg-amber-400 text-hub-navy hover:bg-amber-500 shadow-xs'
                     : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs border border-white/30'
-                }`}
+                  }`}
               >
                 <span>Explore</span>
                 <span className="material-symbols-outlined text-sm">arrow_forward</span>

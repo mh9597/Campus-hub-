@@ -16,9 +16,9 @@ function NotFound() {
         <div>
           <Link
             to="/"
-            className="inline-flex items-center gap-2 bg-primary text-white px-8 py-3.5 rounded-full font-button text-button hover:scale-105 transition-transform"
+            className="btn-black-yellow px-8 py-3.5 rounded-full font-extrabold shadow-md inline-flex items-center gap-2 active-press text-sm cursor-pointer"
           >
-            <span className="material-symbols-outlined">home</span>
+            <span className="material-symbols-outlined text-[20px]">home</span>
             Go Back Home
           </Link>
         </div>

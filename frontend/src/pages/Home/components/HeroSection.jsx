@@ -99,7 +99,7 @@ function HeroSection() {
 
           {/* Right Hero Visual Column */}
           <div className="lg:col-span-6 relative flex justify-center items-center">
-            <div className="relative w-full max-w-[720px] scale-105 lg:scale-125 transition-transform duration-500">
+            <div className="relative w-full max-w-[620px] lg:max-w-[720px] scale-100 lg:scale-110 transition-transform duration-500">
               <img
                 src="/images/hero-student.png"
                 alt="Student pointing to resources"
