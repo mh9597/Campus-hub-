@@ -33,10 +33,27 @@ async function getResources(req, res, next) {
 async function getResourceById(req, res, next) {
   try {
     const { id } = req.params;
-    const data = await publicService.getResourceById(id);
+    let data = await publicService.getResourceById(id);
     if (!data) {
       return sendError(res, 'Resource not found', 404);
     }
+
+    // If mimeType is missing but we have a drive file, fetch and permanently save it
+    if (!data.mimeType && data.driveFileId) {
+      try {
+        const metadata = await driveService.getDriveFileMetadata(data.driveFileId);
+        if (metadata.mimeType) {
+          data.mimeType = metadata.mimeType;
+          await prisma.resource.update({
+            where: { id: data.id },
+            data: { mimeType: metadata.mimeType }
+          });
+        }
+      } catch (e) {
+        console.error('[getResourceById] Failed to fetch drive mimeType:', e.message);
+      }
+    }
+
     return sendSuccess(res, data);
   } catch (err) {
     return next(err);
@@ -88,6 +105,7 @@ async function submitUpload(req, res, next) {
       fileKey,
       driveFileId,
       webViewLink,
+      mimeType: req.file ? req.file.mimetype : null,
     });
 
     return sendSuccess(res, submission, 201, 'Submission received and pending review');

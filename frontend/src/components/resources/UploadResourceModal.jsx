@@ -167,7 +167,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                   className={`w-full px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold text-black outline-none ${
                     !!subjectCode || isLoading 
                       ? 'border-gray-200 bg-gray-100 text-gray-600 cursor-not-allowed'
-                      : 'border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black'
+                      : 'border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px]'
                   }`}
                 />
               </div>
@@ -182,13 +182,12 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                     value={form.resourceType}
                     onChange={(e) => setForm(f => ({ ...f, resourceType: e.target.value }))}
                     disabled={isLoading}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white bg-none focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer disabled:opacity-50"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer disabled:opacity-50"
                   >
                     {RESOURCE_TYPES.map(rt => (
                       <option key={rt} value={rt}>{rt}</option>
                     ))}
                   </select>
-                  <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">expand_more</span>
                 </div>
               </div>
             </div>
@@ -205,7 +204,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                 placeholder="e.g. Unit 3 Notes — Data Structures"
                 maxLength={255}
                 disabled={isLoading}
-                className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black disabled:opacity-50"
+                className="w-full px-4 py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black disabled:opacity-50"
               />
             </div>
 
@@ -220,7 +219,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 placeholder="Brief note for reviewers — topics covered, year, etc."
                 disabled={isLoading}
-                className="w-full px-4 py-3 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black resize-none disabled:opacity-50"
+                className="w-full px-4 py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black resize-none disabled:opacity-50"
               />
             </div>
 

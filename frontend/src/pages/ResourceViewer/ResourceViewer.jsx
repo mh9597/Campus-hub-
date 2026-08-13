@@ -76,10 +76,13 @@ function ResourceViewer() {
   const viewUrl     = buildViewUrl(resource.id);     // iframe + "Open in New Tab"
   const downloadUrl = buildDownloadUrl(resource.id); // Download button
 
-  // Detect type from stored mimeType so we don't need to parse a proxy URL
+  // Detect type from stored mimeType or file name
   const mime = resource.mimeType || '';
-  const resourceIsPdf   = mime.includes('pdf')   || isPdf(resource.fileUrl || '');
-  const resourceIsImage = mime.startsWith('image/') || isImage(resource.fileUrl || '');
+  const titleStr = resource.title || '';
+  const urlStr = resource.fileUrl || '';
+
+  const resourceIsPdf   = mime.includes('pdf') || isPdf(urlStr) || isPdf(titleStr);
+  const resourceIsImage = mime.startsWith('image/') || isImage(urlStr) || isImage(titleStr);
 
   const subject = resource.subject;
   const semester = subject?.semester;
@@ -249,7 +252,7 @@ function ResourceViewer() {
         </aside>
 
         {/* ── Main Viewer Area ──────────────────────────────── */}
-        <main className="flex-1 overflow-hidden relative bg-[#0f1117]">
+        <main className="flex-1 overflow-hidden relative bg-black">
           {!resource.fileUrl && !resource.driveFileId ? (
             <EmptyViewer message="No file is attached to this resource." />
           ) : resourceIsPdf ? (
@@ -257,7 +260,7 @@ function ResourceViewer() {
               {iframeLoading && (
                 <div className="absolute inset-0 flex items-center justify-center z-10">
                   <div className="text-center space-y-3">
-                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-400 mx-auto" />
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-400 mx-auto" />
                     <p className="text-white/40 text-sm">Loading PDF…</p>
                   </div>
                 </div>
@@ -276,15 +279,15 @@ function ResourceViewer() {
               )}
             </>
           ) : resourceIsImage ? (
-            <div className="w-full h-full overflow-auto flex items-center justify-center p-8">
+            <div className="w-full h-full overflow-auto flex justify-center items-center p-4 bg-neutral-950 border border-neutral-900">
               <img
                 src={viewUrl}
                 alt={resource.title}
-                className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                className="max-h-[80vh] max-w-full object-contain rounded"
               />
             </div>
           ) : (
-            <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} />
+            <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} isUnknownType />
           )}
         </main>
       </div>
@@ -292,36 +295,42 @@ function ResourceViewer() {
   );
 }
 
-// ─── Fallback: when PDF can't be embedded ─────────────────────
-function FallbackViewer({ viewUrl, downloadUrl }) {
+// ─── Fallback: when PDF can't be embedded or unknown type ───
+function FallbackViewer({ viewUrl, downloadUrl, isUnknownType }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-8">
-      <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center">
-        <span className="material-symbols-outlined text-white/30 text-[48px]">picture_as_pdf</span>
+    <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-8 bg-neutral-950">
+      <div className="w-20 h-20 rounded-2xl bg-neutral-900 flex items-center justify-center border border-neutral-800">
+        <span className="material-symbols-outlined text-yellow-400 text-[48px]">
+          {isUnknownType ? 'folder_zip' : 'picture_as_pdf'}
+        </span>
       </div>
       <div>
-        <h3 className="text-white/80 font-bold text-lg mb-2">Preview not available</h3>
-        <p className="text-white/40 text-sm max-w-sm">
-          Your browser blocked the inline preview for this file. You can still open or download it directly.
+        <h3 className="text-yellow-400 font-bold text-lg mb-2">Preview not available</h3>
+        <p className="text-neutral-400 text-sm max-w-sm">
+          {isUnknownType 
+            ? "This file format cannot be previewed directly in the browser. Click below to download."
+            : "Your browser blocked the inline preview for this file. You can still open or download it directly."}
         </p>
       </div>
       <div className="flex gap-3">
-        <a
-          href={viewUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition"
-        >
-          <span className="material-symbols-outlined text-[20px]">open_in_new</span>
-          Open in New Tab
-        </a>
+        {!isUnknownType && (
+          <a
+            href={viewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-3 rounded-xl transition"
+          >
+            <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+            Open in New Tab
+          </a>
+        )}
         <a
           href={downloadUrl}
           download
-          className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white/80 font-semibold px-6 py-3 rounded-xl transition"
+          className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-yellow-400 font-bold px-6 py-3 rounded-xl transition border border-neutral-700"
         >
           <span className="material-symbols-outlined text-[20px]">download</span>
-          Download
+          Download File
         </a>
       </div>
     </div>
@@ -330,7 +339,7 @@ function FallbackViewer({ viewUrl, downloadUrl }) {
 
 function EmptyViewer({ message }) {
   return (
-    <div className="flex items-center justify-center h-full text-white/30 text-sm">
+    <div className="flex items-center justify-center h-full text-neutral-500 text-sm bg-neutral-950">
       <span className="material-symbols-outlined mr-2">error_outline</span>
       {message}
     </div>

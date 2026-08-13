@@ -98,6 +98,7 @@ async function reviewUpload(id, action, updatedData = {}) {
           fileKey:      upload.fileKey  || null,
           driveFileId:  upload.driveFileId || null,
           webViewLink:  upload.webViewLink  || null,
+          mimeType:     upload.mimeType || null,
           source:       'student_upload',
           isActive:     true,
         },

@@ -140,6 +140,7 @@ model ResourceUpload {
   fileKey      String?          @db.VarChar(300)
   driveFileId  String?          @db.VarChar(300)
   webViewLink  String?          @db.VarChar(500)
+  mimeType     String?          @db.VarChar(100)
   status       SubmissionStatus @default(PENDING)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
@@ -152,7 +153,7 @@ model ResourceRequest {
   id           String           @id @default(uuid())
   subjectCode  String           @db.VarChar(30)
   resourceType String           @db.VarChar(50)
-  message      String           @db.Text
+  description  String           @db.Text
   email        String           @db.VarChar(255)
   status       SubmissionStatus @default(PENDING)
   createdAt    DateTime         @default(now())

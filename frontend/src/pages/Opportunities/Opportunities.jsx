@@ -309,7 +309,7 @@ function Opportunities() {
                   value={formData.title}
                   onChange={(e) => handleChange('title', e.target.value)}
                   placeholder="e.g. Google STEP Internship 2026"
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black"
                   disabled={submitStatus === 'loading'}
                   required
                 />
@@ -317,40 +317,40 @@ function Opportunities() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Category */}
-                <div>
+                <div className="flex flex-col justify-between h-full">
                   <label htmlFor="opp-category" className="block font-bold text-sm mb-1.5 text-black">
                     Category <span className="text-red-500">*</span>
                   </label>
-                  <div className="relative">
+                  <div className="relative mt-auto">
                     <select
                       id="opp-category"
                       value={formData.category}
                       onChange={(e) => handleChange('category', e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer"
+                      className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer"
                       disabled={submitStatus === 'loading'}
                     >
                       {FILTERS.filter(f => f !== 'All').map(cat => (
                         <option key={cat} value={cat}>{cat}</option>
                       ))}
                     </select>
-                    <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none text-[18px]">
-                      expand_more
-                    </span>
                   </div>
                 </div>
 
                 {/* Submitter Email */}
-                <div>
+                <div className="flex flex-col justify-between h-full">
                   <label htmlFor="opp-email" className="block font-bold text-sm mb-1.5 text-black">
-                    Your Email <span className="text-gray-400 font-normal">(optional)</span>
+                    Your Email <span className="text-red-500">*</span> <span className="text-gray-400 font-normal">(must be @gmail.com)</span>
                   </label>
                   <input
                     id="opp-email"
                     type="email"
                     value={formData.submitterEmail}
                     onChange={(e) => handleChange('submitterEmail', e.target.value)}
-                    placeholder="student@example.com"
-                    className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black"
+                    placeholder="student@gmail.com"
+                    pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
+                    title="Please enter a valid @gmail.com address"
+                    required
+                    className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black mt-auto"
                     disabled={submitStatus === 'loading'}
                   />
                 </div>
@@ -367,7 +367,7 @@ function Opportunities() {
                   onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Describe the opportunity, eligibility, deadlines, and how to apply..."
                   rows={4}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-amber-300/80 bg-white focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all text-sm font-semibold text-black resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black resize-none"
                   disabled={submitStatus === 'loading'}
                   required
                 />

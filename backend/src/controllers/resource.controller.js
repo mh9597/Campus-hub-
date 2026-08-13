@@ -45,12 +45,13 @@ async function proxyResource(req, res, dispositionType) {
 
   // ── Path A: Drive proxy — preferred for all new uploads ───────
   if (resource.driveFileId) {
-    const mimeType = resource.mimeType || 'application/octet-stream';
+    const ext = path.extname(resource.title || '').toLowerCase();
+    const mimeType = resource.mimeType || EXT_MIME_MAP[ext] || 'application/octet-stream';
 
     res.setHeader('Content-Type', mimeType);
     res.setHeader(
       'Content-Disposition',
-      `${dispositionType}; filename="${safeTitle}"`,
+      `${dispositionType}; filename="${encodeURIComponent(resource.title || safeTitle)}"`
     );
     res.setHeader('Cache-Control', 'private, max-age=300');
     res.setHeader('X-Content-Type-Options', 'nosniff');
