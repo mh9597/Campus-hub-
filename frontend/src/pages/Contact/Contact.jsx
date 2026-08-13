@@ -56,7 +56,7 @@ function Contact() {
   const isSuccess = status === 'success';
 
   return (
-    <div className="bg-[#FFF8EC] text-on-surface font-body-md min-h-screen pb-16">
+    <div className="bg-[#FFF8EC] text-on-surface font-body-md min-h-screen pt-24 pb-16">
       <main className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-12">
 
         {/* Breadcrumb */}

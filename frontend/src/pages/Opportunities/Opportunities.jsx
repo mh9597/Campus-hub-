@@ -6,14 +6,11 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import { formatRelativeTime } from '../../services/opportunities/opportunitiesApi';
 import { useOpportunitySubmit } from '../../hooks/useResourceRequest';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
+import AcademicCalendar from './components/AcademicCalendar';
 
 const FILTERS = ['All', 'Internships', 'Hackathons', 'Scholarships', 'Coding', 'Workshops', 'Remote', 'Online'];
 
-const CLOSING_THIS_WEEK = [
-  { id: 1, name: 'MLH Fellowship', daysLeft: '2 days left' },
-  { id: 2, name: 'Google STEP Internship', daysLeft: '4 days left' },
-  { id: 3, name: 'Hacktoberfest 2026', daysLeft: '6 days left' },
-];
+
 
 function Opportunities() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -246,40 +243,8 @@ function Opportunities() {
                 </Link>
               </div>
 
-              {/* Closing This Week Widget */}
-              <div className="bg-white p-6 rounded-[24px] shadow-md border-2 border-amber-300/70 hover:border-black transition-all">
-                <h3 className="font-headline-sm text-headline-sm text-black font-extrabold text-md mb-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-red-600 text-xl">alarm</span> Closing This Week
-                </h3>
-                <div className="space-y-4">
-                  {CLOSING_THIS_WEEK.map((item) => (
-                    <div key={item.id} className="pb-3 border-b border-amber-100 last:border-b-0 last:pb-0">
-                      <p className="font-body-md text-black font-extrabold text-sm">{item.name}</p>
-                      <p className="text-xs text-red-600 font-bold">{item.daysLeft}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Featured Opportunity Widget */}
-              <div className="bg-[#0F172A] text-white p-6 rounded-[24px] shadow-xl border-2 border-amber-400 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-2 opacity-25 text-amber-400">
-                  <span className="material-symbols-outlined text-6xl">star</span>
-                </div>
-                <h3 className="font-label-lg text-label-lg uppercase tracking-widest mb-2 text-xs font-extrabold text-amber-400 flex items-center gap-1">
-                  <span>★</span> Featured Opportunity
-                </h3>
-                <h4 className="font-headline-md text-headline-md mb-1 font-black text-xl text-white">
-                  Summer Research Intern
-                </h4>
-                <p className="font-body-md mb-4 text-gray-300 text-sm font-medium">Stanford University &bull; Remote</p>
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/15">
-                  <span className="text-xs font-bold text-gray-300">Deadline: Nov 15</span>
-                  <button className="btn-yellow-black px-6 py-2 rounded-full text-xs font-extrabold shadow-md cursor-pointer active-press">
-                    Apply Now
-                  </button>
-                </div>
-              </div>
+              {/* Academic Calendar Widget */}
+              <AcademicCalendar />
             </div>
           </div>
         </div>

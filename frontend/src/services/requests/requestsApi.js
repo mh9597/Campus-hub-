@@ -18,7 +18,7 @@ export async function submitResourceRequest({ subjectCode, resourceType, message
   try {
     await fetchFromApi('submissions/request', {
       method: 'POST',
-      body: JSON.stringify({ subjectCode, resourceType, description: message, email }),
+      body: JSON.stringify({ subjectCode, resourceType, message, email }),
     });
     return { success: true };
   } catch (err) {

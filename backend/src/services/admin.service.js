@@ -165,12 +165,7 @@ async function getRequests(status = 'PENDING') {
     where: status ? { status } : undefined,
     orderBy: { createdAt: 'desc' },
   });
-  
-  // Map description back to message for frontend compatibility
-  return requests.map(req => ({
-    ...req,
-    message: req.description || '',
-  }));
+  return requests;
 }
 
 /**
