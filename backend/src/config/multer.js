@@ -1,66 +1,75 @@
-// src/config/multer.js — Disk storage configuration for file uploads
+// src/config/multer.js — Memory storage with separate limits for students vs admins
 'use strict';
 
 const multer = require('multer');
-const path = require('path');
-const crypto = require('crypto');
-const fs = require('fs');
+const path   = require('path');
+const fs     = require('fs');
 
+// Keep UPLOAD_DIR so old local-file streaming in public.controller still resolves paths
 const UPLOAD_DIR = path.resolve(__dirname, '..', '..', 'uploads');
-
-// Ensure the uploads directory exists at startup
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => {
-    cb(null, UPLOAD_DIR);
-  },
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    const randomHex = crypto.randomBytes(8).toString('hex');
-    const timestamp = Date.now();
-    cb(null, `${file.fieldname}-${timestamp}-${randomHex}${ext}`);
-  },
-});
+// ── Memory storage — files live in req.file.buffer, never touch disk ──
+const storage = multer.memoryStorage();
 
-const fileFilter = (_req, file, cb) => {
-  const ALLOWED_MIME_TYPES = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'application/vnd.ms-powerpoint',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/vnd.ms-excel',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'image/jpeg',
-    'image/png',
-    'image/webp',
-    'text/plain',
-    'application/zip',
-  ];
+// ── MIME-type allow-lists ──────────────────────────────────────
 
-  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(
-      new multer.MulterError(
-        'LIMIT_UNEXPECTED_FILE',
-        `File type not allowed: ${file.mimetype}`
-      ),
-      false
-    );
-  }
-};
+const STUDENT_MIME_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/jpeg',
+  'image/png',
+  'application/zip',
+];
 
-const upload = multer({
+const ADMIN_MIME_TYPES = [
+  ...STUDENT_MIME_TYPES,
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'image/webp',
+  'text/plain',
+];
+
+// ── Filter factories ───────────────────────────────────────────
+
+function makeFileFilter(allowedTypes) {
+  return (_req, file, cb) => {
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(
+        new multer.MulterError(
+          'LIMIT_UNEXPECTED_FILE',
+          `File type not allowed: ${file.mimetype}`,
+        ),
+        false,
+      );
+    }
+  };
+}
+
+// ── Exports ───────────────────────────────────────────────────
+
+/** Used on student submission routes — 15 MB cap, stricter MIME list */
+const studentUpload = multer({
   storage,
-  fileFilter,
-  limits: {
-    fileSize: 50 * 1024 * 1024, // 50 MB
-    files: 1,
-  },
+  fileFilter: makeFileFilter(STUDENT_MIME_TYPES),
+  limits: { fileSize: 15 * 1024 * 1024, files: 1 }, // 15 MB
 });
 
-module.exports = { upload, UPLOAD_DIR };
+/** Used on admin resource routes — 50 MB cap, full MIME list */
+const adminUpload = multer({
+  storage,
+  fileFilter: makeFileFilter(ADMIN_MIME_TYPES),
+  limits: { fileSize: 50 * 1024 * 1024, files: 1 }, // 50 MB
+});
+
+/** Legacy alias — keeps any remaining imports working */
+const upload = adminUpload;
+
+module.exports = { upload, studentUpload, adminUpload, UPLOAD_DIR };

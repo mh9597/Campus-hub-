@@ -9,6 +9,9 @@ import {
 
 const RESOURCE_TYPES = ['Notes', 'Previous Year Papers', 'Practical Files', 'Viva Questions', 'Question Bank', 'Syllabus', 'Other'];
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+const buildViewUrl = (id) => `${API_BASE}/resources/${id}/view`;
+
 function Modal({ title, onClose, children }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
@@ -273,6 +276,8 @@ export default function AdminResourcesView() {
   const [showCreate, setShowCreate] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  // { id, title } of the resource pending hard-delete confirmation
+  const [confirmDelete, setConfirmDelete] = useState(null);
 
   const loadSubjects = useCallback(async () => {
     try {
@@ -324,16 +329,24 @@ export default function AdminResourcesView() {
 
   async function handleEdit(form) {
     await updateResource(editItem.id, {
-      title: form.title,
+      title:        form.title,
       resourceType: form.resourceType,
-      description: form.description,
-      isActive: true,
+      description:  form.description,
+      subjectId:    form.subjectId,
+      source:       form.source,
+      isActive:     true,
     });
   }
 
   async function handleDelete(id) {
     setDeletingId(id);
-    try { await deleteResource(id); await load(); } finally { setDeletingId(null); }
+    try {
+      await deleteResource(id);
+      await load();
+    } finally {
+      setDeletingId(null);
+      setConfirmDelete(null);
+    }
   }
 
   return (
@@ -385,8 +398,8 @@ export default function AdminResourcesView() {
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                {r.fileUrl && (
-                  <a href={r.fileUrl} target="_blank" rel="noopener noreferrer" title="View file"
+                {(r.fileUrl || r.driveFileId) && (
+                  <a href={buildViewUrl(r.id)} target="_blank" rel="noopener noreferrer" title="View file"
                     className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all">
                     <span className="material-symbols-outlined text-[16px]">open_in_new</span>
                   </a>
@@ -395,8 +408,12 @@ export default function AdminResourcesView() {
                   className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all">
                   <span className="material-symbols-outlined text-[16px]">edit</span>
                 </button>
-                <button onClick={() => handleDelete(r.id)} disabled={deletingId === r.id} title="Deactivate"
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-error/10 hover:text-error transition-all disabled:opacity-40">
+                <button
+                  onClick={() => setConfirmDelete({ id: r.id, title: r.title })}
+                  disabled={deletingId === r.id}
+                  title="Delete permanently"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-error/10 hover:text-error transition-all disabled:opacity-40"
+                >
                   {deletingId === r.id
                     ? <svg className="animate-spin h-3.5 w-3.5 text-error" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                     : <span className="material-symbols-outlined text-[16px]">delete</span>
@@ -418,6 +435,67 @@ export default function AdminResourcesView() {
         <Modal title="Edit Resource" onClose={(saved) => { setEditItem(null); if (saved) load(); }}>
           <ResourceForm departments={departments} semesters={semesters} subjects={subjects} onSubmit={handleEdit} initial={editItem} onClose={(saved) => { setEditItem(null); if (saved) load(); }} />
         </Modal>
+      )}
+
+      {/* ── Drive Delete Confirmation Modal ───────────────── */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+            {/* Yellow header */}
+            <div className="bg-amber-400 px-6 py-5 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-black text-[22px]">warning</span>
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-black leading-tight">Permanent Delete</h2>
+                <p className="text-xs font-semibold text-black/60">This action cannot be undone</p>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-6 space-y-4">
+              <p className="text-sm text-gray-700 leading-relaxed">
+                You are about to permanently delete:
+              </p>
+              <div className="bg-amber-50 border-2 border-amber-300 rounded-xl px-4 py-3">
+                <p className="font-bold text-black text-sm truncate">{confirmDelete.title}</p>
+              </div>
+              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex gap-2">
+                <span className="material-symbols-outlined text-red-500 text-[18px] shrink-0 mt-0.5">cloud_off</span>
+                <p className="text-xs text-red-700 leading-relaxed">
+                  <strong>Warning:</strong> This will permanently delete the file from both
+                  the website database <em>and</em> your Google Drive storage.
+                  The file cannot be recovered after this action.
+                </p>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="px-6 pb-6 flex gap-3">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-sm font-bold text-gray-600 hover:border-gray-400 hover:text-black transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(confirmDelete.id)}
+                disabled={deletingId === confirmDelete.id}
+                className="flex-1 py-3 rounded-xl bg-black text-amber-400 text-sm font-black hover:bg-gray-900 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
+              >
+                {deletingId === confirmDelete.id ? (
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                  </svg>
+                ) : (
+                  <span className="material-symbols-outlined text-[18px]">delete_forever</span>
+                )}
+                {deletingId === confirmDelete.id ? 'Deleting…' : 'Delete Forever'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

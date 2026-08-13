@@ -10,9 +10,10 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 
-const publicRoutes = require('./routes/public.routes');
-const authRoutes = require('./routes/auth.routes');
-const adminRoutes = require('./routes/admin.routes');
+const publicRoutes   = require('./routes/public.routes');
+const authRoutes     = require('./routes/auth.routes');
+const adminRoutes    = require('./routes/admin.routes');
+const resourceRoutes = require('./routes/resource.routes');
 const { notFoundHandler, errorHandler } = require('./middlewares/error.middleware');
 
 const app = express();
@@ -63,6 +64,9 @@ app.get('/health', (_req, res) => {
 
 // Public student routes  (no auth)
 app.use('/api', publicRoutes);
+
+// Secure resource proxy (view + download) — no auth required
+app.use('/api', resourceRoutes);
 
 // Admin authentication routes
 app.use('/api/admin/auth', authRoutes);

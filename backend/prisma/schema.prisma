@@ -84,8 +84,10 @@ model Resource {
   title        String
   description  String?  @db.Text
   resourceType String   @db.VarChar(50)
-  fileUrl      String   @db.VarChar(500)
+  fileUrl      String?  @db.VarChar(500)
   fileKey      String?  @db.VarChar(300)
+  driveFileId  String?  @db.VarChar(300)
+  webViewLink  String?  @db.VarChar(500)
   fileSize     Int?
   mimeType     String?  @db.VarChar(100)
   source       String?  @db.VarChar(100)
@@ -136,6 +138,8 @@ model ResourceUpload {
   description  String?          @db.Text
   fileUrl      String?          @db.VarChar(500)
   fileKey      String?          @db.VarChar(300)
+  driveFileId  String?          @db.VarChar(300)
+  webViewLink  String?          @db.VarChar(500)
   status       SubmissionStatus @default(PENDING)
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt

@@ -2,7 +2,9 @@
 // Protected admin management endpoints — delegates to admin.service.js
 'use strict';
 
-const adminService = require('../services/admin.service');
+const adminService  = require('../services/admin.service');
+const driveService  = require('../services/drive.service');
+const prisma        = require('../config/prisma');
 const { sendSuccess, sendError } = require('../utils/response');
 
 // ─── Uploads ──────────────────────────────────────────────────
@@ -85,22 +87,57 @@ async function getResources(req, res, next) {
 // POST /api/admin/resources
 async function createResource(req, res, next) {
   try {
-    let fileUrl = req.body.fileUrl || null;
-    let fileKey = req.body.fileKey || null;
+    let fileUrl     = req.body.fileUrl || null;
+    let fileKey     = req.body.fileKey || null;
+    let driveFileId = null;
+    let webViewLink = null;
+
     if (req.file) {
-      fileKey = req.file.filename;
-      fileUrl = `/uploads/${req.file.filename}`;
+      // ── Resolve Department + Semester names for folder structure ──
+      // Subject ➔ Semester ➔ Department
+      let departmentName = 'General';
+      let semesterName   = 'General';
+
+      if (req.body.subjectId) {
+        const subject = await prisma.subject.findUnique({
+          where:   { id: req.body.subjectId },
+          include: { semester: { include: { department: true } } },
+        });
+
+        if (subject?.semester?.department?.name) {
+          departmentName = subject.semester.department.name;
+        }
+        if (subject?.semester?.name) {
+          semesterName = subject.semester.name;
+        }
+      }
+
+      // ── Upload into Root ➔ Department ➔ Semester ➔ ResourceType ──
+      const result = await driveService.uploadFileToDrive(
+        req.file,
+        departmentName,
+        semesterName,
+        req.body.resourceType || 'General',
+      );
+
+      driveFileId = result.fileId;
+      webViewLink = result.webViewLink;
+      fileKey     = result.fileId;
+      fileUrl     = result.webViewLink;
     }
+
     const resource = await adminService.createResource({
-      subjectId: req.body.subjectId,
-      title: req.body.title,
-      description: req.body.description || null,
+      subjectId:    req.body.subjectId,
+      title:        req.body.title,
+      description:  req.body.description || null,
       resourceType: req.body.resourceType,
       fileUrl,
       fileKey,
+      driveFileId,
+      webViewLink,
       fileSize: req.file?.size || req.body.fileSize || null,
       mimeType: req.file?.mimetype || req.body.mimeType || null,
-      source: req.body.source || 'admin',
+      source:   req.body.source || 'admin',
     });
     return sendSuccess(res, resource, 201, 'Resource created');
   } catch (err) {
@@ -112,20 +149,59 @@ async function createResource(req, res, next) {
 async function updateResource(req, res, next) {
   try {
     const { id } = req.params;
-    const { subjectId: _s, createdAt: _c, ...updateData } = req.body;
-    const resource = await adminService.updateResource(id, updateData);
+
+    // Fetch current record so we can detect title changes and get driveFileId
+    const current = await prisma.resource.findUnique({ where: { id } });
+    if (!current) return sendError(res, 'Resource not found', 404);
+
+    // Strict allowlist — never accept arbitrary fields from the client
+    const ALLOWED = ['title', 'description', 'resourceType', 'subjectId', 'source', 'isActive'];
+    const updateData = {};
+    for (const key of ALLOWED) {
+      if (Object.prototype.hasOwnProperty.call(req.body, key)) {
+        updateData[key] = req.body[key];
+      }
+    }
+
+    // If title is being changed and the resource lives on Drive, rename it there
+    const newTitle = updateData.title;
+    if (newTitle && newTitle !== current.title && current.driveFileId) {
+      try {
+        await driveService.renameInDrive(current.driveFileId, newTitle, current.mimeType);
+      } catch (driveErr) {
+        // Log but don't block the DB update — Drive rename is best-effort
+        console.error('[admin.controller] renameInDrive failed:', driveErr.message);
+      }
+    }
+
+    const resource = await prisma.resource.update({
+      where: { id },
+      data:  updateData,
+    });
     return sendSuccess(res, resource, 200, 'Resource updated');
   } catch (err) {
     return next(err);
   }
 }
 
-// DELETE /api/admin/resources/:id  (soft-delete)
+// DELETE /api/admin/resources/:id  (hard-delete from DB + Drive)
 async function deleteResource(req, res, next) {
   try {
     const { id } = req.params;
-    const resource = await adminService.deleteResource(id);
-    return sendSuccess(res, resource, 200, 'Resource deactivated');
+
+    // 1. Fetch the DB record to get the Drive file ID before deleting
+    const resource = await prisma.resource.findUnique({ where: { id } });
+    if (!resource) return sendError(res, 'Resource not found', 404);
+
+    // 2. Delete the physical file from Google Drive (404-tolerant)
+    if (resource.driveFileId) {
+      await driveService.deleteFromDrive(resource.driveFileId);
+    }
+
+    // 3. Hard-delete the database record
+    await prisma.resource.delete({ where: { id } });
+
+    return sendSuccess(res, { id }, 200, 'Resource permanently deleted from database and Google Drive');
   } catch (err) {
     return next(err);
   }

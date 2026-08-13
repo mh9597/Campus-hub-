@@ -9,7 +9,7 @@ const { body, param, query } = require('express-validator');
 const adminController = require('../controllers/admin.controller');
 const { authenticate, requireRole } = require('../middlewares/auth.middleware');
 const { handleValidationErrors } = require('../middlewares/validate.middleware');
-const { upload } = require('../config/multer');
+const { adminUpload } = require('../config/multer');
 
 const router = Router();
 
@@ -75,7 +75,7 @@ router.get(
 router.post(
   '/resources',
   requireRole('ADMIN', 'MODERATOR'),
-  upload.single('file'),
+  adminUpload.single('file'),
   [
     body('subjectId').notEmpty().isUUID(),
     body('title').notEmpty().isString().trim(),

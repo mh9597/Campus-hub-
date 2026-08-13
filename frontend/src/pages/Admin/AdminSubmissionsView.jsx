@@ -7,15 +7,9 @@ import {
   getAdminRequests, reviewRequest,
 } from '../../services/admin/adminApi';
 
-const API_ORIGIN = import.meta.env.VITE_API_BASE_URL
-  ? new URL(import.meta.env.VITE_API_BASE_URL).origin
-  : 'http://localhost:3001';
-
-function resolveFileUrl(raw) {
-  if (!raw) return '#';
-  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
-  return `${API_ORIGIN}${raw.startsWith('/') ? '' : '/'}${raw}`;
-}
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+// Admin can view submissions via the backend proxy (no Drive URL exposed)
+const buildViewUrl = (id) => `${API_BASE}/resources/${id}/view`;
 
 const STATUS_TABS = ['PENDING', 'APPROVED', 'REJECTED'];
 
@@ -80,8 +74,8 @@ function UploadCard({ item, onAction }) {
           {new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
         <div className="flex gap-2">
-          {item.fileUrl && (
-            <a href={resolveFileUrl(item.fileUrl)} target="_blank" rel="noopener noreferrer"
+          {(item.fileUrl || item.driveFileId) && (
+            <a href={buildViewUrl(item.id)} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline">
               <span className="material-symbols-outlined text-[13px]">open_in_new</span> View File
             </a>

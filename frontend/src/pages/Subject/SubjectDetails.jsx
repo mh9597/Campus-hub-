@@ -5,27 +5,20 @@ import { getSubjectByCode } from '../../services/resources/resourcesApi';
 import { ErrorState } from '../../components/ui/ErrorState';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
 
-// Resolve fileUrl — handles both absolute URLs and relative /uploads/ paths
-const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api').replace(/\/api\/?$/, '');
+// Backend proxy base — never expose raw Drive URLs to the browser
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+const buildDownloadUrl = (id) => `${API_BASE}/resources/${id}/download`;
 
-function resolveFileUrl(resource) {
-  const raw = resource.fileUrl || resource.url || '';
-  if (!raw) return '#';
-  if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
-  // Relative path like /uploads/abc.pdf → prepend server origin
-  return `${API_ORIGIN}${raw.startsWith('/') ? '' : '/'}${raw}`;
-}
-
-// Detect file type from URL for icon display
-function getFileIcon(url) {
-  if (!url) return 'draft';
-  const lower = url.toLowerCase();
-  if (lower.includes('.pdf')) return 'picture_as_pdf';
-  if (lower.includes('.doc') || lower.includes('.docx')) return 'description';
-  if (lower.includes('.ppt') || lower.includes('.pptx')) return 'slideshow';
-  if (lower.includes('.xls') || lower.includes('.xlsx')) return 'grid_on';
-  if (lower.includes('.zip') || lower.includes('.rar')) return 'folder_zip';
-  if (lower.includes('.jpg') || lower.includes('.png') || lower.includes('.jpeg')) return 'image';
+// Detect file type — checks mimeType first (reliable for Drive files), then URL
+function getFileIcon(resource) {
+  const mime = resource.mimeType || '';
+  const url  = (resource.fileUrl || resource.url || '').toLowerCase();
+  if (mime.includes('pdf')   || url.includes('.pdf'))  return 'picture_as_pdf';
+  if (mime.includes('word')  || url.includes('.doc'))  return 'description';
+  if (mime.includes('ppt')   || url.includes('.ppt'))  return 'slideshow';
+  if (mime.includes('excel') || url.includes('.xls'))  return 'grid_on';
+  if (mime.includes('zip')   || url.includes('.zip'))  return 'folder_zip';
+  if (mime.startsWith('image/') || /\.(jpe?g|png|gif|webp)/.test(url)) return 'image';
   return 'draft';
 }
 
@@ -211,8 +204,8 @@ function SubjectDetails() {
           {!resourcesLoading && !error && filteredResources.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredResources.map((res) => {
-                const href = resolveFileUrl(res);
-                const fileIcon = getFileIcon(res.fileUrl || res.url);
+                const downloadUrl = buildDownloadUrl(res.id);
+                const fileIcon    = getFileIcon(res);
                 return (
                   <div
                     key={res.id}
@@ -252,7 +245,7 @@ function SubjectDetails() {
                         View Material
                       </Link>
                       <a
-                        href={href}
+                        href={downloadUrl}
                         download
                         className="inline-flex items-center justify-center gap-1.5 bg-[#FEF3D6] border-2 border-amber-400 text-black hover:bg-amber-400 px-4 py-2.5 rounded-xl text-sm font-bold transition-all active-press"
                       >

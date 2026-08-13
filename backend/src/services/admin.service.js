@@ -60,13 +60,16 @@ async function reviewUpload(id, action) {
       }),
       prisma.resource.create({
         data: {
-          subjectId: subject.id,
-          title: upload.title,
-          description: upload.description,
+          subjectId:    subject.id,
+          title:        upload.title,
+          description:  upload.description,
           resourceType: upload.resourceType,
-          fileUrl: upload.fileUrl || '',
-          fileKey: upload.fileKey,
-          source: 'student_upload',
+          fileUrl:      upload.fileUrl  || null,
+          fileKey:      upload.fileKey  || null,
+          // Carry Drive metadata so the proxy streaming works for student uploads too
+          driveFileId:  upload.driveFileId || null,
+          webViewLink:  upload.webViewLink  || null,
+          source:   'student_upload',
           isActive: true,
         },
       }),

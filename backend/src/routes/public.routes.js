@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 
 const publicController = require('../controllers/public.controller');
 const { handleValidationErrors } = require('../middlewares/validate.middleware');
-const { upload } = require('../config/multer');
+const { studentUpload } = require('../config/multer');
 
 const router = Router();
 
@@ -40,12 +40,6 @@ router.get(
   publicController.getResources
 );
 
-// ─── GET /api/resources/:id/view ─────────────────────────────
-// Streams local files inline with correct Content-Type so the browser
-// renders them instead of downloading. Redirects cloud URLs.
-// Must be registered BEFORE /resources/:id to avoid route shadowing.
-router.get('/resources/:id/view', publicController.viewResource);
-
 // ─── GET /api/resources/:id ───────────────────────────────────
 router.get('/resources/:id', publicController.getResourceById);
 
@@ -53,11 +47,11 @@ router.get('/resources/:id', publicController.getResourceById);
 router.get('/opportunities', publicController.getOpportunities);
 
 // ─── POST /api/submissions/upload ────────────────────────────
-// Accepts multipart/form-data with an optional 'file' field
+// Accepts multipart/form-data with an optional 'file' field — 15 MB student limit
 router.post(
   '/submissions/upload',
   submissionLimiter,
-  upload.single('file'),
+  studentUpload.single('file'),
   [
     body('subjectCode')
       .notEmpty().withMessage('subjectCode is required')

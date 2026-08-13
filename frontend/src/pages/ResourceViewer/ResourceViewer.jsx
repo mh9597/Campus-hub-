@@ -4,25 +4,17 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { getResourceById } from '../../services/resources/resourcesApi';
-import { API_BASE_URL } from '../../lib/api';
 
 // ─── Helpers ──────────────────────────────────────────────────
-const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
 
-// Used for the Download button — resolves raw /uploads/ path to full URL
-function resolveFileUrl(rawUrl) {
-  if (!rawUrl) return '';
-  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) return rawUrl;
-  return `${API_ORIGIN}${rawUrl.startsWith('/') ? '' : '/'}${rawUrl}`;
-}
-
-// Used for viewing — routes through the backend streaming controller which
-// sets Content-Type + Content-Disposition: inline, so browsers render inline
-function buildViewUrl(id) {
-  return `${API_BASE_URL}/resources/${id}/view`;
-}
+// Backend proxy URLs — the raw Google Drive URL NEVER reaches the browser
+function buildViewUrl(id)     { return `${API_BASE}/resources/${id}/view`; }
+function buildDownloadUrl(id) { return `${API_BASE}/resources/${id}/download`; }
 
 function isPdf(url) {
+  // For proxy URLs we rely on the backend Content-Type header, but we can
+  // check the stored mimeType on the resource object instead (see below).
   return url?.toLowerCase().includes('.pdf');
 }
 
@@ -81,8 +73,14 @@ function ResourceViewer() {
 
   if (!resource) return null;
 
-  const fileUrl = resolveFileUrl(resource.fileUrl || resource.url); // used for download only
-  const viewUrl = buildViewUrl(resource.id);                        // used for iframe & open-in-new-tab
+  const viewUrl     = buildViewUrl(resource.id);     // iframe + "Open in New Tab"
+  const downloadUrl = buildDownloadUrl(resource.id); // Download button
+
+  // Detect type from stored mimeType so we don't need to parse a proxy URL
+  const mime = resource.mimeType || '';
+  const resourceIsPdf   = mime.includes('pdf')   || isPdf(resource.fileUrl || '');
+  const resourceIsImage = mime.startsWith('image/') || isImage(resource.fileUrl || '');
+
   const subject = resource.subject;
   const semester = subject?.semester;
   const department = semester?.department;
@@ -133,7 +131,7 @@ function ResourceViewer() {
 
         {/* Download button */}
         <a
-          href={fileUrl}
+          href={downloadUrl}
           download
           className="shrink-0 flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition"
         >
@@ -240,7 +238,7 @@ function ResourceViewer() {
               Open in New Tab
             </a>
             <a
-              href={fileUrl}
+              href={downloadUrl}
               download
               className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white/80 text-sm font-semibold py-2.5 rounded-xl transition"
             >
@@ -252,9 +250,9 @@ function ResourceViewer() {
 
         {/* ── Main Viewer Area ──────────────────────────────── */}
         <main className="flex-1 overflow-hidden relative bg-[#0f1117]">
-          {!fileUrl ? (
-            <EmptyViewer message="No file URL found for this resource." />
-          ) : isPdf(fileUrl) ? (
+          {!resource.fileUrl && !resource.driveFileId ? (
+            <EmptyViewer message="No file is attached to this resource." />
+          ) : resourceIsPdf ? (
             <>
               {iframeLoading && (
                 <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -265,7 +263,7 @@ function ResourceViewer() {
                 </div>
               )}
               {iframeError ? (
-                <FallbackViewer fileUrl={viewUrl} />
+                <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} />
               ) : (
                 <iframe
                   key={viewUrl}
@@ -277,16 +275,16 @@ function ResourceViewer() {
                 />
               )}
             </>
-          ) : isImage(fileUrl) ? (
+          ) : resourceIsImage ? (
             <div className="w-full h-full overflow-auto flex items-center justify-center p-8">
               <img
-                src={fileUrl}
+                src={viewUrl}
                 alt={resource.title}
                 className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
               />
             </div>
           ) : (
-            <FallbackViewer fileUrl={fileUrl} />
+            <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} />
           )}
         </main>
       </div>
@@ -295,7 +293,7 @@ function ResourceViewer() {
 }
 
 // ─── Fallback: when PDF can't be embedded ─────────────────────
-function FallbackViewer({ fileUrl }) {
+function FallbackViewer({ viewUrl, downloadUrl }) {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-8">
       <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center">
@@ -309,7 +307,7 @@ function FallbackViewer({ fileUrl }) {
       </div>
       <div className="flex gap-3">
         <a
-          href={fileUrl}
+          href={viewUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition"
@@ -318,7 +316,7 @@ function FallbackViewer({ fileUrl }) {
           Open in New Tab
         </a>
         <a
-          href={fileUrl}
+          href={downloadUrl}
           download
           className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white/80 font-semibold px-6 py-3 rounded-xl transition"
         >
