@@ -171,31 +171,31 @@ function Semesters() {
 
                   {/* Decorative Logo / Emoji */}
                   <div className="absolute right-5 top-5">
-                    {sem.id === 1 ? (
+                    {sem.semesterNumber === 1 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
                         <img src={sparklesIcon} alt="Sparkles" className="w-full h-full object-contain filter drop-shadow-sm" />
                       </div>
-                    ) : sem.id === 2 ? (
+                    ) : sem.semesterNumber === 2 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
                         <img src={dnaIcon} alt="DNA" className="w-full h-full object-contain filter drop-shadow-sm" />
                       </div>
-                    ) : sem.id === 3 ? (
+                    ) : sem.semesterNumber === 3 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
                         <img src={databaseIcon} alt="Database" className="w-full h-full object-contain filter drop-shadow-sm" />
                       </div>
-                    ) : sem.id === 4 ? (
+                    ) : sem.semesterNumber === 4 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
                         <img src={computerIcon} alt="Computer" className="w-full h-full object-contain filter drop-shadow-sm" />
                       </div>
-                    ) : sem.id === 5 ? (
+                    ) : sem.semesterNumber === 5 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
                         <img src={exceptionIcon} alt="Exception" className="w-full h-full object-contain filter drop-shadow-sm" />
                       </div>
-                    ) : sem.id === 6 ? (
+                    ) : sem.semesterNumber === 6 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
                         <img src={dataScienceIcon} alt="Data Science" className="w-full h-full object-contain filter drop-shadow-sm" />
                       </div>
-                    ) : sem.id === 7 ? (
+                    ) : sem.semesterNumber === 7 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
                         <img src={hackerIcon} alt="Hacker" className="w-full h-full object-contain filter drop-shadow-sm" />
                       </div>
@@ -211,7 +211,7 @@ function Semesters() {
                   </div>
 
                   <p className={`text-4xl sm:text-5xl font-black ${colors.numText} mb-1 tracking-tighter font-display-lg`}>
-                    {String(sem.id).padStart(2, '0')}
+                    {String(sem.semesterNumber).padStart(2, '0')}
                   </p>
 
                   <h3 className="mt-2 text-2xl font-bold text-gray-900 font-display-lg tracking-tight">

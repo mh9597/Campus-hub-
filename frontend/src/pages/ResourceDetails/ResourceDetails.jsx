@@ -104,13 +104,13 @@ function SemesterDetails() {
                       </div>
 
                       {/* LEFT PAPER (work-4) */}
-                      <div className="work-4 absolute top-[12%] bottom-[15%] left-[4%] w-[34%] bg-[#f8f9fa] rounded-t-xl transition-all ease duration-300 origin-bottom group-hover:-translate-y-8 flex flex-col pt-3 pl-4 pr-3 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] border border-gray-200 border-b-0">
+                      <div className="work-4 absolute top-[6%] bottom-[15%] left-[4%] w-[34%] bg-[#f8f9fa] rounded-t-xl transition-all ease duration-300 origin-bottom group-hover:-translate-y-8 flex flex-col pt-3 pl-4 pr-3 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] border border-gray-200 border-b-0">
                          <span className="text-[10px] text-gray-800 font-extrabold tracking-wide mb-0.5">Code</span>
                          <span className="text-[17px] text-gray-900 font-black tracking-tighter leading-none">{sub.code}</span>
                       </div>
                       
                       {/* RIGHT PAPER (work-3) */}
-                      <div className="work-3 absolute top-[15%] bottom-[15%] right-[4%] w-[56%] bg-[#f8f9fa] rounded-t-xl transition-all ease duration-300 origin-bottom group-hover:-translate-y-12 flex flex-col pt-3 pl-4 pr-3 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] border border-gray-200 border-b-0">
+                      <div className="work-3 absolute top-[6%] bottom-[15%] right-[4%] w-[56%] bg-[#f8f9fa] rounded-t-xl transition-all ease duration-300 origin-bottom group-hover:-translate-y-12 flex flex-col pt-3 pl-4 pr-3 shadow-[0_-2px_10px_rgba(0,0,0,0.08)] border border-gray-200 border-b-0">
                          <span className="text-[10px] text-gray-800 font-extrabold tracking-wide mb-0.5">Details</span>
                          <span className="text-[14px] text-gray-900 font-black tracking-tight leading-[1.1] line-clamp-2 pr-2">{sub.title}</span>
                       </div>

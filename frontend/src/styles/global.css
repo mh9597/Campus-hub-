@@ -2,6 +2,14 @@
 @import "tailwindcss";
 @config "../../tailwind.config.js";
 
+@font-face {
+  font-family: 'Grindy Brush';
+  src: url('./grindy-brush/Grindy Brush.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 html {
   scrollbar-width: none;
   /* Firefox */
