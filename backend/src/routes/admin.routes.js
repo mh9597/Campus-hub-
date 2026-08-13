@@ -32,6 +32,9 @@ router.patch(
   [
     param('id').isUUID(),
     body('action').notEmpty().isIn(['APPROVED', 'REJECTED']),
+    body('title').optional().isString().trim(),
+    body('subjectCode').optional().isString().trim(),
+    body('resourceType').optional().isString().trim(),
   ],
   handleValidationErrors,
   adminController.reviewUpload

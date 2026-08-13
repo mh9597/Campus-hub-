@@ -28,11 +28,11 @@ async function getUploads(req, res, next) {
 async function reviewUpload(req, res, next) {
   try {
     const { id } = req.params;
-    const { action } = req.body;
+    const { action, title, subjectCode, resourceType } = req.body;
     if (!['APPROVED', 'REJECTED'].includes(action?.toUpperCase())) {
       return sendError(res, 'action must be APPROVED or REJECTED', 400);
     }
-    const result = await adminService.reviewUpload(id, action.toUpperCase());
+    const result = await adminService.reviewUpload(id, action.toUpperCase(), { title, subjectCode, resourceType });
     return sendSuccess(res, result, 200, `Upload ${action.toLowerCase()} successfully`);
   } catch (err) {
     return next(err);
@@ -93,10 +93,11 @@ async function createResource(req, res, next) {
     let webViewLink = null;
 
     if (req.file) {
-      // ── Resolve Department + Semester names for folder structure ──
+      // ── Resolve Department + Semester + Subject names for folder structure ──
       // Subject ➔ Semester ➔ Department
       let departmentName = 'General';
       let semesterName   = 'General';
+      let subjectName    = 'General';
 
       if (req.body.subjectId) {
         const subject = await prisma.subject.findUnique({
@@ -110,13 +111,17 @@ async function createResource(req, res, next) {
         if (subject?.semester?.name) {
           semesterName = subject.semester.name;
         }
+        if (subject?.title) {
+          subjectName = subject.title;
+        }
       }
 
-      // ── Upload into Root ➔ Department ➔ Semester ➔ ResourceType ──
+      // ── Upload into Root ➔ Department ➔ Semester ➔ Subject ➔ ResourceType ──
       const result = await driveService.uploadFileToDrive(
         req.file,
         departmentName,
         semesterName,
+        subjectName,
         req.body.resourceType || 'General',
       );
 

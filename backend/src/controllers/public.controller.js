@@ -64,32 +64,14 @@ async function submitUpload(req, res, next) {
     let webViewLink = null;
 
     if (req.file) {
-      // ── Resolve Department + Semester names via subjectCode ──
-      // Subject (by code) ➔ Semester ➔ Department
-      let departmentName = 'Student Uploads';
-      let semesterName   = 'General';
-
-      if (subjectCode) {
-        const subject = await prisma.subject.findUnique({
-          where:   { code: subjectCode },
-          include: { semester: { include: { department: true } } },
-        });
-
-        if (subject?.semester?.department?.name) {
-          departmentName = subject.semester.department.name;
-        }
-        if (subject?.semester?.name) {
-          semesterName = subject.semester.name;
-        }
+      // ── Upload directly to the Pending Contributions folder ──
+      const pendingFolderId = process.env.GOOGLE_DRIVE_PENDING_FOLDER_ID;
+      
+      if (!pendingFolderId) {
+        throw new Error('Server configuration error: GOOGLE_DRIVE_PENDING_FOLDER_ID is missing');
       }
 
-      // ── Upload into Root ➔ Department ➔ Semester ➔ ResourceType ──
-      const result = await driveService.uploadFileToDrive(
-        req.file,
-        departmentName,
-        semesterName,
-        resourceType || 'General',
-      );
+      const result = await driveService.uploadDirectToDrive(req.file, pendingFolderId);
 
       driveFileId = result.fileId;
       webViewLink = result.webViewLink;

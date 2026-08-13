@@ -14,8 +14,8 @@ const RESOURCE_TYPES = [
   'Other',
 ];
 
-const ACCEPTED_TYPES = '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.txt,.zip';
-const MAX_SIZE_MB = 50;
+const ACCEPTED_TYPES = '.pdf,.doc,.docx,.jpg,.jpeg,.png,.zip';
+const MAX_SIZE_MB = 15;
 
 function formatFileSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -251,7 +251,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                       Drag &amp; drop or <span className="text-amber-600">browse</span>
                     </p>
                     <p className="text-xs font-medium text-gray-500 mt-1.5">
-                      PDF, DOC, PPT, XLS, Images, ZIP — up to {MAX_SIZE_MB} MB
+                      PDF, DOC, Images, ZIP — up to {MAX_SIZE_MB} MB
                     </p>
                   </div>
                   <input

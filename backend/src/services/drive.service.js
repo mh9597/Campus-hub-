@@ -104,10 +104,11 @@ async function getOrCreateSubfolder(folderName, parentFolderId) {
  *
  * @param {string} departmentName  e.g. "Computer Engineering"
  * @param {string} semesterName    e.g. "Semester 3"
+ * @param {string} subjectName     e.g. "Design and Analysis of Algorithms"
  * @param {string} resourceType    e.g. "Notes"
  * @returns {Promise<string>}      Drive ID of the innermost (ResourceType) folder
  */
-async function resolveFolderPath(departmentName, semesterName, resourceType) {
+async function resolveFolderPath(departmentName, semesterName, subjectName, resourceType) {
   const rootId = process.env.GOOGLE_DRIVE_FOLDER_ID;
 
   // Level 1 — Department
@@ -116,8 +117,11 @@ async function resolveFolderPath(departmentName, semesterName, resourceType) {
   // Level 2 — Semester
   const semId = await getOrCreateSubfolder(semesterName, deptId);
 
-  // Level 3 — Resource Type
-  const typeId = await getOrCreateSubfolder(resourceType, semId);
+  // Level 3 — Subject
+  const subId = await getOrCreateSubfolder(subjectName, semId);
+
+  // Level 4 — Resource Type
+  const typeId = await getOrCreateSubfolder(resourceType, subId);
 
   return typeId;
 }
@@ -131,15 +135,16 @@ async function resolveFolderPath(departmentName, semesterName, resourceType) {
  *   The `req.file` object produced by multer memoryStorage.
  * @param {string} departmentName  e.g. "Computer Engineering"
  * @param {string} semesterName    e.g. "Semester 3"
+ * @param {string} subjectName     e.g. "Design and Analysis of Algorithms"
  * @param {string} resourceType    e.g. "Notes"
  * @returns {Promise<{ fileId: string, webViewLink: string, webContentLink: string }>}
  */
-async function uploadFileToDrive(file, departmentName, semesterName, resourceType) {
+async function uploadFileToDrive(file, departmentName, semesterName, subjectName, resourceType) {
   // Resolve (or create) the nested folder structure first
   let targetFolderId;
 
-  if (departmentName && semesterName && resourceType) {
-    targetFolderId = await resolveFolderPath(departmentName, semesterName, resourceType);
+  if (departmentName && semesterName && subjectName && resourceType) {
+    targetFolderId = await resolveFolderPath(departmentName, semesterName, subjectName, resourceType);
   } else {
     // Fallback — dump straight into root if metadata is missing
     targetFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
@@ -164,6 +169,43 @@ async function uploadFileToDrive(file, departmentName, semesterName, resourceTyp
   const fileId = uploadRes.data.id;
 
   // Grant "anyone with the link" read access so the proxy stream can fetch it
+  await drive.permissions.create({
+    fileId,
+    requestBody: { role: 'reader', type: 'anyone' },
+  });
+
+  return {
+    fileId,
+    webViewLink:    uploadRes.data.webViewLink,
+    webContentLink: uploadRes.data.webContentLink,
+  };
+}
+
+/**
+ * Upload a multer file object directly to a specific Google Drive folder.
+ *
+ * @param {{ buffer: Buffer, originalname: string, mimetype: string }} file
+ * @param {string} parentFolderId
+ * @returns {Promise<{ fileId: string, webViewLink: string, webContentLink: string }>}
+ */
+async function uploadDirectToDrive(file, parentFolderId) {
+  const bodyStream = Readable.from(file.buffer);
+
+  const uploadRes = await drive.files.create({
+    requestBody: {
+      name:    file.originalname,
+      parents: [parentFolderId],
+    },
+    media: {
+      mimeType: file.mimetype,
+      body:     bodyStream,
+    },
+    fields: 'id, webViewLink, webContentLink',
+  });
+
+  const fileId = uploadRes.data.id;
+
+  // Grant read access
   await drive.permissions.create({
     fileId,
     requestBody: { role: 'reader', type: 'anyone' },
@@ -235,6 +277,26 @@ async function deleteFromDrive(fileId) {
 // Alias kept for backwards compat with any legacy callers
 const deleteFileFromDrive = deleteFromDrive;
 
+// ── Move ────────────────────────────────────────────────────
+
+/**
+ * Move a file on Google Drive to a new folder on-the-fly without downloading it.
+ *
+ * @param {string} fileId                Google Drive file ID
+ * @param {string} targetFolderId        The new parent folder ID
+ * @param {string} currentParentFolderId The current parent folder ID
+ * @returns {Promise<{ id: string }>}
+ */
+async function moveFileInDrive(fileId, targetFolderId, currentParentFolderId) {
+  const response = await drive.files.update({
+    fileId,
+    addParents: targetFolderId,
+    removeParents: currentParentFolderId,
+    fields: 'id, parents'
+  });
+  return response.data;
+}
+
 // ── Rename ────────────────────────────────────────────────────
 
 /**
@@ -282,10 +344,12 @@ async function renameInDrive(fileId, newTitle, mimeType) {
 
 module.exports = {
   uploadFileToDrive,
+  uploadDirectToDrive,
   getDriveFileStream,
   getDriveFileMetadata,
   deleteFromDrive,
   deleteFileFromDrive, // backwards compat alias
+  moveFileInDrive,
   renameInDrive,
   // Exported for testing — not needed in controllers
   getOrCreateSubfolder,

@@ -3,6 +3,7 @@
 'use strict';
 
 const prisma = require('../config/prisma');
+const driveService = require('./drive.service');
 
 // ─── Uploads Management ───────────────────────────────────────
 
@@ -19,11 +20,12 @@ async function getUploads(status = 'PENDING') {
 
 /**
  * Approve or reject a ResourceUpload.
- * On APPROVE: auto-creates a Resource from the upload data.
+ * On APPROVE: moves file to final nested folder, renames it if needed, and creates a Resource.
  * @param {string} id  Upload UUID
  * @param {'APPROVED'|'REJECTED'} action
+ * @param {Object} updatedData Optional modified fields (title, subjectCode, resourceType)
  */
-async function reviewUpload(id, action) {
+async function reviewUpload(id, action, updatedData = {}) {
   const upload = await prisma.resourceUpload.findUnique({ where: { id } });
 
   if (!upload) {
@@ -39,17 +41,45 @@ async function reviewUpload(id, action) {
   }
 
   if (action === 'APPROVED') {
+    const finalSubjectCode = updatedData.subjectCode || upload.subjectCode;
+    const finalTitle = updatedData.title || upload.title;
+    const finalResourceType = updatedData.resourceType || upload.resourceType;
+
     // Find the subject by code
     const subject = await prisma.subject.findUnique({
-      where: { code: upload.subjectCode },
+      where: { code: finalSubjectCode },
+      include: { semester: { include: { department: true } } },
     });
 
     if (!subject) {
-      const err = new Error(
-        `Cannot approve: subject with code "${upload.subjectCode}" not found`
-      );
+      const err = new Error(`Cannot approve: subject with code "${finalSubjectCode}" not found`);
       err.statusCode = 422;
       throw err;
+    }
+
+    // Move file in Google Drive if it exists
+    if (upload.driveFileId) {
+      try {
+        const departmentName = subject?.semester?.department?.name || 'Student Uploads';
+        const semesterName = subject?.semester?.name || 'General';
+        const subjectName = subject?.title || 'General';
+
+        const targetFolderId = await driveService.resolveFolderPath(departmentName, semesterName, subjectName, finalResourceType);
+        const pendingFolderId = process.env.GOOGLE_DRIVE_PENDING_FOLDER_ID;
+        
+        await driveService.moveFileInDrive(upload.driveFileId, targetFolderId, pendingFolderId);
+
+        if (finalTitle !== upload.title) {
+          await driveService.renameInDrive(upload.driveFileId, finalTitle, null);
+        }
+      } catch (driveErr) {
+        console.error('[admin.service] Failed to move/rename file on Drive:', driveErr);
+        // We still continue to approve the DB record if they want, but usually it's better to throw
+        // Throwing ensures the DB doesn't get out of sync if the Drive move fails
+        const err = new Error(`Failed to move file in Google Drive: ${driveErr.message}`);
+        err.statusCode = 502;
+        throw err;
+      }
     }
 
     // Create the actual Resource + mark upload approved in a transaction
@@ -61,16 +91,15 @@ async function reviewUpload(id, action) {
       prisma.resource.create({
         data: {
           subjectId:    subject.id,
-          title:        upload.title,
+          title:        finalTitle,
           description:  upload.description,
-          resourceType: upload.resourceType,
+          resourceType: finalResourceType,
           fileUrl:      upload.fileUrl  || null,
           fileKey:      upload.fileKey  || null,
-          // Carry Drive metadata so the proxy streaming works for student uploads too
           driveFileId:  upload.driveFileId || null,
           webViewLink:  upload.webViewLink  || null,
-          source:   'student_upload',
-          isActive: true,
+          source:       'student_upload',
+          isActive:     true,
         },
       }),
     ]);
@@ -78,7 +107,15 @@ async function reviewUpload(id, action) {
     return { upload: updatedUpload, resource: createdResource };
   }
 
-  // REJECTED — just update status
+  // REJECTED — delete from Drive if applicable
+  if (upload.driveFileId) {
+    try {
+      await driveService.deleteFromDrive(upload.driveFileId);
+    } catch (err) {
+      console.error('[admin.service] Failed to delete rejected file from Drive:', err.message);
+    }
+  }
+
   const updatedUpload = await prisma.resourceUpload.update({
     where: { id },
     data: { status: 'REJECTED' },

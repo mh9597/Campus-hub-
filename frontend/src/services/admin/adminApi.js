@@ -34,11 +34,11 @@ export async function getAdminUploads(status = 'PENDING') {
   return fetchFromApi(`admin/uploads?status=${status}`);
 }
 
-// PATCH /api/admin/uploads/:id  body: { action: 'APPROVED'|'REJECTED' }
-export async function reviewUpload(id, action) {
+// PATCH /api/admin/uploads/:id  body: { action: 'APPROVED'|'REJECTED', title?, subjectCode?, resourceType? }
+export async function reviewUpload(id, action, updatedData = {}) {
   return fetchFromApi(`admin/uploads/${id}`, {
     method: 'PATCH',
-    body: JSON.stringify({ action }),
+    body: JSON.stringify({ action, ...updatedData }),
   });
 }
 

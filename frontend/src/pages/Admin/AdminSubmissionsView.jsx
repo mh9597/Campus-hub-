@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   getAdminUploads, reviewUpload,
   getAdminRequests, reviewRequest,
+  getAdminCatalog,
 } from '../../services/admin/adminApi';
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
@@ -44,29 +45,117 @@ function ActionButton({ label, icon, onClick, variant = 'primary', loading }) {
 }
 
 // ── Upload Card ───────────────────────────────────────────────
-function UploadCard({ item, onAction }) {
+function UploadCard({ item, onAction, departments, semesters, subjects }) {
   const [busy, setBusy] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  
+  const [editForm, setEditForm] = useState({
+    title: item.title || '',
+    subjectCode: item.subjectCode || '',
+    resourceType: item.resourceType || '',
+  });
+
   const isPending = item.status === 'PENDING';
 
   async function handle(action) {
+    if (action === 'APPROVED' && !isEditing) {
+      setIsEditing(true);
+      return;
+    }
+    
     setBusy(true);
-    try { await onAction(item.id, action); } finally { setBusy(false); }
+    try {
+      const data = action === 'APPROVED' ? editForm : undefined;
+      await onAction(item.id, action, data);
+      setIsEditing(false);
+    } finally {
+      setBusy(false);
+    }
   }
+
+  // Derive selected department and semester from chosen subject
+  const currentSubject = subjects.find(s => s.code === editForm.subjectCode);
+  const currentSemester = semesters.find(s => s.id === currentSubject?.semesterId);
+  
+  const [selectedDepartment, setSelectedDepartment] = useState(currentSemester?.departmentId || '');
+  const [selectedSemester, setSelectedSemester] = useState(currentSemester?.id || '');
+
+  // Reset dropdowns when subject changes
+  useEffect(() => {
+    if (currentSubject && currentSemester) {
+      setSelectedDepartment(currentSemester.departmentId);
+      setSelectedSemester(currentSemester.id);
+    }
+  }, [currentSubject, currentSemester]);
+
+  const filteredSemesters = semesters.filter(s => s.departmentId === selectedDepartment);
+  const filteredSubjects = subjects.filter(s => s.semesterId === selectedSemester);
+
+  const RESOURCE_TYPES = ['Notes', 'Previous Year Papers', 'Practical Files', 'Viva Questions', 'Question Bank', 'Syllabus', 'Other'];
 
   return (
     <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-on-surface truncate">{item.title}</p>
-          <p className="text-xs text-on-surface-variant mt-0.5">
-            <span className="font-medium">{item.subjectCode}</span> · {item.resourceType}
-          </p>
-        </div>
-        <StatusBadge status={item.status} />
-      </div>
+      {!isEditing ? (
+        <>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-on-surface truncate">{item.title}</p>
+              <p className="text-xs text-on-surface-variant mt-0.5">
+                <span className="font-medium">{item.subjectCode}</span> · {item.resourceType}
+              </p>
+            </div>
+            <StatusBadge status={item.status} />
+          </div>
 
-      {item.description && (
-        <p className="text-sm text-on-surface-variant leading-relaxed line-clamp-2">{item.description}</p>
+          {item.description && (
+            <p className="text-sm text-on-surface-variant leading-relaxed line-clamp-2">{item.description}</p>
+          )}
+        </>
+      ) : (
+        <div className="flex flex-col gap-4 py-2">
+          <div>
+            <label className="block text-xs font-semibold text-on-surface-variant mb-1">Title</label>
+            <input type="text" value={editForm.title} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
+              className="w-full px-3 py-2 bg-surface-container rounded-lg border-0 text-sm focus:ring-2 focus:ring-primary" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1">Branch</label>
+              <select value={selectedDepartment} onChange={e => { setSelectedDepartment(e.target.value); setSelectedSemester(''); setEditForm(f => ({ ...f, subjectCode: '' })); }}
+                className="w-full px-3 py-2 bg-surface-container rounded-lg border-0 text-sm focus:ring-2 focus:ring-primary">
+                <option value="">Select Branch</option>
+                {departments.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1">Semester</label>
+              <select value={selectedSemester} onChange={e => { setSelectedSemester(e.target.value); setEditForm(f => ({ ...f, subjectCode: '' })); }} disabled={!selectedDepartment}
+                className="w-full px-3 py-2 bg-surface-container rounded-lg border-0 text-sm focus:ring-2 focus:ring-primary disabled:opacity-50">
+                <option value="">Select Sem</option>
+                {filteredSemesters.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1">Subject</label>
+              <select value={editForm.subjectCode} onChange={e => setEditForm(f => ({ ...f, subjectCode: e.target.value }))} disabled={!selectedSemester}
+                className="w-full px-3 py-2 bg-surface-container rounded-lg border-0 text-sm focus:ring-2 focus:ring-primary disabled:opacity-50">
+                <option value="">Select Subject</option>
+                {filteredSubjects.map(s => <option key={s.code} value={s.code}>{s.title}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-on-surface-variant mb-1">Resource Type</label>
+              <select value={editForm.resourceType} onChange={e => setEditForm(f => ({ ...f, resourceType: e.target.value }))}
+                className="w-full px-3 py-2 bg-surface-container rounded-lg border-0 text-sm focus:ring-2 focus:ring-primary">
+                {RESOURCE_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="flex items-center justify-between pt-2 border-t border-outline-variant/10">
@@ -74,16 +163,28 @@ function UploadCard({ item, onAction }) {
           {new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
         <div className="flex gap-2">
-          {(item.fileUrl || item.driveFileId) && (
-            <a href={buildViewUrl(item.id)} target="_blank" rel="noopener noreferrer"
+          {!isEditing && (item.fileUrl || item.driveFileId || item.webViewLink) && (
+            <a href={item.webViewLink || item.fileUrl || buildViewUrl(item.id)} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-xs text-primary font-medium hover:underline">
               <span className="material-symbols-outlined text-[13px]">open_in_new</span> View File
             </a>
           )}
-          {isPending && (
+          
+          {isPending && !isEditing && (
             <>
-              <ActionButton label="Approve" icon="check_circle" onClick={() => handle('APPROVED')} loading={busy} />
+              <ActionButton label="Approve" icon="edit_document" onClick={() => handle('APPROVED')} loading={busy} />
               <ActionButton label="Reject" icon="cancel" onClick={() => handle('REJECTED')} variant="danger" loading={busy} />
+            </>
+          )}
+
+          {isEditing && (
+            <>
+              <button onClick={() => setIsEditing(false)} disabled={busy} className="px-3 py-1.5 text-xs font-semibold text-on-surface-variant hover:text-on-surface transition-colors disabled:opacity-50">Cancel</button>
+              <button onClick={() => handle('APPROVED')} disabled={busy || !editForm.title || !editForm.subjectCode} 
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-400 text-black hover:bg-amber-500 transition-all disabled:opacity-50">
+                <span className="material-symbols-outlined text-[14px]">check_circle</span>
+                Confirm Approve
+              </button>
             </>
           )}
         </div>
@@ -147,6 +248,11 @@ export default function AdminSubmissionsView() {
   const [statusFilter, setStatusFilter] = useState('PENDING');
   const [uploads, setUploads] = useState([]);
   const [requests, setRequests] = useState([]);
+  
+  const [departments, setDepartments] = useState([]);
+  const [semesters, setSemesters] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -154,6 +260,23 @@ export default function AdminSubmissionsView() {
     setLoading(true);
     setError('');
     try {
+      const depts = await getAdminCatalog();
+      const allDepts = [];
+      const allSems = [];
+      const allSubs = [];
+      for (const d of depts) {
+        allDepts.push({ id: d.id, code: d.code, name: d.name });
+        for (const sem of d.semesters ?? []) {
+          allSems.push({ id: sem.id, name: sem.name, semesterNumber: sem.semesterNumber, deptCode: d.code || d.name, departmentId: d.id });
+          for (const sub of sem.subjects ?? []) {
+            allSubs.push({ ...sub, semesterId: sem.id });
+          }
+        }
+      }
+      setDepartments(allDepts);
+      setSemesters(allSems);
+      setSubjects(allSubs);
+
       if (tab === 'uploads') {
         const data = await getAdminUploads(statusFilter);
         setUploads(Array.isArray(data) ? data : []);
@@ -250,7 +373,7 @@ export default function AdminSubmissionsView() {
       {!loading && items.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {tab === 'uploads'
-            ? uploads.map((item) => <UploadCard key={item.id} item={item} onAction={handleUploadAction} />)
+            ? uploads.map((item) => <UploadCard key={item.id} item={item} onAction={handleUploadAction} departments={departments} semesters={semesters} subjects={subjects} />)
             : requests.map((item) => <RequestCard key={item.id} item={item} onAction={handleRequestAction} />)
           }
         </div>
