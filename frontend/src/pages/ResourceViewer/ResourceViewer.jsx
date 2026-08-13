@@ -60,6 +60,18 @@ function ResourceViewer() {
     load();
   }, [id, navigate, resource]);
 
+  // Safety fallback: Chromium PDF plugin inside <iframe> does not trigger standard onLoad.
+  // Automatically dismiss loading spinner after 1.2s to reveal PDF.
+  useEffect(() => {
+    if (!resource) return;
+    setIframeLoading(true);
+    setIframeError(false);
+    const timer = setTimeout(() => {
+      setIframeLoading(false);
+    }, 1200);
+    return () => clearTimeout(timer);
+  }, [resource?.id]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0f1117] flex items-center justify-center">
@@ -83,6 +95,8 @@ function ResourceViewer() {
 
   const resourceIsPdf   = mime.includes('pdf') || isPdf(urlStr) || isPdf(titleStr);
   const resourceIsImage = mime.startsWith('image/') || isImage(urlStr) || isImage(titleStr);
+  const hasDriveFile    = !!resource.driveFileId;
+  const canTryIframe    = resourceIsPdf || hasDriveFile;
 
   const subject = resource.subject;
   const semester = subject?.semester;
@@ -255,13 +269,23 @@ function ResourceViewer() {
         <main className="flex-1 overflow-hidden relative bg-black">
           {!resource.fileUrl && !resource.driveFileId ? (
             <EmptyViewer message="No file is attached to this resource." />
-          ) : resourceIsPdf ? (
+          ) : resourceIsImage && !hasDriveFile ? (
+            // Local image files — render directly
+            <div className="w-full h-full overflow-auto flex items-center justify-center p-8">
+              <img
+                src={viewUrl}
+                alt={resource.title}
+                className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+              />
+            </div>
+          ) : canTryIframe ? (
+            // PDF or Drive file — attempt inline iframe (backend sends correct Content-Type)
             <>
               {iframeLoading && (
-                <div className="absolute inset-0 flex items-center justify-center z-10">
-                  <div className="text-center space-y-3">
-                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-yellow-400 mx-auto" />
-                    <p className="text-white/40 text-sm">Loading PDF…</p>
+                <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                  <div className="text-center space-y-3 bg-[#0f1117]/80 p-6 rounded-2xl backdrop-blur-sm">
+                    <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-400 mx-auto" />
+                    <p className="text-white/60 text-sm font-medium">Loading preview…</p>
                   </div>
                 </div>
               )}
@@ -278,14 +302,6 @@ function ResourceViewer() {
                 />
               )}
             </>
-          ) : resourceIsImage ? (
-            <div className="w-full h-full overflow-auto flex justify-center items-center p-4 bg-neutral-950 border border-neutral-900">
-              <img
-                src={viewUrl}
-                alt={resource.title}
-                className="max-h-[80vh] max-w-full object-contain rounded"
-              />
-            </div>
           ) : (
             <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} isUnknownType />
           )}

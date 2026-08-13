@@ -82,6 +82,18 @@ async function reviewUpload(id, action, updatedData = {}) {
       }
     }
 
+    let mimeType = null;
+    let fileSize = null;
+    if (upload.driveFileId) {
+      try {
+        const meta = await driveService.getDriveFileMetadata(upload.driveFileId);
+        mimeType = meta?.mimeType || null;
+        fileSize = meta?.size ? parseInt(meta.size, 10) : null;
+      } catch (metaErr) {
+        console.warn('[admin.service] Could not fetch drive metadata:', metaErr.message);
+      }
+    }
+
     // Create the actual Resource + mark upload approved in a transaction
     const [updatedUpload, createdResource] = await prisma.$transaction([
       prisma.resourceUpload.update({
@@ -98,7 +110,8 @@ async function reviewUpload(id, action, updatedData = {}) {
           fileKey:      upload.fileKey  || null,
           driveFileId:  upload.driveFileId || null,
           webViewLink:  upload.webViewLink  || null,
-          mimeType:     upload.mimeType || null,
+          mimeType:     upload.mimeType || mimeType || null,
+          fileSize:     fileSize || null,
           source:       'student_upload',
           isActive:     true,
         },

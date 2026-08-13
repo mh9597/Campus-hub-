@@ -4,6 +4,7 @@
 
 const path          = require('path');
 const fs            = require('fs');
+const prisma        = require('../config/prisma');
 const publicService = require('../services/public.service');
 const driveService  = require('../services/drive.service');
 const { UPLOAD_DIR } = require('../config/multer');
@@ -45,16 +46,46 @@ async function proxyResource(req, res, dispositionType) {
 
   // ── Path A: Drive proxy — preferred for all new uploads ───────
   if (resource.driveFileId) {
-    const ext = path.extname(resource.title || '').toLowerCase();
-    const mimeType = resource.mimeType || EXT_MIME_MAP[ext] || 'application/octet-stream';
+    let mimeType = resource.mimeType;
+    const titleExt = path.extname(resource.title || '').toLowerCase();
+
+    // If mimeType is missing from DB, fetch from Drive on the fly and cache it in DB
+    if (!mimeType || mimeType === 'application/octet-stream') {
+      if (titleExt && EXT_MIME_MAP[titleExt]) {
+        mimeType = EXT_MIME_MAP[titleExt];
+      } else {
+        try {
+          const meta = await driveService.getDriveFileMetadata(resource.driveFileId);
+          if (meta && meta.mimeType) {
+            mimeType = meta.mimeType;
+            // Async update in DB without blocking the stream
+            prisma.resource.update({
+              where: { id: resource.id },
+              data: {
+                mimeType: meta.mimeType,
+                fileSize: meta.size ? parseInt(meta.size, 10) : undefined,
+              },
+            }).catch(e => console.warn('[proxyResource] DB cache update failed:', e.message));
+          }
+        } catch (metaErr) {
+          console.warn('[proxyResource] Could not fetch drive metadata:', metaErr.message);
+        }
+      }
+    }
+
+    mimeType = mimeType || EXT_MIME_MAP[titleExt] || 'application/octet-stream';
+
+    // Derive file extension if title doesn't already have one
+    const ext = Object.keys(EXT_MIME_MAP).find(key => EXT_MIME_MAP[key] === mimeType) || titleExt || '';
+    const hasExtension = /\.[a-zA-Z0-9]{2,5}$/.test(safeTitle);
+    const finalFilename = hasExtension ? safeTitle : `${safeTitle}${ext}`;
 
     res.setHeader('Content-Type', mimeType);
     res.setHeader(
       'Content-Disposition',
-      `${dispositionType}; filename="${encodeURIComponent(resource.title || safeTitle)}"`
+      `${dispositionType}; filename="${encodeURIComponent(finalFilename)}"`,
     );
     res.setHeader('Cache-Control', 'private, max-age=300');
-    res.setHeader('X-Content-Type-Options', 'nosniff');
 
     let driveStream;
     try {

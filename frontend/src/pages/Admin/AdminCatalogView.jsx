@@ -264,20 +264,23 @@ function IconPicker({ value, onChange }) {
 
 // ─── Color Picker ──────────────────────────────────────────────
 const SUBJECT_COLORS = [
-  { id: 'blue', color: 'bg-blue-500' },
-  { id: 'green', color: 'bg-green-500' },
-  { id: 'yellow', color: 'bg-yellow-500' },
-  { id: 'purple', color: 'bg-purple-500' },
-  { id: 'orange', color: 'bg-orange-500' },
-  { id: 'pink', color: 'bg-pink-500' },
-  { id: 'rose', color: 'bg-rose-500' },
-  { id: 'cyan', color: 'bg-cyan-500' },
+  { id: 'lime', label: 'Neon Lime', color: 'bg-[#c6f62b]', hex: '#c6f62b' },
+  { id: 'emerald', label: 'Emerald', color: 'bg-emerald-400', hex: '#4ade80' },
+  { id: 'sky', label: 'Sky Blue', color: 'bg-sky-400', hex: '#38bdf8' },
+  { id: 'yellow', label: 'Canary Yellow', color: 'bg-yellow-400', hex: '#facc15' },
+  { id: 'orange', label: 'Vivid Orange', color: 'bg-orange-400', hex: '#fb923c' },
+  { id: 'purple', label: 'Purple', color: 'bg-purple-400', hex: '#c084fc' },
+  { id: 'pink', label: 'Hot Pink', color: 'bg-pink-400', hex: '#f472b6' },
+  { id: 'blue', label: 'Classic Blue', color: 'bg-blue-500', hex: '#3b82f6' },
+  { id: 'green', label: 'Mint Green', color: 'bg-green-500', hex: '#22c55e' },
+  { id: 'rose', label: 'Rose Pink', color: 'bg-rose-500', hex: '#f43f5e' },
+  { id: 'cyan', label: 'Electric Cyan', color: 'bg-cyan-400', hex: '#22d3ee' },
 ];
 
 function ColorPicker({ value, onChange }) {
   const [open, setOpen] = useState(false);
-  const activeColor = SUBJECT_COLORS.find(c => c.id === value) || SUBJECT_COLORS[0];
-  
+  const activeColor = SUBJECT_COLORS.find(c => c.id === value?.toLowerCase() || c.hex === value) || SUBJECT_COLORS[0];
+
   return (
     <div className="relative">
       <button
@@ -285,11 +288,19 @@ function ColorPicker({ value, onChange }) {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-surface-container border border-outline-variant/40 text-sm text-on-surface hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary/10 transition"
       >
-        <div className="flex items-center gap-2">
-          <div className={`w-4 h-4 rounded-full shadow-sm ${activeColor.color}`} />
-          <span className="font-mono text-xs opacity-70 capitalize">{value}</span>
+        <div className="flex items-center gap-2.5">
+          <div
+            className={`w-5 h-5 rounded-full border border-black/20 shadow-sm ${activeColor.color}`}
+            style={{ backgroundColor: activeColor.hex }}
+          />
+          <span className="font-semibold text-xs capitalize text-on-surface">
+            {activeColor.label || activeColor.id}
+          </span>
         </div>
-        <span className="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform" style={{ transform: open ? 'rotate(180deg)' : 'none' }}>
+        <span
+          className="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform"
+          style={{ transform: open ? 'rotate(180deg)' : 'none' }}
+        >
           expand_more
         </span>
       </button>
@@ -297,16 +308,33 @@ function ColorPicker({ value, onChange }) {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute top-full right-0 md:left-0 mt-2 p-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl z-50 grid grid-cols-4 gap-2 w-48 animate-fade-in">
-            {SUBJECT_COLORS.map(c => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => { onChange(c.id); setOpen(false); }}
-                title={c.id}
-                className={`w-8 h-8 rounded-full shadow-sm flex items-center justify-center transition-all hover:scale-110 ${c.color} ${value === c.id ? 'ring-2 ring-offset-2 ring-primary' : ''}`}
-              />
-            ))}
+          <div className="absolute top-full right-0 md:left-0 mt-2 p-3 bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-xl z-50 flex flex-col gap-2 w-56 animate-fade-in">
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider px-1">
+              Folder Theme Color
+            </span>
+            <div className="grid grid-cols-4 gap-2">
+              {SUBJECT_COLORS.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => {
+                    onChange(c.id);
+                    setOpen(false);
+                  }}
+                  title={c.label}
+                  className={`w-9 h-9 rounded-full border border-black/15 shadow-sm flex items-center justify-center transition-all hover:scale-110 ${
+                    value === c.id || value === c.hex ? 'ring-2 ring-offset-2 ring-primary scale-105' : ''
+                  }`}
+                  style={{ backgroundColor: c.hex }}
+                >
+                  {(value === c.id || value === c.hex) && (
+                    <span className="material-symbols-outlined text-[14px] text-black drop-shadow">
+                      check
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </>
       )}
