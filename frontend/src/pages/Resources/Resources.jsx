@@ -1,206 +1,264 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
+import { WordReveal, TextGradientSheen, BlurText, BlurCategoryScroller } from '../../components/ui/TextAnimations';
+
+const DEPARTMENTS = [
+  {
+    code: 'CE',
+    name: 'Computer Engineering (CE)',
+    description: 'Semester-wise resources for Computer Engineering students including notes, previous year question papers, syllabus, and lab manuals.',
+    icon: 'memory',
+    isAvailable: true,
+    path: '/semesters',
+    badge: 'Available',
+    gradient: 'from-amber-500/20 via-orange-500/10 to-transparent',
+    borderColor: 'border-amber-400',
+    iconBg: 'bg-amber-100 text-amber-900 border-amber-300',
+  },
+  {
+    code: 'CSE',
+    name: 'Computer Science & Engineering (CSE)',
+    description: 'Specialized study materials for software engineering, algorithms, cloud computing, and theory of computation.',
+    icon: 'laptop_mac',
+    isAvailable: false,
+    badge: 'Coming Soon',
+    gradient: 'from-sky-500/15 via-indigo-500/5 to-transparent',
+    borderColor: 'border-sky-300',
+    iconBg: 'bg-sky-100 text-sky-900 border-sky-300',
+  },
+  {
+    code: 'IT',
+    name: 'Information Technology (IT)',
+    description: 'Specialized study materials for Information Technology subjects, database systems, and web technologies.',
+    icon: 'dns',
+    isAvailable: false,
+    badge: 'Coming Soon',
+    gradient: 'from-purple-500/15 via-pink-500/5 to-transparent',
+    borderColor: 'border-purple-300',
+    iconBg: 'bg-purple-100 text-purple-900 border-purple-300',
+  },
+];
+
+const RESOURCE_CATEGORIES = [
+  {
+    id: 'notes',
+    title: 'Handwritten Notes',
+    desc: 'Unit-wise digitized notes written by top scorers with clean diagrams.',
+    icon: 'edit_note',
+    color: 'bg-amber-50 text-amber-800 border-amber-200',
+    badge: 'High Demand',
+  },
+  {
+    id: 'pyqs',
+    title: 'Previous Year Papers',
+    desc: 'Mid-sem & end-sem university question papers with solution keys.',
+    icon: 'history_edu',
+    color: 'bg-rose-50 text-rose-800 border-rose-200',
+    badge: 'Exam Prep',
+  },
+  {
+    id: 'practicals',
+    title: 'Lab Manuals & Codes',
+    desc: 'Fully written experiment files, test outputs, and runnable source code.',
+    icon: 'science',
+    color: 'bg-sky-50 text-sky-800 border-sky-200',
+    badge: 'Verified Code',
+  },
+  {
+    id: 'viva',
+    title: 'Viva & Oral Banks',
+    desc: 'Most frequently asked external examiner viva questions with answers.',
+    icon: 'quiz',
+    color: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    badge: 'Scoring Key',
+  },
+  {
+    id: 'syllabus',
+    title: 'Official Syllabus',
+    desc: 'Updated unit weightages, paper patterns, and recommended reading.',
+    icon: 'menu_book',
+    color: 'bg-purple-50 text-purple-800 border-purple-200',
+    badge: '2026 Batch',
+  },
+  {
+    id: 'textbooks',
+    title: 'Reference Books',
+    desc: 'Standard university prescribed e-books and author reference guides.',
+    icon: 'auto_stories',
+    color: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+    badge: 'Full PDFs',
+  },
+];
+
+const FEATURES = [
+  {
+    image: '/images/verified-content.png',
+    title: 'Verified Content',
+    desc: 'All notes and question papers are reviewed for accuracy by subject rankers and senior coordinators.',
+  },
+  {
+    image: '/images/organized.png',
+    title: 'Zero-Friction Hierarchy',
+    desc: 'Structured by Department → Semester → Subject → Category for instant 1-click navigation.',
+  },
+  {
+    image: '/images/fast-downloads.png',
+    title: 'Instant Previews & Download',
+    desc: 'Optimized high-speed cloud CDN with embedded PDF viewers and zero paywalls or ad-blockers.',
+  },
+  {
+    image: '/images/updated-regularly.png',
+    title: 'Continuous Updates',
+    desc: 'New semester examination papers and syllabus revisions are uploaded within 24 hours of release.',
+  },
+];
 
 function Resources() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
-  const departments = [
-    {
-      code: 'CE',
-      name: 'Computer Engineering (CE)',
-      description: 'Semester-wise resources for Computer Engineering students including notes, papers, and lab manuals.',
-      icon: 'memory',
-      isAvailable: true,
-      path: '/semesters',
-    },
-    {
-      code: 'CSE',
-      name: 'Computer Science & Engineering (CSE)',
-      description: 'Academic resources for CSE students covering software engineering, algorithms, and theory of computation.',
-      icon: 'laptop_mac',
-      isAvailable: false,
-    },
-    {
-      code: 'IT',
-      name: 'Information Technology (IT)',
-      description: 'Specialized study materials for Information Technology subjects, database systems, and web technologies.',
-      icon: 'dns',
-      isAvailable: false,
-    },
-  ];
-
-  const features = [
-    {
-      image: '/images/verified-content.png',
-      title: 'Verified Content',
-      desc: 'All resources are reviewed by subject matter experts and top-performing alumni.',
-    },
-    {
-      image: '/images/organized.png',
-      title: 'Organized',
-      desc: 'Structure by semester and category for zero-friction navigation through your degree.',
-    },
-    {
-      image: '/images/fast-downloads.png',
-      title: 'Fast Downloads',
-      desc: 'Optimized PDF sizes and high-speed servers for instant access even on mobile data.',
-    },
-    {
-      image: '/images/updated-regularly.png',
-      title: 'Updated Regularly',
-      desc: 'New syllabus changes and the latest session papers are added within 24 hours of release.',
-    },
-  ];
+  const handleNotifyComingSoon = (deptName) => {
+    addToast({
+      message: `🔔 Thanks for your interest! ${deptName} resources are being scanned and will drop soon.`,
+      type: 'info',
+      duration: 3500,
+    });
+  };
 
   return (
-    <div className="pt-20 bg-[#FDFBF7] text-hub-navy font-poppins min-h-screen relative overflow-hidden selection:bg-amber-300 selection:text-hub-navy">
-      {/* ─── Background Decor (Exact Match to Reference Image) ─── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-        {/* Left Side Organic Warm Cream Blob (Subtle, Compact & Soft) */}
-        <div className="absolute top-[220px] -left-28 w-[240px] sm:w-[280px] h-[340px] sm:h-[400px] bg-[#F7EEDC]/60 rounded-tr-[160px] rounded-br-[140px] blur-sm opacity-60" />
-
-        {/* Far-Left Yellow Dots Grid (Subtle, compact) */}
-        <svg className="absolute top-14 left-2 sm:left-4 w-12 h-28 opacity-40" viewBox="0 0 60 140" fill="#F59E0B">
-          <pattern id="r-dots-left" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
-            <circle cx="3" cy="3" r="2" />
-          </pattern>
-          <rect width="60" height="140" fill="url(#r-dots-left)" />
-        </svg>
-
-        {/* Top-Right Dark Navy Dots Grid (5x5) */}
-        <svg className="absolute top-6 right-6 sm:right-12 w-24 h-24 opacity-35" viewBox="0 0 100 100" fill="#0D1B40">
-          <pattern id="r-dots-tr" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
-            <circle cx="3" cy="3" r="2.2" />
-          </pattern>
-          <rect width="100" height="100" fill="url(#r-dots-tr)" />
-        </svg>
-
-        {/* Right Side Yellow Dots Grid in Department Section (4x6) */}
-        <svg className="absolute top-[480px] right-3 sm:right-6 w-16 h-36 opacity-75 hidden sm:block" viewBox="0 0 60 140" fill="#F59E0B">
-          <pattern id="r-dots-dept-r" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
-            <circle cx="3" cy="3" r="2.2" />
-          </pattern>
-          <rect width="60" height="140" fill="url(#r-dots-dept-r)" />
-        </svg>
-
-        {/* Bottom Left Yellow Dots Grid in Department Section (4x6) */}
-        <svg className="absolute top-[780px] left-3 sm:left-6 w-16 h-36 opacity-75 hidden sm:block" viewBox="0 0 60 140" fill="#F59E0B">
-          <pattern id="r-dots-dept-l" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
-            <circle cx="3" cy="3" r="2.2" />
-          </pattern>
-          <rect width="60" height="140" fill="url(#r-dots-dept-l)" />
-        </svg>
-
-        {/* Hollow Yellow Circles matching reference image (Desktop/Tablet display) */}
-        <div className="hidden md:block absolute top-[18%] left-[49%] w-5 h-5 rounded-full border-2 border-amber-400 opacity-80 pointer-events-none" />
-        <div className="hidden md:block absolute top-[16%] right-[8%] w-5 h-5 rounded-full border-2 border-amber-400 opacity-80 pointer-events-none" />
-        <div className="hidden md:block absolute top-[46%] left-6 sm:left-10 w-6 h-6 rounded-full border-2 border-amber-400 opacity-85 pointer-events-none" />
-        <div className="hidden md:block absolute top-[38%] right-[4%] w-6 h-6 rounded-full border-2 border-amber-400 opacity-85 pointer-events-none" />
-        <div className="hidden md:block absolute top-[68%] left-4 sm:left-8 w-6 h-6 rounded-full border-2 border-amber-400 opacity-85 pointer-events-none" />
-        <div className="hidden md:block absolute top-[78%] right-4 sm:right-8 w-6 h-6 rounded-full border-2 border-amber-400 opacity-85 pointer-events-none" />
-
-        {/* Tiny Navy Wave Decoration (bottom right of hero) */}
-        <div className="absolute top-[440px] right-14 flex gap-1 opacity-70 hidden lg:flex">
-          <svg className="w-12 h-3" viewBox="0 0 48 10" fill="none" stroke="#0D1B40" strokeWidth="2">
-            <path d="M0,5 Q6,0 12,5 T24,5 T36,5 T48,5" />
-          </svg>
-        </div>
+    <div className="pt-20 bg-[#f8fafc] text-slate-800 font-sans min-h-screen pb-24 relative overflow-x-clip selection:bg-amber-300 selection:text-slate-900">
+      {/* ─── Ambient Canvas & Subtle Grid Pattern ─── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
+        <div
+          className="absolute inset-0 opacity-[0.35]"
+          style={{
+            backgroundImage:
+              'linear-gradient(to right, rgba(203, 213, 225, 0.4) 1px, transparent 1px), linear-gradient(to bottom, rgba(203, 213, 225, 0.4) 1px, transparent 1px)',
+            backgroundSize: '36px 36px',
+          }}
+        />
+        <div className="absolute -top-32 -left-20 w-[650px] h-[650px] bg-gradient-to-br from-amber-300/25 via-orange-300/15 to-transparent rounded-full blur-3xl opacity-75" />
+        <div className="absolute top-[25%] -right-24 w-[600px] h-[600px] bg-gradient-to-bl from-sky-300/25 via-indigo-300/15 to-transparent rounded-full blur-3xl opacity-65" />
+        <div className="absolute top-[60%] -left-20 w-[550px] h-[550px] bg-gradient-to-tr from-purple-300/20 via-pink-300/10 to-transparent rounded-full blur-3xl opacity-50" />
       </div>
 
-      {/* ─── HERO SECTION ─── */}
-      <section className="relative pt-6 pb-16 lg:pt-8 lg:pb-24 z-10">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* ─── BREADCRUMB ─── */}
+        <nav aria-label="Breadcrumb" className="pt-6 pb-2">
+          <ol className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500">
+            <li>
+              <Link to="/" className="hover:text-slate-900 transition-colors flex items-center gap-1">
+                <span className="material-symbols-outlined text-[16px] text-amber-500">home</span>
+                <span>Home</span>
+              </Link>
+            </li>
+            <li className="text-slate-300 select-none">/</li>
+            <li className="text-slate-900 font-bold">Academic Resources</li>
+          </ol>
+        </nav>
 
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center text-xs font-semibold text-gray-500 mb-7">
-            <Link to="/" className="hover:text-amber-500 transition-colors">Home</Link>
-            <span className="mx-2 text-gray-400">/</span>
-            <span className="text-black font-bold">Resources</span>
-          </nav>
-
+        {/* ─── HERO SECTION ─── */}
+        <section className="pt-6 pb-12 lg:pt-8 lg:pb-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
-
-            {/* LEFT: Text Content */}
-            <div className="lg:col-span-5 space-y-6 max-w-[560px]">
-
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF3D6] border border-amber-300/70 text-hub-navy text-[11px] font-extrabold uppercase tracking-widest shadow-2xs">
-                <span>📚</span>
-                <span>Academic Resources</span>
-              </div>
-
-              {/* Headline */}
-              <h1 className="text-[40px] sm:text-5xl lg:text-[50px] xl:text-[54px] font-black text-hub-navy leading-[1.14] tracking-tight">
-                Access All Your Academic
+            {/* LEFT: Text & Instant Search */}
+            <div className="lg:col-span-6 space-y-6 max-w-xl">
+              {/* Editorial Smooth Word-Reveal Headline */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-black text-slate-950 tracking-tight leading-[1.12]">
+                <WordReveal
+                  text="Access All Your Academic"
+                  className="text-slate-900"
+                  wordClassName="hover:text-amber-600 transition-colors"
+                  delay={0.05}
+                  stagger={0.04}
+                />
                 <br />
-                <span className="relative inline-block text-amber-500">
-                  Resources
+                <span className="relative inline-flex items-baseline pb-1">
+                  <TextGradientSheen
+                    className="drop-shadow-xs"
+                    fromColor="#f59e0b"
+                    viaColor="#ea580c"
+                    toColor="#d97706"
+                  >
+                    Resources in One Place
+                  </TextGradientSheen>
                   <svg
-                    className="absolute -bottom-2 left-0 w-full h-3 opacity-90"
-                    viewBox="0 0 100 10"
+                    className="absolute -bottom-1.5 left-0 w-full h-3 text-amber-400/80 pointer-events-none"
+                    viewBox="0 0 100 12"
                     preserveAspectRatio="none"
                   >
-                    <path d="M 0 7 Q 25 1 50 7 Q 75 13 100 7" fill="none" stroke="#FBBF24" strokeWidth="4" strokeLinecap="round" />
-                  </svg>
-                </span>
-                {' '}in{' '}
-                <span className="relative inline-block text-amber-500">
-                  One Place
-                  <svg
-                    className="absolute -bottom-2 left-0 w-full h-3 opacity-90"
-                    viewBox="0 0 100 10"
-                    preserveAspectRatio="none"
-                  >
-                    <path d="M 0 7 Q 25 1 50 7 Q 75 13 100 7" fill="none" stroke="#F59E0B" strokeWidth="4" strokeLinecap="round" />
+                    <path d="M0 6 Q 50 0 100 6" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
                   </svg>
                 </span>
               </h1>
 
-              {/* Description */}
-              <p className="text-sm sm:text-base text-gray-600 max-w-xl leading-relaxed font-medium">
-                Browse semester-wise notes, previous year papers, practical files, viva questions, question banks, syllabus, and other academic materials organized for easy access.
+              {/* Subtitle */}
+              <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
+                Browse semester-wise notes, previous year question papers, practical files, viva questions, question banks, and syllabus organized with zero friction.
               </p>
 
-              {/* CTA Button */}
-              <a
-                href="#departments"
-                className="inline-flex items-center gap-2.5 bg-black hover:bg-gray-800 text-white font-bold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 text-sm"
-              >
-                <span>Explore Departments</span>
-                <span className="material-symbols-outlined text-lg leading-none">arrow_forward</span>
-              </a>
-            </div>
+              {/* CTA Action Button */}
+              <div className="pt-2">
+                <a
+                  href="#departments"
+                  className="inline-flex items-center gap-2.5 bg-slate-950 hover:bg-amber-400 text-white hover:text-slate-950 font-black px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 text-sm cursor-pointer"
+                >
+                  <span>Explore Departments</span>
+                  <span className="material-symbols-outlined text-lg leading-none">arrow_forward</span>
+                </a>
+              </div>
 
-            {/* RIGHT: Illustration (Slid & Shifted Right for Web Display) */}
-            <div className="lg:col-span-7 relative flex justify-center items-center lg:justify-end lg:pl-6">
-              <div className="relative w-full max-w-[540px] sm:max-w-[620px] lg:max-w-[720px] xl:max-w-[800px] lg:translate-x-8 xl:translate-x-12 transition-transform duration-500 hover:scale-[1.02]">
-                <img
-                  alt="Academic Resources Center Illustration"
-                  className="w-full h-auto object-contain mix-blend-multiply drop-shadow-2xl"
-                  src="/images/resource-hero-section.png"
-                />
+              {/* Live Metric Ribbon */}
+              <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-slate-700">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs">
+                  <span className="material-symbols-outlined text-amber-500 text-[18px]">school</span>
+                  <span>8 Full Semesters</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs">
+                  <span className="material-symbols-outlined text-emerald-500 text-[18px]">verified</span>
+                  <span>100% Free &amp; Verified</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs">
+                  <span className="material-symbols-outlined text-sky-500 text-[18px]">bolt</span>
+                  <span>Instant PDF Viewer</span>
+                </div>
               </div>
             </div>
 
+            {/* RIGHT: 3D Illustration Layer */}
+            <div className="lg:col-span-6 relative flex justify-center items-center lg:justify-end">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className="relative w-full max-w-[500px] lg:max-w-[580px] group"
+              >
+                <div className="relative rounded-3xl overflow-hidden p-4">
+                  <img
+                    alt="Academic Resources Hub"
+                    src="/images/resource-hero-section.png"
+                    className="w-full h-auto object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                </div>
+              </motion.div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ─── CHOOSE YOUR DEPARTMENT SECTION ─── */}
-      <section id="departments" className="py-16 md:py-24 relative scroll-mt-24 z-10">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
-
-          {/* Section heading */}
-          <div className="text-center mb-14 space-y-2">
-            <h2 className="text-3xl sm:text-4xl font-black text-hub-navy leading-tight tracking-tight">
+        {/* ─── CHOOSE YOUR DEPARTMENT SECTION ─── */}
+        <section id="departments" className="py-14 sm:py-20 relative scroll-mt-24">
+          <div className="text-center mb-12 space-y-2 max-w-2xl mx-auto">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-mono font-bold uppercase tracking-wider border border-slate-200">
+              <span>ENGINEERING BRANCHES</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-950 tracking-tight">
               Choose Your{' '}
-              <span className="relative inline-block text-hub-navy">
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600">
                 Department
                 <svg
-                  className="absolute -bottom-2 left-0 w-full h-3 text-amber-400"
+                  className="absolute -bottom-1.5 left-0 w-full h-2.5 text-amber-400"
                   viewBox="0 0 100 10"
                   preserveAspectRatio="none"
                 >
@@ -208,74 +266,108 @@ function Resources() {
                 </svg>
               </span>
             </h2>
-            <p className="text-sm sm:text-base text-gray-500 font-medium max-w-xl mx-auto pt-2">
-              Select your engineering branch to access specialized academic resources.
+            <p className="text-xs sm:text-sm text-slate-500 font-medium pt-1">
+              Select your academic branch to access specialized subjects, semester curriculum, and exam materials.
             </p>
           </div>
 
-          {/* Department cards grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {departments.map((dept) => (
-              <div
+          {/* Department Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            {DEPARTMENTS.map((dept) => (
+              <motion.div
                 key={dept.code}
-                className="glass-card rounded-[28px] p-8 sm:p-10 border border-gray-100/80 shadow-[0_10px_35px_rgba(0,0,0,0.035)] hover:shadow-2xl hover:-translate-y-2 hover:border-amber-300/50 transition-all duration-300 flex flex-col items-center text-center group relative overflow-hidden active-press"
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
+                className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] flex flex-col justify-between relative overflow-hidden transition-all group"
               >
-                {!dept.isAvailable && (
-                  <div className="absolute top-4 right-4 bg-amber-100/90 backdrop-blur-sm text-amber-900 text-[10px] font-extrabold px-3 py-1 rounded-full border border-amber-300/80 uppercase tracking-wider flex items-center gap-1 shadow-sm">
-                    <span>🚀</span> Coming Soon
-                  </div>
-                )}
+                {/* Background Gradient Subtle Accent */}
+                <div className={`absolute top-0 left-0 right-0 h-32 bg-gradient-to-b ${dept.gradient} pointer-events-none`} />
 
-                {/* Amber Icon Badge */}
-                <div className="w-16 h-16 rounded-2xl bg-[#FEF3D6] text-hub-navy border border-amber-300/70 flex items-center justify-center mb-6 mx-auto transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3 shadow-sm">
-                  <span className="material-symbols-outlined text-3xl text-hub-navy">{dept.icon}</span>
+                <div>
+                  {/* Top Status & Icon */}
+                  <div className="flex items-start justify-between mb-5 relative z-10">
+                    <div className={`w-14 h-14 rounded-2xl ${dept.iconBg} border flex items-center justify-center shadow-xs transition-transform duration-300 group-hover:scale-110`}>
+                      <span className="material-symbols-outlined text-[28px]">{dept.icon}</span>
+                    </div>
+
+                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border shadow-2xs ${
+                      dept.isAvailable
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                        : 'bg-amber-50 text-amber-800 border-amber-300'
+                    }`}>
+                      {dept.badge}
+                    </span>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-lg sm:text-xl font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-600 transition-colors">
+                    {dept.name}
+                  </h3>
+
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-8">
+                    {dept.description}
+                  </p>
                 </div>
 
-                <h3 className="text-lg sm:text-xl font-black text-hub-navy mb-3 tracking-tight leading-snug">{dept.name}</h3>
-                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-medium mb-8 max-w-[280px] mx-auto flex-1">{dept.description}</p>
-
-                {/* Action button */}
-                {dept.isAvailable ? (
-                  <Link
-                    to={dept.path}
-                    className="w-full sm:w-[85%] font-bold py-3.5 rounded-full bg-hub-navy hover:bg-black text-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex items-center justify-center gap-2 text-sm mt-auto active-press"
-                  >
-                    <span>Explore</span>
-                    <span className="material-symbols-outlined text-base leading-none transition-transform duration-200 group-hover:translate-x-1">
-                      arrow_forward
-                    </span>
-                  </Link>
-                ) : (
-                  <button
-                    disabled
-                    type="button"
-                    className="w-full sm:w-[85%] font-bold py-3.5 rounded-full bg-hub-navy text-white shadow-md flex items-center justify-center gap-2 text-sm mt-auto opacity-90 cursor-not-allowed"
-                  >
-                    <span>Coming Soon</span>
-                    <span className="material-symbols-outlined text-base leading-none">
-                      lock
-                    </span>
-                  </button>
-                )}
-              </div>
+                {/* Action CTA */}
+                <div className="pt-2">
+                  {dept.isAvailable ? (
+                    <Link
+                      to={dept.path}
+                      className="w-full py-3.5 px-6 rounded-2xl bg-slate-950 hover:bg-amber-400 text-white hover:text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.99]"
+                    >
+                      <span>Explore Resources</span>
+                      <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                        arrow_forward
+                      </span>
+                    </Link>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled
+                      className="w-full py-3.5 px-6 rounded-2xl bg-slate-100 text-slate-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-200/80 cursor-not-allowed"
+                    >
+                      <span>Coming Soon</span>
+                      <span className="material-symbols-outlined text-[16px] text-slate-400">lock</span>
+                    </button>
+                  )}
+                </div>
+              </motion.div>
             ))}
           </div>
+        </section>
 
-        </div>
-      </section>
+        {/* ─── RESOURCE MATRIX: BLUR TEXT SCROLLER ─── */}
+        <section className="py-12 sm:py-16 relative">
+          <div className="text-center mb-8 max-w-2xl mx-auto space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-mono font-bold uppercase tracking-wider border border-slate-200">
+              <span>EXPLORE BY STUDY FORMAT</span>
+            </div>
+            <BlurText
+              text="Everything You Need to Ace Your Exams"
+              className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-950 tracking-tight"
+            />
+            <p className="text-xs sm:text-sm text-slate-500 font-medium">
+              Curated notes, question papers, code solutions, and viva banks.
+            </p>
+          </div>
 
-      {/* ─── WHY USE OUR RESOURCES ─── */}
-      <section className="py-14 md:py-20 relative z-10">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
+          {/* Interactive Infinite Blur Scroller Track */}
+          <BlurCategoryScroller categories={RESOURCE_CATEGORIES} />
+        </section>
 
-          {/* Section heading */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-black text-hub-navy leading-tight tracking-tight">
-              Why Use{' '}
-              <span className="relative inline-block text-hub-navy">
-                Our Resources?
+        {/* ─── WHY USE OUR RESOURCES (FEATURES) ─── */}
+        <section className="py-14 sm:py-20 relative">
+          <div className="text-center mb-12 max-w-2xl mx-auto space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-800 text-[11px] font-mono font-bold uppercase tracking-wider border border-amber-300/40">
+              <span>THE CAMPUSHUB DIFFERENCE</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-950 tracking-tight">
+              Why Students Trust Our{' '}
+              <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600">
+                Resource Library
                 <svg
-                  className="absolute -bottom-2 left-0 w-full h-3 text-amber-400"
+                  className="absolute -bottom-1.5 left-0 w-full h-2.5 text-amber-400"
                   viewBox="0 0 100 10"
                   preserveAspectRatio="none"
                 >
@@ -285,112 +377,93 @@ function Resources() {
             </h2>
           </div>
 
-          {/* Feature cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
-            {features.map((feat) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {FEATURES.map((feat) => (
               <div
                 key={feat.title}
-                className="glass-card rounded-2xl p-7 border border-gray-100/90 shadow-sm flex flex-col items-center text-center space-y-3 hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 active-press"
+                className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center space-y-3"
               >
-                <div className="w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center mb-1">
+                <div className="w-16 h-16 flex items-center justify-center mb-1">
                   <img
                     src={feat.image}
                     alt={feat.title}
-                    className="w-14 h-14 sm:w-16 sm:h-16 object-contain drop-shadow-sm hover:scale-110 transition-transform duration-300"
+                    className="w-14 h-14 object-contain drop-shadow-sm transition-transform duration-300 hover:scale-110"
                   />
                 </div>
-                <h3 className="text-base font-extrabold text-hub-navy">{feat.title}</h3>
-                <p className="text-xs text-gray-500 leading-relaxed font-medium">{feat.desc}</p>
+                <h3 className="text-base font-extrabold text-slate-900">{feat.title}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed font-medium">{feat.desc}</p>
               </div>
             ))}
           </div>
+        </section>
 
-        </div>
-      </section>
-
-      {/* ─── CTA BANNER: "Can't find your resource?" ─── */}
-      <section className="py-8 sm:py-12 md:py-16 relative z-10">
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
-
-          {/* Dark CTA Box */}
-          <div className="relative rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl bg-[#0B132B] border border-white/10">
-            
-            {/* Top Left Yellow Ring Accent */}
-            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-2 sm:border-[3px] border-[#FBBF24] opacity-90 pointer-events-none" />
-
-            {/* Paper Airplane Trail Image (Left Side) - Responsive scaling & opacity */}
+        {/* ─── BOTTOM CTA BANNER ─── */}
+        <section className="py-10 sm:py-16 relative">
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-[#0B132B] border border-white/10 text-white">
+            {/* Paper Airplane Trail Decor */}
             <div className="absolute bottom-0 left-0 h-28 sm:h-44 md:h-[88%] max-h-full w-auto pointer-events-none z-0 sm:z-10 flex items-end opacity-40 sm:opacity-75 md:opacity-90">
               <img src="/images/paper-airplane-trail.png" alt="Paper Airplane Trail" className="h-full w-auto object-contain object-bottom" />
             </div>
 
-            {/* Top Right Royal Blue Circle - Responsive Sizing */}
-            <div className="absolute -top-16 -right-16 sm:-top-28 sm:-right-20 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#1D4ED8] pointer-events-none opacity-80 sm:opacity-100" />
+            {/* Glowing Radial Circles */}
+            <div className="absolute -top-16 -right-16 sm:-top-28 sm:-right-20 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#1D4ED8] pointer-events-none opacity-80" />
+            <div className="absolute -bottom-20 -right-10 sm:-bottom-28 sm:-right-12 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#F59E0B] shadow-xl pointer-events-none opacity-80" />
 
-            {/* Top Right Yellow Dots Grid - Hidden on mobile */}
-            <div className="absolute top-6 right-8 sm:top-8 sm:right-12 pointer-events-none hidden sm:block z-10">
-              <svg className="w-20 h-14 md:w-24 md:h-16" viewBox="0 0 100 80">
-                <pattern id="cta-yellow-dots" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-                  <circle cx="4" cy="4" r="2.5" fill="#FBBF24" />
-                </pattern>
-                <rect width="100" height="80" fill="url(#cta-yellow-dots)" />
-              </svg>
-            </div>
+            <div className="relative z-10 px-6 py-12 sm:px-10 sm:py-16 md:px-16 md:py-20 text-center max-w-2xl mx-auto space-y-4 sm:space-y-5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-400 text-xs font-bold uppercase tracking-wider mb-2 border border-white/15">
+                <span className="material-symbols-outlined text-[16px]">volunteer_activism</span>
+                <span>COMMUNITY-POWERED PLATFORM</span>
+              </div>
 
-            {/* Bottom Right Orange Circle - Responsive Sizing */}
-            <div className="absolute -bottom-20 -right-10 sm:-bottom-28 sm:-right-12 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#F59E0B] shadow-xl pointer-events-none opacity-80 sm:opacity-100" />
-
-            {/* Content Container - Responsive Padding & Layout */}
-            <div className="relative z-10 px-5 py-10 sm:px-8 sm:py-14 md:px-14 md:py-20 text-center max-w-2xl mx-auto space-y-4 sm:space-y-5">
-              <h2 className="text-2xl sm:text-3xl md:text-[38px] font-black text-white leading-tight tracking-tight flex flex-col items-center">
-                <span>Can't find</span>
-                <span className="relative inline-block mt-1">
-                  what you're looking for?
-                  <div className="absolute -bottom-1.5 sm:-bottom-2 left-0 w-full h-[2.5px] sm:h-[3px] bg-white rounded-full"></div>
-                </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight tracking-tight">
+                Can't find what you're looking for?
               </h2>
 
-              <p className="text-xs sm:text-sm md:text-base text-gray-300 font-medium max-w-lg mx-auto leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-slate-300 font-medium max-w-lg mx-auto leading-relaxed">
                 Our community is constantly updating the resource library. If a specific paper or note is missing, let us know and we'll track it down for you.
               </p>
 
-              {/* Responsive Buttons Container */}
-              <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-3 w-full sm:w-auto">
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-3 sm:gap-4 pt-3">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-hub-navy font-black px-6 sm:px-7 py-3 sm:py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer active-press"
+                  className="w-full sm:w-auto bg-[#FACC15] hover:bg-yellow-400 text-slate-950 font-black px-7 py-3.5 rounded-full shadow-lg hover:shadow-yellow-400/20 hover:-translate-y-0.5 transition-all text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">upload</span>
+                  <span className="material-symbols-outlined text-[18px]">upload</span>
                   <span>Upload Resource</span>
                 </button>
+
                 <Link
                   to="/contact"
-                  className="w-full sm:w-auto bg-white hover:bg-gray-100 text-hub-navy font-black px-6 sm:px-7 py-3 sm:py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm inline-flex items-center justify-center gap-2 active-press"
+                  className="w-full sm:w-auto bg-white hover:bg-slate-100 text-slate-950 font-black px-7 py-3.5 rounded-full shadow-lg hover:-translate-y-0.5 transition-all text-xs sm:text-sm inline-flex items-center justify-center gap-2"
                 >
-                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">assignment_add</span>
+                  <span className="material-symbols-outlined text-[18px]">assignment_add</span>
                   <span>Request Resource</span>
                 </Link>
+
                 <a
-                  href="/community"
-                  className="w-full sm:w-auto border-2 border-white/50 hover:border-white text-white font-bold px-6 sm:px-7 py-3 sm:py-3.5 rounded-full hover:bg-white/10 transition-all duration-300 text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer active-press"
+                  href="https://chat.whatsapp.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto border-2 border-white/40 hover:border-white text-white font-bold px-7 py-3.5 rounded-full hover:bg-white/10 transition-all text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">groups</span>
-                  <span>Join Whatsapp Community</span>
+                  <span className="material-symbols-outlined text-[18px]">groups</span>
+                  <span>Join WhatsApp Community</span>
                 </a>
               </div>
             </div>
-
           </div>
-        </div>
-      </section>
-      
+        </section>
+      </main>
+
       {/* ─── UPLOAD MODAL ─── */}
       {isModalOpen && (
-        <UploadResourceModal 
-          onClose={() => setIsModalOpen(false)} 
-          onSuccess={() => { 
-            setIsModalOpen(false); 
-            addToast({ message: '✅ Resource submitted for review.', type: 'success', duration: 5000 }); 
-          }} 
+        <UploadResourceModal
+          onClose={() => setIsModalOpen(false)}
+          onSuccess={() => {
+            setIsModalOpen(false);
+            addToast({ message: '🎉 Resource submitted! It will appear once reviewed by admin.', type: 'success', duration: 5000 });
+          }}
         />
       )}
 

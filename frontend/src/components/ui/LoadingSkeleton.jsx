@@ -63,3 +63,20 @@ export function AnnouncementSkeleton() {
     </div>
   );
 }
+
+/** Full page lazy transition fallback with subtle pulse loader */
+export function PageLoadingFallback() {
+  return (
+    <div className="min-h-[70vh] flex flex-col items-center justify-center p-8 text-center">
+      <div className="relative flex items-center justify-center mb-4">
+        <div className="w-12 h-12 rounded-2xl bg-amber-400/20 border border-amber-400 animate-ping absolute" />
+        <div className="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg relative z-10 font-black text-sm">
+          CH
+        </div>
+      </div>
+      <p className="text-xs font-bold text-slate-500 tracking-wider uppercase animate-pulse">
+        Loading CampusHub...
+      </p>
+    </div>
+  );
+}

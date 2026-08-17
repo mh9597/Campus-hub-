@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSemesters } from '../../hooks/useSemesters';
@@ -15,10 +16,112 @@ import dnaIcon from './dna-icon.png';
 function Semesters() {
   const navigate = useNavigate();
   const { semesters, loading, error, refetch } = useSemesters();
+  const gridRef = useRef(null);
+  const [pathData, setPathData] = useState({ path: '', points: [], width: 0, height: 0 });
+
+  // Dynamically calculate the curved flow path connecting pushpins
+  const updatePath = useCallback(() => {
+    if (!gridRef.current) return;
+    const container = gridRef.current;
+    const containerRect = container.getBoundingClientRect();
+    const pinElements = Array.from(container.querySelectorAll('[data-semester-pin]'));
+
+    if (pinElements.length < 2) {
+      setPathData({ path: '', points: [], width: containerRect.width, height: containerRect.height });
+      return;
+    }
+
+    const points = pinElements.map((el) => {
+      const rect = el.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width / 2 - containerRect.left,
+        y: rect.top + rect.height * 0.45 - containerRect.top,
+      };
+    });
+
+    // Build continuous smooth bezier path
+    let d = `M ${points[0].x.toFixed(1)} ${points[0].y.toFixed(1)}`;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const dx = p2.x - p1.x;
+      const dy = p2.y - p1.y;
+
+      const isSameRow = Math.abs(dy) < 100 && dx > 40;
+      const isRowWrap = dy >= 100 && dx < -40;
+
+      if (isSameRow) {
+        // Same horizontal row (desktop/tablet): natural hanging yarn curve
+        const midX = (p1.x + p2.x) / 2;
+        const midY = (p1.y + p2.y) / 2;
+        const dist = Math.hypot(dx, dy);
+        const sag = Math.min(26, Math.max(10, dist * 0.06));
+        d += ` Q ${midX.toFixed(1)} ${(midY + sag).toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+      } else if (isRowWrap) {
+        // Multi-column row wrap: S-curve looping around the end of row through the row gap
+        const deltaY = p2.y - p1.y;
+        const midY = p1.y + deltaY * 0.5;
+        const midX = (p1.x + p2.x) / 2;
+
+        const maxRight = Math.max(15, (containerRect.width - p1.x - 15) * 0.6);
+        const maxLeft = Math.max(15, (p2.x - 15) * 0.6);
+        const rightLoop = Math.min(65, maxRight);
+        const leftLoop = Math.min(65, maxLeft);
+
+        const cp1x = p1.x + rightLoop;
+        const cp1y = p1.y + deltaY * 0.15;
+        const cp2x = midX + Math.abs(p1.x - midX) * 0.4;
+        const cp2y = midY;
+
+        const cp3x = midX - Math.abs(midX - p2.x) * 0.4;
+        const cp3y = midY;
+        const cp4x = p2.x - leftLoop;
+        const cp4y = p2.y - deltaY * 0.15;
+
+        d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${midX.toFixed(1)} ${midY.toFixed(1)}`;
+        d += ` C ${cp3x.toFixed(1)} ${cp3y.toFixed(1)}, ${cp4x.toFixed(1)} ${cp4y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+      } else {
+        // Vertical stacked flow (mobile single column):
+        // Clean vertical flow connecting pin to pin behind cards
+        const midX = (p1.x + p2.x) / 2;
+        const midY = (p1.y + p2.y) / 2;
+        d += ` Q ${midX.toFixed(1)} ${midY.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`;
+      }
+    }
+
+    setPathData({
+      path: d,
+      points,
+      width: Math.round(containerRect.width),
+      height: Math.round(containerRect.height),
+    });
+  }, []);
+
+  // Recalculate on mount, data changes, and viewport resize
+  useEffect(() => {
+    if (loading) return;
+
+    const t1 = setTimeout(updatePath, 50);
+    const t2 = setTimeout(updatePath, 200);
+
+    const observer = new ResizeObserver(() => updatePath());
+    if (gridRef.current) {
+      observer.observe(gridRef.current);
+    }
+
+    window.addEventListener('resize', updatePath);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      observer.disconnect();
+      window.removeEventListener('resize', updatePath);
+    };
+  }, [loading, semesters, updatePath]);
 
   return (
     <div
-      className="pt-20 text-on-surface font-body-md min-h-screen selection:bg-primary-container selection:text-on-primary-container relative"
+      className="pt-20 text-on-surface font-body-md min-h-screen selection:bg-primary-container selection:text-on-primary-container relative overflow-x-clip"
       style={{
         backgroundColor: '#f8fafc',
         backgroundImage: 'radial-gradient(#cbd5e1 2px, transparent 2px)',
@@ -26,7 +129,7 @@ function Semesters() {
       }}
     >
       {/* Header / Breadcrumb Section */}
-      <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter pt-12 pb-6">
+      <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter pt-12 pb-6 overflow-x-clip">
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 mb-4 font-label-lg text-label-lg text-secondary">
           <Link to="/" className="hover:text-amber-600 opacity-70 transition-colors font-medium">Home</Link>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
@@ -43,33 +146,7 @@ function Semesters() {
       </section>
 
       {/* The "Bulletin Board" Grid */}
-      <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-12 relative">
-        {/* SVG Connectors */}
-        <div className="absolute inset-0 pointer-events-none hidden lg:block">
-          <style>
-            {`
-              @keyframes thread-flow {
-                to {
-                  stroke-dashoffset: -180;
-                }
-              }
-              .animate-thread {
-                animation: thread-flow 8s linear infinite;
-              }
-            `}
-          </style>
-          <svg height="100%" preserveAspectRatio="none" viewBox="0 0 1000 1000" width="100%" className="opacity-60">
-            <path
-              fill="none"
-              stroke="#94a3b8"
-              strokeWidth="3"
-              strokeDasharray="8 10"
-              className="animate-thread"
-              d="M 184 50 Q 342 80, 500 50 Q 657 80, 815 50 C 1050 50, 1050 385, 815 385 Q 657 415, 500 385 Q 342 415, 184 385 C -50 385, -50 720, 342 720"
-            />
-          </svg>
-        </div>
-
+      <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-12 relative overflow-x-clip">
         {/* Error state */}
         {error && !loading && (
           <ErrorState
@@ -79,8 +156,80 @@ function Semesters() {
           />
         )}
 
-        {/* Bento Grid */}
-        <div className="flex flex-wrap justify-center gap-x-8 gap-y-16 lg:gap-x-16 lg:gap-y-24 relative z-10">
+        {/* Bento Grid with Dynamic Flow Thread */}
+        <div ref={gridRef} className="flex flex-wrap justify-center gap-x-8 gap-y-16 lg:gap-x-16 lg:gap-y-24 relative overflow-visible">
+          {/* Dynamic SVG Flow Thread (1:1 subpixel overlay) */}
+          {pathData.path && (
+            <div className="absolute inset-0 pointer-events-none z-0 overflow-visible">
+              <style>
+                {`
+                  @keyframes thread-flow {
+                    from {
+                      stroke-dashoffset: 0;
+                    }
+                    to {
+                      stroke-dashoffset: -180;
+                    }
+                  }
+                  .animate-thread-flow {
+                    animation: thread-flow 10s linear infinite;
+                  }
+                `}
+              </style>
+              <svg className="w-full h-full overflow-visible">
+                <defs>
+                  {/* Vibrant continuous journey gradient */}
+                  <linearGradient id="semester-flow-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10B981" />
+                    <stop offset="20%" stopColor="#0EA5E9" />
+                    <stop offset="40%" stopColor="#F59E0B" />
+                    <stop offset="60%" stopColor="#8B5CF6" />
+                    <stop offset="80%" stopColor="#06B6D4" />
+                    <stop offset="100%" stopColor="#F43F5E" />
+                  </linearGradient>
+                  <filter id="thread-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#0F172A" floodOpacity="0.1" />
+                  </filter>
+                </defs>
+
+                {/* Layer 1: Ambient Depth Shadow */}
+                <path
+                  d={pathData.path}
+                  fill="none"
+                  stroke="rgba(15, 23, 42, 0.06)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  transform="translate(0, 3)"
+                />
+
+                {/* Layer 2: Subtle Under-track */}
+                <path
+                  d={pathData.path}
+                  fill="none"
+                  stroke="#cbd5e1"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity="0.45"
+                />
+
+                {/* Layer 3: Vibrant Animated Flow Thread */}
+                <path
+                  d={pathData.path}
+                  fill="none"
+                  stroke="url(#semester-flow-gradient)"
+                  strokeWidth="3"
+                  strokeDasharray="8 10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="animate-thread-flow"
+                  filter="url(#thread-shadow)"
+                />
+              </svg>
+            </div>
+          )}
+
           {/* Loading: show skeleton placeholders */}
           {loading && Array.from({ length: 7 }).map((_, i) => (
             <SemesterCardSkeleton key={i} />
@@ -145,8 +294,12 @@ function Semesters() {
               <motion.div
                 key={sem.id}
                 drag
-                dragConstraints={{ left: -300, right: 300, top: -300, bottom: 300 }}
-                dragElastic={0.2}
+                dragSnapToOrigin
+                dragMomentum={false}
+                dragConstraints={gridRef}
+                dragElastic={0.15}
+                onDrag={updatePath}
+                onDragEnd={updatePath}
                 whileHover={{ scale: 1.03, y: -8, zIndex: 30 }}
                 whileDrag={{ scale: 1.05, rotate: 2, zIndex: 50, cursor: 'grabbing' }}
                 onClick={(e) => {
@@ -154,10 +307,13 @@ function Semesters() {
                     navigate(`/semesters/${sem.id}`);
                   }
                 }}
-                className={`group relative w-full sm:w-[calc(50%-16px)] lg:w-[30%] max-w-[340px] rounded-[32px] bg-white p-3 sm:p-4 pt-10 sm:pt-12 shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-shadow duration-300 min-h-[340px] cursor-grab ${getLayoutStyles(index)}`}
+                className={`group relative z-10 w-[calc(100%-20px)] sm:w-[calc(50%-16px)] lg:w-[30%] max-w-[335px] rounded-[32px] bg-white p-3 sm:p-4 pt-10 sm:pt-12 shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-shadow duration-300 min-h-[340px] cursor-grab touch-pan-y select-none ${getLayoutStyles(index)}`}
               >
                 {/* Pin */}
-                <div className="absolute left-1/2 -top-2 sm:top-[-4px] -translate-x-1/2 z-20 pointer-events-none transition-transform duration-300 group-hover:scale-110">
+                <div
+                  data-semester-pin
+                  className="absolute left-1/2 -top-2 sm:top-[-4px] -translate-x-1/2 z-20 pointer-events-none transition-transform duration-300 group-hover:scale-110"
+                >
                   <img
                     src={pinIcon}
                     alt="Pin"

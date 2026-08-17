@@ -9,16 +9,24 @@ const prisma = require('../config/prisma');
 /**
  * Returns all departments, each containing semesters, each containing
  * subjects with an embedded _count of active resources.
+ * Ordering guarantees:
+ *   Departments  → code ascending (alphabetical)
+ *   Semesters    → semesterNumber ascending (logical order), sortOrder as tiebreaker
+ *   Subjects     → sortOrder ascending, title alphabetically as tiebreaker
  */
 async function getSemesters() {
   const departments = await prisma.department.findMany({
-    orderBy: { id: 'asc' },
+    orderBy: { code: 'asc' },
     include: {
       semesters: {
-        orderBy: { sortOrder: 'asc' },
+        // Primary: logical semester number — correct even when sortOrder resets to default 0.
+        // Secondary: sortOrder for admin-controlled custom positioning within the same number.
+        orderBy: [{ semesterNumber: 'asc' }, { sortOrder: 'asc' }],
         include: {
           subjects: {
-            orderBy: { sortOrder: 'asc' },
+            // Primary: admin-defined sort position.
+            // Secondary: title for a deterministic tie-break when sortOrder values collide.
+            orderBy: [{ sortOrder: 'asc' }, { title: 'asc' }],
             include: {
               _count: {
                 select: {

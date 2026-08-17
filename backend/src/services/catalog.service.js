@@ -3,7 +3,8 @@
 // All DB access goes through Prisma; never called directly from the browser.
 'use strict';
 
-const prisma = require('../config/prisma');
+const prisma       = require('../config/prisma');
+const driveService = require('./drive.service');
 
 // ─── Helpers ──────────────────────────────────────────────────
 
@@ -36,11 +37,18 @@ async function getDepartments() {
     orderBy: { code: 'asc' },
     include: {
       semesters: {
-        orderBy: { semesterNumber: 'asc' },
+        // Primary: logical semester number. Secondary: admin sort position.
+        orderBy: [{ semesterNumber: 'asc' }, { sortOrder: 'asc' }],
         include: {
           subjects: {
-            orderBy: { sortOrder: 'asc' },
+            // Primary: admin sort position. Secondary: title for deterministic tie-break.
+            orderBy: [{ sortOrder: 'asc' }, { title: 'asc' }],
             include: {
+              // Embed lightweight resource rows for the checklist modal
+              resources: {
+                select: { id: true, title: true, resourceType: true },
+                orderBy: { createdAt: 'asc' },
+              },
               _count: { select: { resources: true } },
             },
           },
@@ -177,6 +185,56 @@ async function deleteSemester(id) {
   return prisma.semester.delete({ where: { id: Number(id) } });
 }
 
+/**
+ * Cascade-delete a semester along with ALL its subjects and resources.
+ * Also removes every associated Google Drive file (404-tolerant).
+ * @param {number} id  Semester PK
+ * @returns {{ semesterId: number, subjectsDeleted: number, resourcesDeleted: number }}
+ */
+async function deleteSemesterCascade(id) {
+  const numId = Number(id);
+
+  // 1. Load the semester to confirm it exists.
+  const sem = await prisma.semester.findUnique({ where: { id: numId } });
+  if (!sem) throw notFound('Semester', id);
+
+  // 2. Load all resources nested under this semester's subjects (only the fields we need).
+  const subjects = await prisma.subject.findMany({
+    where: { semesterId: numId },
+    select: {
+      id: true,
+      resources: { select: { id: true, driveFileId: true } },
+    },
+  });
+
+  const allResources = subjects.flatMap(s => s.resources);
+  const subjectIds   = subjects.map(s => s.id);
+
+  // 3. Best-effort Drive cleanup — log errors, never block.
+  await Promise.allSettled(
+    allResources
+      .filter(r => r.driveFileId)
+      .map(r =>
+        driveService.deleteFromDrive(r.driveFileId).catch(err =>
+          console.error(`[catalog.service] cascade: Drive delete failed for ${r.driveFileId}:`, err.message)
+        )
+      )
+  );
+
+  // 4. Transactional DB cleanup: resources → subjects → semester.
+  await prisma.$transaction([
+    prisma.resource.deleteMany({ where: { subjectId: { in: subjectIds } } }),
+    prisma.subject.deleteMany({  where: { semesterId: numId } }),
+    prisma.semester.delete({     where: { id: numId } }),
+  ]);
+
+  return {
+    semesterId:       numId,
+    subjectsDeleted:  subjects.length,
+    resourcesDeleted: allResources.length,
+  };
+}
+
 // ─── Subjects ─────────────────────────────────────────────────
 
 /**
@@ -266,6 +324,7 @@ module.exports = {
   createSemester,
   updateSemester,
   deleteSemester,
+  deleteSemesterCascade,
   createSubject,
   updateSubject,
   deleteSubject,

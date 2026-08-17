@@ -212,6 +212,25 @@ async function deleteResource(req, res, next) {
   }
 }
 
+// POST /api/admin/resources/bulk-delete  (hard-delete multiple resources by ID array)
+async function bulkDeleteResources(req, res, next) {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return sendError(res, 'ids must be a non-empty array of resource UUIDs', 400);
+    }
+    const result = await adminService.bulkDeleteResources(ids);
+    return sendSuccess(
+      res,
+      result,
+      200,
+      `${result.deleted} resource(s) permanently deleted from database and Google Drive`,
+    );
+  } catch (err) {
+    return next(err);
+  }
+}
+
 // ─── Opportunities ────────────────────────────────────────────
 
 // GET /api/admin/opportunities
@@ -307,7 +326,7 @@ async function deleteAnnouncement(req, res, next) {
 module.exports = {
   getUploads, reviewUpload,
   getRequests, reviewRequest,
-  getResources, createResource, updateResource, deleteResource,
+  getResources, createResource, updateResource, deleteResource, bulkDeleteResources,
   getOpportunities, createOpportunity, toggleOpportunity, deleteOpportunity,
   getAnnouncements, createAnnouncement, toggleAnnouncement, deleteAnnouncement,
 };

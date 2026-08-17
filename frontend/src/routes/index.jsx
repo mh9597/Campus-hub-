@@ -1,21 +1,31 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { createBrowserRouter, Navigate, useParams, Navigate as RouterNavigate } from 'react-router-dom';
 import AppLayout from '../layouts/AppLayout';
 import AdminLayout from '../layouts/AdminLayout';
+import { PageLoadingFallback } from '../components/ui/LoadingSkeleton';
 
-// ─── Public pages ─────────────────────────────────────────────
-import Home from '../pages/Home/Home';
-import Resources from '../pages/Resources/Resources';
-import Semesters from '../pages/Resources/Semesters';
-import SemesterDetails from '../pages/ResourceDetails/ResourceDetails';
-import Opportunities from '../pages/Opportunities/Opportunities';
-import Community from '../pages/Community/Community';
-import About from '../pages/About/About';
-import Contact from '../pages/Contact/Contact';
-import NotFound from '../pages/NotFound/NotFound';
-import SubjectDetails from '../pages/Subject/SubjectDetails';
-import ComingSoon from '../pages/ComingSoon/ComingSoon';
-import ResourceViewer from '../pages/ResourceViewer/ResourceViewer';
-import { useParams, Navigate as RouterNavigate } from 'react-router-dom';
+// ─── Helper to wrap lazy components in Suspense ───────────────
+function withSuspense(Component) {
+  return (
+    <Suspense fallback={<PageLoadingFallback />}>
+      <Component />
+    </Suspense>
+  );
+}
+
+// ─── Public pages (Dynamic Code-Splitting) ────────────────────
+const Home = lazy(() => import('../pages/Home/Home'));
+const Resources = lazy(() => import('../pages/Resources/Resources'));
+const Semesters = lazy(() => import('../pages/Resources/Semesters'));
+const SemesterDetails = lazy(() => import('../pages/ResourceDetails/ResourceDetails'));
+const Opportunities = lazy(() => import('../pages/Opportunities/Opportunities'));
+const Community = lazy(() => import('../pages/Community/Community'));
+const About = lazy(() => import('../pages/About/About'));
+const Contact = lazy(() => import('../pages/Contact/Contact'));
+const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
+const SubjectDetails = lazy(() => import('../pages/Subject/SubjectDetails'));
+const ComingSoon = lazy(() => import('../pages/ComingSoon/ComingSoon'));
+const ResourceViewer = lazy(() => import('../pages/ResourceViewer/ResourceViewer'));
 
 function DepartmentRouteHandler() {
   const { code } = useParams();
@@ -26,13 +36,13 @@ function DepartmentRouteHandler() {
   return <RouterNavigate to={`/coming-soon?dept=${normalized}`} replace />;
 }
 
-// ─── Admin pages ──────────────────────────────────────────────
-import AdminLogin from '../pages/Admin/AdminLogin';
-import AdminDashboard from '../pages/Admin/AdminDashboard';
-import AdminSubmissionsView from '../pages/Admin/AdminSubmissionsView';
-import AdminResourcesView from '../pages/Admin/AdminResourcesView';
-import AdminOpportunitiesView from '../pages/Admin/AdminOpportunitiesView';
-import AdminCatalogView from '../pages/Admin/AdminCatalogView';
+// ─── Admin pages (Separated into isolated admin chunks) ───────
+const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin'));
+const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard'));
+const AdminSubmissionsView = lazy(() => import('../pages/Admin/AdminSubmissionsView'));
+const AdminResourcesView = lazy(() => import('../pages/Admin/AdminResourcesView'));
+const AdminOpportunitiesView = lazy(() => import('../pages/Admin/AdminOpportunitiesView'));
+const AdminCatalogView = lazy(() => import('../pages/Admin/AdminCatalogView'));
 
 export const router = createBrowserRouter([
   // ── Public app ─────────────────────────────────────────────
@@ -40,45 +50,43 @@ export const router = createBrowserRouter([
     path: '/',
     element: <AppLayout />,
     children: [
-      { index: true, element: <Home /> },
-      { path: 'resources', element: <Resources /> },
-      { path: 'semesters', element: <Semesters /> },
-      { path: 'semesters/:id', element: <SemesterDetails /> },
-      { path: 'subject/:code', element: <SubjectDetails /> },
-      { path: 'opportunities', element: <Opportunities /> },
-      { path: 'community', element: <Community /> },
-      { path: 'contact', element: <Contact /> },
-      { path: 'about', element: <About /> },
-      { path: 'coming-soon', element: <ComingSoon /> },
+      { index: true, element: withSuspense(Home) },
+      { path: 'resources', element: withSuspense(Resources) },
+      { path: 'semesters', element: withSuspense(Semesters) },
+      { path: 'semesters/:id', element: withSuspense(SemesterDetails) },
+      { path: 'subject/:code', element: withSuspense(SubjectDetails) },
+      { path: 'opportunities', element: withSuspense(Opportunities) },
+      { path: 'community', element: withSuspense(Community) },
+      { path: 'contact', element: withSuspense(Contact) },
+      { path: 'about', element: withSuspense(About) },
+      { path: 'coming-soon', element: withSuspense(ComingSoon) },
       { path: 'department/:code', element: <DepartmentRouteHandler /> },
-      { path: '*', element: <NotFound /> },
+      { path: '*', element: withSuspense(NotFound) },
     ],
   },
 
   // ── Resource Viewer (full-screen, no navbar) ────────────────
-  { path: '/resource/:id', element: <ResourceViewer /> },
+  { path: '/resource/:id', element: withSuspense(ResourceViewer) },
 
   // ── Admin login (standalone — no sidebar) ──────────────────
-  { path: '/admin/login', element: <AdminLogin /> },
+  { path: '/admin/login', element: withSuspense(AdminLogin) },
 
   // ── Admin portal (protected — requires auth, shows sidebar) ─
   {
     path: '/admin',
     element: <AdminLayout />,
     children: [
-      // /admin  →  redirect to dashboard
       { index: true, element: <Navigate to="/admin/dashboard" replace /> },
-      { path: 'dashboard', element: <AdminDashboard /> },
-      { path: 'submissions', element: <AdminSubmissionsView /> },
-      { path: 'uploads', element: <AdminSubmissionsView /> },      // alias
-      { path: 'resources', element: <AdminResourcesView /> },
-      { path: 'opportunities', element: <AdminOpportunitiesView /> },
-      { path: 'catalog', element: <AdminCatalogView /> },
-      // Unknown /admin/* → 404
-      { path: '*', element: <NotFound /> },
+      { path: 'dashboard', element: withSuspense(AdminDashboard) },
+      { path: 'submissions', element: withSuspense(AdminSubmissionsView) },
+      { path: 'uploads', element: withSuspense(AdminSubmissionsView) },
+      { path: 'resources', element: withSuspense(AdminResourcesView) },
+      { path: 'opportunities', element: withSuspense(AdminOpportunitiesView) },
+      { path: 'catalog', element: withSuspense(AdminCatalogView) },
+      { path: '*', element: withSuspense(NotFound) },
     ],
   },
 
   // ── Global catch-all for unmatched top-level routes ─────────
-  { path: '*', element: <NotFound /> },
+  { path: '*', element: withSuspense(NotFound) },
 ]);

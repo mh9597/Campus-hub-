@@ -89,6 +89,18 @@ router.post(
   adminController.createResource
 );
 
+// POST /api/admin/resources/bulk-delete  — MUST be registered before /:id to avoid param collision
+router.post(
+  '/resources/bulk-delete',
+  requireRole('ADMIN'),
+  [
+    body('ids').isArray({ min: 1 }).withMessage('ids must be a non-empty array'),
+    body('ids.*').isUUID().withMessage('each id must be a valid UUID'),
+  ],
+  handleValidationErrors,
+  adminController.bulkDeleteResources
+);
+
 // PUT /api/admin/resources/:id
 router.put(
   '/resources/:id',

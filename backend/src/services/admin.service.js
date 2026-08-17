@@ -191,6 +191,44 @@ async function deleteResource(id) {
   });
 }
 
+/**
+ * Hard-delete multiple resources by ID array.
+ * Performs best-effort Drive file cleanup before removing DB records.
+ * @param {string[]} ids  Array of Resource UUIDs
+ * @returns {{ deleted: number, ids: string[] }}
+ */
+async function bulkDeleteResources(ids) {
+  if (!Array.isArray(ids) || ids.length === 0) {
+    const err = new Error('ids must be a non-empty array');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  // 1. Fetch Drive file IDs for cleanup (ignore missing — they may not have Drive files).
+  const records = await prisma.resource.findMany({
+    where: { id: { in: ids } },
+    select: { id: true, driveFileId: true },
+  });
+
+  // 2. Best-effort Drive cleanup — never block DB deletion on Drive errors.
+  await Promise.allSettled(
+    records
+      .filter(r => r.driveFileId)
+      .map(r =>
+        driveService.deleteFromDrive(r.driveFileId).catch(err =>
+          console.error(`[admin.service] bulkDelete: Drive delete failed for ${r.driveFileId}:`, err.message)
+        )
+      )
+  );
+
+  // 3. Hard-delete all matched records in one statement.
+  const { count } = await prisma.resource.deleteMany({
+    where: { id: { in: ids } },
+  });
+
+  return { deleted: count, ids };
+}
+
 // ─── Opportunities ────────────────────────────────────────────
 
 /**
@@ -319,6 +357,7 @@ module.exports = {
   createResource,
   updateResource,
   deleteResource,
+  bulkDeleteResources,
   getResources,
   createOpportunity,
   getOpportunities,

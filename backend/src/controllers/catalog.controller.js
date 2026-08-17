@@ -93,6 +93,23 @@ async function deleteSemester(req, res, next) {
   }
 }
 
+// DELETE /api/admin/catalog/semesters/:id/cascade
+async function deleteSemesterCascade(req, res, next) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return sendError(res, 'Invalid semester id', 400);
+    const result = await catalogService.deleteSemesterCascade(id);
+    return sendSuccess(
+      res,
+      result,
+      200,
+      `Semester and ${result.resourcesDeleted} resource(s) across ${result.subjectsDeleted} subject(s) permanently deleted`,
+    );
+  } catch (err) {
+    return next(err);
+  }
+}
+
 // ─── Subjects ─────────────────────────────────────────────────
 
 // POST /api/admin/catalog/subjects
@@ -139,6 +156,7 @@ module.exports = {
   createSemester,
   updateSemester,
   deleteSemester,
+  deleteSemesterCascade,
   createSubject,
   updateSubject,
   deleteSubject,

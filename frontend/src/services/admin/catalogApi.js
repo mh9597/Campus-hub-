@@ -53,6 +53,14 @@ export function deleteSemester(id) {
   return fetchFromApi(`admin/catalog/semesters/${id}`, { method: 'DELETE' });
 }
 
+/**
+ * Cascade-delete a semester along with ALL its subjects + resources.
+ * Also triggers backend Drive cleanup for every resource file.
+ */
+export function deleteSemesterCascade(id) {
+  return fetchFromApi(`admin/catalog/semesters/${id}/cascade`, { method: 'DELETE' });
+}
+
 // ─── Subjects ─────────────────────────────────────────────────
 
 /** Create a subject under a given semester. */

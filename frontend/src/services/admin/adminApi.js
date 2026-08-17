@@ -108,6 +108,14 @@ export async function deleteResource(id) {
   return fetchFromApi(`admin/resources/${id}`, { method: 'DELETE' });
 }
 
+// POST /api/admin/resources/bulk-delete  (hard-delete selected IDs + Drive files)
+export async function bulkDeleteResources(ids) {
+  return fetchFromApi('admin/resources/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  });
+}
+
 // ─── Opportunities ────────────────────────────────────────────
 
 // GET /api/admin/opportunities

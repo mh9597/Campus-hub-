@@ -5,9 +5,10 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   getAdminDepartments,
   createDepartment, updateDepartment, deleteDepartment,
-  createSemester,  updateSemester,  deleteSemester,
+  createSemester,  updateSemester,  deleteSemester, deleteSemesterCascade,
   createSubject,   updateSubject,   deleteSubject,
 } from '../../services/admin/catalogApi';
+import { bulkDeleteResources } from '../../services/admin/adminApi';
 
 // ─── Toast notification (inline, no dependency) ──────────────
 function Toast({ toast, onClose }) {
@@ -52,6 +53,223 @@ function ConfirmDialog({ open, message, onConfirm, onCancel }) {
             className="px-4 py-2 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600 transition"
           >
             Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Semester Cascade Delete Modal (Interactive Checklist) ────
+const RESOURCE_TYPE_COLORS = {
+  Notes:       'bg-blue-100 text-blue-700',
+  PYQ:         'bg-purple-100 text-purple-700',
+  Syllabus:    'bg-green-100 text-green-700',
+  Book:        'bg-amber-100 text-amber-700',
+  Assignment:  'bg-orange-100 text-orange-700',
+  Practical:   'bg-cyan-100 text-cyan-700',
+  Video:       'bg-rose-100 text-rose-700',
+};
+function ResourceTypePill({ type }) {
+  const cls = RESOURCE_TYPE_COLORS[type] ?? 'bg-surface-container text-on-surface-variant';
+  return (
+    <span className={`inline-block text-[10px] font-bold px-1.5 py-0.5 rounded-md ${cls}`}>
+      {type}
+    </span>
+  );
+}
+
+function SemesterCascadeModal({ sem, resources, onBulkDelete, onCascadeDelete, onCancel }) {
+  // resources = [{ id, title, resourceType, subjectTitle, subjectCode }]
+  const [checked, setChecked]   = useState(() => new Set(resources.map(r => r.id)));
+  const [deleting, setDeleting] = useState(null); // null | 'bulk' | 'cascade'
+
+  const allSelected  = checked.size === resources.length && resources.length > 0;
+  const noneSelected = checked.size === 0;
+
+  const toggleAll = () =>
+    setChecked(allSelected ? new Set() : new Set(resources.map(r => r.id)));
+
+  const toggleOne = (id) =>
+    setChecked(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+
+  // Group resources by subject for the list display
+  const grouped = resources.reduce((acc, r) => {
+    const key = r.subjectTitle;
+    if (!acc[key]) acc[key] = { code: r.subjectCode, items: [] };
+    acc[key].items.push(r);
+    return acc;
+  }, {});
+
+  const handleBulk = async () => {
+    if (noneSelected || deleting) return;
+    setDeleting('bulk');
+    try {
+      await onBulkDelete([...checked]);
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const handleCascade = async () => {
+    if (deleting) return;
+    setDeleting('cascade');
+    try {
+      await onCascadeDelete();
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  const isDisabled = deleting !== null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg border border-red-200/40 overflow-hidden flex flex-col max-h-[90vh]">
+
+        {/* ── Header ─────────────────────────────────────────── */}
+        <div className="flex items-center gap-3 px-6 py-4 bg-red-500/10 border-b border-red-200/30 shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-red-100 flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-red-600 text-[20px]">delete_sweep</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-sm font-bold text-on-surface">Manage Resources Before Deleting</h2>
+            <p className="text-xs text-on-surface-variant truncate">{sem.name}</p>
+          </div>
+          <button
+            onClick={onCancel}
+            disabled={isDisabled}
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition text-on-surface-variant disabled:opacity-40"
+          >
+            <span className="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        {/* ── Select-All bar ─────────────────────────────────── */}
+        <div className="flex items-center gap-3 px-5 py-2.5 border-b border-outline-variant/10 bg-surface-container/30 shrink-0">
+          <button
+            onClick={toggleAll}
+            disabled={isDisabled}
+            className="w-5 h-5 rounded border-2 flex items-center justify-center transition shrink-0
+              border-outline-variant/60 hover:border-primary/60
+              disabled:opacity-40"
+            aria-label={allSelected ? 'Deselect all' : 'Select all'}
+          >
+            {allSelected && (
+              <span className="material-symbols-outlined text-[14px] text-primary">check</span>
+            )}
+            {!allSelected && checked.size > 0 && (
+              <span className="w-2 h-0.5 bg-primary/70 rounded-full" />
+            )}
+          </button>
+          <span className="text-xs text-on-surface-variant flex-1">
+            <span className="font-semibold text-on-surface">{checked.size}</span> of {resources.length} selected
+          </span>
+          <button
+            onClick={toggleAll}
+            disabled={isDisabled}
+            className="text-xs font-semibold text-primary hover:underline disabled:opacity-40"
+          >
+            {allSelected ? 'Deselect All' : 'Select All'}
+          </button>
+        </div>
+
+        {/* ── Scrollable resource checklist ───────────────────── */}
+        <div className="overflow-y-auto flex-1 divide-y divide-outline-variant/10">
+          {Object.entries(grouped).map(([subjectTitle, { code, items }]) => (
+            <div key={subjectTitle}>
+              {/* Subject sub-header */}
+              <div className="sticky top-0 flex items-center gap-2 px-5 py-2 bg-surface-container/60 backdrop-blur-sm border-b border-outline-variant/10">
+                <span className="material-symbols-outlined text-[14px] text-on-surface-variant">book_2</span>
+                <span className="text-xs font-bold text-on-surface">{subjectTitle}</span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">{code}</span>
+                <span className="ml-auto text-[10px] text-on-surface-variant">{items.length} file{items.length !== 1 ? 's' : ''}</span>
+              </div>
+              {/* Resource rows */}
+              {items.map(r => {
+                const isChecked = checked.has(r.id);
+                return (
+                  <button
+                    key={r.id}
+                    onClick={() => !isDisabled && toggleOne(r.id)}
+                    disabled={isDisabled}
+                    className={`w-full flex items-center gap-3 px-5 py-2.5 text-left transition group
+                      ${ isChecked
+                          ? 'bg-red-50/60 hover:bg-red-50'
+                          : 'hover:bg-surface-container/40'
+                      } disabled:cursor-not-allowed`}
+                  >
+                    {/* Checkbox */}
+                    <span
+                      className={`w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition
+                        ${ isChecked
+                            ? 'bg-red-500 border-red-500'
+                            : 'border-outline-variant/60 group-hover:border-red-400/60'
+                        }`}
+                    >
+                      {isChecked && (
+                        <span className="material-symbols-outlined text-white text-[11px]">check</span>
+                      )}
+                    </span>
+                    {/* Resource info */}
+                    <ResourceTypePill type={r.resourceType} />
+                    <span className={`text-xs flex-1 truncate ${ isChecked ? 'text-red-800 font-medium' : 'text-on-surface' }`}>
+                      {r.title}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        {/* ── Warning (shown when something is checked) ───────── */}
+        {checked.size > 0 && (
+          <div className="flex gap-2 items-start mx-5 mt-4 mb-1 px-3 py-2.5 bg-red-50 border border-red-200 rounded-xl shrink-0">
+            <span className="material-symbols-outlined text-red-500 text-[16px] mt-0.5 shrink-0">warning</span>
+            <p className="text-[11px] text-red-700 leading-relaxed">
+              <strong>Permanently deletes</strong> {checked.size} file{checked.size !== 1 ? 's' : ''} from the
+              database and Google Drive. <strong>Cannot be undone.</strong>
+            </p>
+          </div>
+        )}
+
+        {/* ── Footer actions ─────────────────────────────────── */}
+        <div className="flex flex-wrap gap-2 px-5 py-4 border-t border-outline-variant/10 bg-surface-container/20 shrink-0">
+          <button
+            onClick={onCancel}
+            disabled={isDisabled}
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-surface-container border border-outline-variant/30 text-on-surface hover:bg-surface-container-high disabled:opacity-50 transition"
+          >
+            Cancel
+          </button>
+
+          <div className="flex-1" />
+
+          {/* Delete Selected */}
+          <button
+            onClick={handleBulk}
+            disabled={noneSelected || isDisabled}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-red-500 text-white hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          >
+            {deleting === 'bulk'
+              ? <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Deleting…</>
+              : <><span className="material-symbols-outlined text-[15px]">delete</span>Delete Selected ({checked.size})</>}
+          </button>
+
+          {/* Delete Semester & All */}
+          <button
+            onClick={handleCascade}
+            disabled={isDisabled}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-red-800 text-white hover:bg-red-900 disabled:opacity-40 disabled:cursor-not-allowed transition"
+          >
+            {deleting === 'cascade'
+              ? <><span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Deleting…</>
+              : <><span className="material-symbols-outlined text-[15px]">delete_forever</span>Delete Semester &amp; All</>}
           </button>
         </div>
       </div>
@@ -494,6 +712,7 @@ export default function AdminCatalogView() {
   const [toast, setToast]             = useState(null);
   const [confirm, setConfirm]         = useState(null);
   const [modal, setModal]             = useState(null);
+  const [cascadeModal, setCascadeModal] = useState(null); // { sem, subjectCount, resourceCount }
   // modal = { type: 'dept'|'sem'|'subject', mode: 'create'|'edit', target: object }
 
   // ── Fetch ──────────────────────────────────────────────────
@@ -565,6 +784,22 @@ export default function AdminCatalogView() {
   };
 
   const handleDeleteSem = (sem, deptName) => {
+    // Flatten all resources across this semester's subjects for the checklist.
+    const resources = sem.subjects?.flatMap(s =>
+      (s.resources ?? []).map(r => ({
+        ...r,
+        subjectTitle: s.title,
+        subjectCode:  s.code,
+      }))
+    ) ?? [];
+
+    if (resources.length > 0) {
+      // Open the interactive checklist modal.
+      setCascadeModal({ sem, resources });
+      return;
+    }
+
+    // No resources — use the simpler confirm dialog.
     setConfirm({
       message: `Delete "${sem.name}" from ${deptName}? This only works if the semester has no subjects.`,
       onConfirm: async () => {
@@ -579,6 +814,32 @@ export default function AdminCatalogView() {
         }
       },
     });
+  };
+
+  const handleBulkDelete = async (ids) => {
+    const { sem } = cascadeModal;
+    try {
+      const result = await bulkDeleteResources(ids);
+      showToast(`${result.deleted} resource(s) deleted from "${sem.name}"`);
+      setCascadeModal(null);
+      fetchDepts();
+    } catch (err) {
+      showToast(err.message || 'Bulk delete failed', 'error');
+    }
+  };
+
+  const handleCascadeDeleteSem = async () => {
+    if (!cascadeModal) return;
+    const { sem } = cascadeModal;
+    try {
+      const result = await deleteSemesterCascade(sem.id);
+      showToast(`"${sem.name}" and ${result.resourcesDeleted} resource(s) permanently deleted`);
+      fetchDepts();
+    } catch (err) {
+      showToast(err.message || 'Cascade delete failed', 'error');
+    } finally {
+      setCascadeModal(null);
+    }
   };
 
   // ── Subject actions ────────────────────────────────────────
@@ -716,6 +977,17 @@ export default function AdminCatalogView() {
                                 <span className="font-semibold text-on-surface text-sm">{sem.name}</span>
                                 <span className="text-xs px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary font-semibold">Sem {sem.semesterNumber}</span>
                                 <Badge count={sem._count?.subjects ?? sem.subjects?.length ?? 0} label="subjects" />
+                                {/* Resource count badge — only shown when there are resources */}
+                                {(() => {
+                                  const rc = sem._count?.resources ??
+                                    (sem.subjects?.reduce((a, s) => a + (s._count?.resources ?? 0), 0) ?? 0);
+                                  return rc > 0 ? (
+                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">
+                                      <span className="material-symbols-outlined text-[12px]">folder</span>
+                                      {rc} resource{rc !== 1 ? 's' : ''}
+                                    </span>
+                                  ) : null;
+                                })()}
                               </div>
                               {sem.description && (
                                 <p className="text-xs text-on-surface-variant mt-0.5 truncate">{sem.description}</p>
@@ -797,6 +1069,17 @@ export default function AdminCatalogView() {
       )}
 
       {/* ─── Modals ─────────────────────────────────────────── */}
+
+      {/* ─── Cascade Semester Delete Modal ──────────────────── */}
+      {cascadeModal && (
+        <SemesterCascadeModal
+          sem={cascadeModal.sem}
+          resources={cascadeModal.resources}
+          onBulkDelete={handleBulkDelete}
+          onCascadeDelete={handleCascadeDeleteSem}
+          onCancel={() => setCascadeModal(null)}
+        />
+      )}
 
       {modal?.type === 'dept' && modal.mode === 'create' && (
         <DepartmentModal
