@@ -40,7 +40,8 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
   const navigate = useNavigate();
 
   // Helper to extract acronym or prominent title
-  const getShortTitle = (title, code) => {
+  const getShortTitle = (title, code, shortForm) => {
+    if (shortForm && shortForm.trim()) return shortForm.trim().toUpperCase();
     if (!title) return code || 'SUB';
     const words = title.split(' ').filter(w => !['and', 'of', '&', 'for', 'in', 'to'].includes(w.toLowerCase()));
     if (words.length >= 3 || title.length > 18) {
@@ -49,7 +50,7 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
     return title;
   };
 
-  const shortTitle = getShortTitle(subject.title, subject.code);
+  const shortTitle = getShortTitle(subject.title, subject.code, subject.shortForm);
   const theme = getFolderTheme(subject.pinColor, subject.bgColor, index);
 
   // Dynamic resource count computation
@@ -93,59 +94,138 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
         <span>SEM 0{semesterNumber}</span>
       </div>
 
-      {/* ─── Folder Vector Container ─── */}
-      <div className="relative w-full aspect-[400/280]">
+      {/* ─── Folder Vector & Interactive Container ─── */}
+      <div className="relative w-full aspect-[400/280] [perspective:1000px] group/folder">
 
-        {/* SVG Vector Folder Shape */}
-        <svg
-          viewBox="0 0 400 280"
-          className="w-full h-full drop-shadow-[0_8px_18px_rgba(0,0,0,0.1)] group-hover:drop-shadow-[0_16px_28px_rgba(0,0,0,0.16)] transition-all duration-300"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+        {/* ─── 1. BACK FOLDER LAYER (Static Base) ─── */}
+        <div className="absolute inset-0 pointer-events-none">
+          <svg
+            viewBox="0 0 400 280"
+            className="w-full h-full drop-shadow-[0_6px_12px_rgba(0,0,0,0.08)]"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Back Folder Body + Top Tab */}
+            <path
+              d="M 28 0 
+                 H 150 
+                 C 175 0, 185 24, 210 24 
+                 H 372 
+                 C 387 24, 398 35, 398 50 
+                 V 252 
+                 C 398 267, 387 278, 372 278 
+                 H 28 
+                 C 13 278, 2 267, 2 252 
+                 V 26 
+                 C 2 11, 13 0, 28 0 Z"
+              fill={theme.bg}
+              stroke="#000000"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
+            {/* Dark inner shadow representing folder depth interior */}
+            <path
+              d="M 28 35 H 372 V 75 H 28 Z"
+              fill="black"
+              fillOpacity="0.12"
+            />
+          </svg>
+        </div>
+
+        {/* ─── 2. INNER PAPER SHEETS (Slide up out of folder on hover) ─── */}
+        <div className="absolute inset-x-8 top-[18%] bottom-[20%] pointer-events-none z-10 overflow-visible">
+          {/* Back Paper Sheet (Left tilted) */}
+          <div className="absolute inset-x-3 top-0 h-32 bg-[#fffdfa] border-[2px] border-black rounded-t-lg shadow-sm transition-all duration-300 ease-out transform origin-bottom group-hover/folder:-translate-y-8 group-hover/folder:-rotate-4 group-hover/folder:scale-102 flex flex-col p-2 gap-1.5 opacity-90 group-hover/folder:opacity-100">
+            <div className="w-12 h-1.5 bg-amber-400/80 rounded-full" />
+            <div className="w-full h-1 bg-black/15 rounded-full" />
+            <div className="w-3/4 h-1 bg-black/15 rounded-full" />
+          </div>
+
+          {/* Middle Paper Sheet (Right tilted) */}
+          <div className="absolute inset-x-5 top-0 h-32 bg-[#fefce8] border-[2px] border-black rounded-t-lg shadow-md transition-all duration-300 ease-out delay-50 transform origin-bottom group-hover/folder:-translate-y-11 group-hover/folder:rotate-3 group-hover/folder:scale-102 flex flex-col p-2 gap-1.5 opacity-95 group-hover/folder:opacity-100">
+            <div className="flex items-center justify-between">
+              <div className="w-14 h-1.5 bg-sky-400/80 rounded-full" />
+              <div className="w-2.5 h-2.5 rounded-full bg-red-400 border border-black" />
+            </div>
+            <div className="w-full h-1 bg-black/20 rounded-full" />
+            <div className="w-4/5 h-1 bg-black/20 rounded-full" />
+            <div className="w-2/3 h-1 bg-black/20 rounded-full" />
+          </div>
+
+          {/* Front Paper Sheet (Syllabus / Exam Preview) */}
+          <div className="absolute inset-x-7 top-0 h-32 bg-white border-[2px] border-black rounded-t-lg shadow-lg transition-all duration-300 ease-out delay-75 transform origin-bottom group-hover/folder:-translate-y-7 group-hover/folder:-rotate-1 flex flex-col p-2.5 gap-1.5">
+            <div className="flex items-center justify-between border-b border-black/10 pb-1">
+              <span className="text-[7px] font-black uppercase tracking-wider text-black/60">RESOURCES</span>
+              <span className="text-[7px] font-bold text-amber-600 bg-amber-50 px-1 rounded border border-amber-200">PDF</span>
+            </div>
+            <div className="w-full h-1 bg-black/25 rounded-full" />
+            <div className="w-5/6 h-1 bg-black/20 rounded-full" />
+          </div>
+        </div>
+
+        {/* ─── 3. FRONT COVER FLAP & CONTENT (Tilts forward in 3D on hover) ─── */}
+        <div
+          className="absolute inset-0 z-20 transition-all duration-300 ease-out origin-bottom transform group-hover/folder:[transform:rotateX(-24deg)_translateY(6px)]"
+          style={{ transformStyle: 'preserve-3d' }}
         >
-          {/* 1. BACK FOLDER LAYER (Tab + Back body) */}
-          <path
-            d="M 28 0 
-               H 150 
-               C 175 0, 185 24, 210 24 
-               H 372 
-               C 387 24, 398 35, 398 50 
-               V 252 
-               C 398 267, 387 278, 372 278 
-               H 28 
-               C 13 278, 2 267, 2 252 
-               V 26 
-               C 2 11, 13 0, 28 0 Z"
-            fill={theme.bg}
-            stroke="#000000"
-            strokeWidth="2.5"
-            strokeLinejoin="round"
-          />
+          {/* Front Flap SVG */}
+          <svg
+            viewBox="0 0 400 280"
+            className="w-full h-full drop-shadow-[0_10px_20px_rgba(0,0,0,0.12)] group-hover/folder:drop-shadow-[0_18px_32px_rgba(0,0,0,0.22)] transition-all duration-300"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Front cover flap path */}
+            <path
+              d="M 28 50 
+                 H 372 
+                 C 387 50, 398 61, 398 76 
+                 V 252 
+                 C 398 267, 387 278, 372 278 
+                 H 28 
+                 C 13 278, 2 267, 2 252 
+                 V 76 
+                 C 2 61, 13 50, 28 50 Z"
+              fill={theme.frontBg}
+              stroke="#000000"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+            />
 
-          {/* 2. FRONT COVER FLAP LAYER (Front pocket overlapping bottom portion) */}
-          <path
-            d="M 28 50 
-               H 372 
-               C 387 50, 398 61, 398 76 
-               V 252 
-               C 398 267, 387 278, 372 278 
-               H 28 
-               C 13 278, 2 267, 2 252 
-               V 76 
-               C 2 61, 13 50, 28 50 Z"
-            fill={theme.frontBg}
-            stroke="#000000"
-            strokeWidth="2.5"
-            strokeLinejoin="round"
-          />
-        </svg>
+            {/* Inner Lip Gradient/Highlight */}
+            <path
+              d="M 29 52 H 371"
+              stroke="#FFFFFF"
+              strokeWidth="2"
+              strokeOpacity="0.4"
+            />
+          </svg>
 
-        {/* ─── Stacked Right-Side Vertical Tabs (Flush against folder cover edge) ─── */}
-        <div className="absolute right-[1px] translate-x-full top-[56%] -translate-y-1/2 flex flex-col gap-1 z-20">
+          {/* Center Typography & Content on Front Cover */}
+          <div className="absolute inset-x-0 top-[22%] bottom-0 flex flex-col items-center justify-center px-6 text-center pointer-events-none z-10">
+            {/* Main Title */}
+            <h2 className="font-black italic text-2xl sm:text-3xl lg:text-[34px] text-black tracking-tight leading-none drop-shadow-[0_1px_0_rgba(255,255,255,0.4)]">
+              {shortTitle}
+            </h2>
+
+            {/* Subtitle */}
+            <p className="font-medium text-[11px] sm:text-xs text-black/80 mt-1.5 max-w-[90%] leading-tight tracking-tight">
+              {subject.title}
+            </p>
+
+            {/* Resource Count Pill */}
+            <span className="inline-block mt-2 text-[9px] sm:text-[10px] font-black tracking-wider text-black/70 bg-black/10 px-2.5 py-0.5 rounded-full border border-black/10 uppercase group-hover/folder:bg-black group-hover/folder:text-white transition-colors duration-300">
+              {resourceLabel}
+            </span>
+          </div>
+        </div>
+
+        {/* ─── 4. Stacked Right-Side Vertical Tabs ─── */}
+        <div className="absolute right-[1px] translate-x-full top-[56%] -translate-y-1/2 flex flex-col gap-1 z-30">
           {[
-            { label: 'Syllabus', type: 'syllabus' },
-            { label: 'Notes', type: 'notes' },
-            { label: 'PYQs', type: 'pyqs' },
+            { label: 'Syllabus', type: 'syllabus', hoverOffset: 'group-hover/folder:translate-x-1.5' },
+            { label: 'Notes', type: 'notes', hoverOffset: 'group-hover/folder:translate-x-2.5' },
+            { label: 'PYQs', type: 'pyqs', hoverOffset: 'group-hover/folder:translate-x-1.5' },
           ].map((tab, tIdx) => (
             <div
               key={tIdx}
@@ -155,7 +235,7 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
                   navigate(`/subject/${subject.code.toLowerCase()}?tab=${tab.type}`);
                 }
               }}
-              className="px-1 py-1.5 sm:py-2 flex items-center justify-center bg-[#fef9c3] hover:bg-amber-300 cursor-pointer border border-l-0 border-black rounded-r-[5px] shadow-[1px_1px_0px_rgba(0,0,0,0.8)] group-hover:translate-x-0.5 transition-all duration-200"
+              className={`px-1 py-1.5 sm:py-2 flex items-center justify-center bg-[#fef9c3] hover:bg-amber-300 cursor-pointer border border-l-0 border-black rounded-r-[5px] shadow-[1px_1px_0px_rgba(0,0,0,0.8)] transition-all duration-200 ${tab.hoverOffset}`}
               style={{ writingMode: 'vertical-rl' }}
               title={`View ${tab.label}`}
             >
@@ -166,27 +246,9 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
           ))}
         </div>
 
-        {/* ─── Center Typography & Content ─── */}
-        <div className="absolute inset-x-0 top-[18%] bottom-0 flex flex-col items-center justify-center px-6 text-center pointer-events-none z-10">
-          {/* Main Title */}
-          <h2 className="font-black italic text-2xl sm:text-3xl lg:text-[34px] text-black tracking-tight leading-none drop-shadow-[0_1px_0_rgba(255,255,255,0.4)]">
-            {shortTitle}
-          </h2>
-
-          {/* Subtitle */}
-          <p className="font-medium text-[11px] sm:text-xs text-black/80 mt-1.5 max-w-[90%] leading-tight tracking-tight">
-            {subject.title}
-          </p>
-
-          {/* Resource Count Pill */}
-          <span className="inline-block mt-2 text-[9px] sm:text-[10px] font-black tracking-wider text-black/70 bg-black/10 px-2.5 py-0.5 rounded-full border border-black/10 uppercase">
-            {resourceLabel}
-          </span>
-        </div>
-
-        {/* ─── Bottom Left Glass Lens Ring Overlay ─── */}
-        <div className="absolute left-[-8px] bottom-[-8px] z-30 pointer-events-none" title={resourceLabel}>
-          <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-full border-[2px] border-white/90 bg-white/20 backdrop-blur-md shadow-[inset_0_2px_6px_rgba(255,255,255,0.9),0_8px_16px_rgba(0,0,0,0.15)] flex items-center justify-center transform -rotate-12 group-hover:scale-110 group-hover:rotate-0 transition-transform duration-300">
+        {/* ─── 5. Bottom Left Glass Lens Ring Overlay ─── */}
+        <div className="absolute left-[-8px] bottom-[-8px] z-40 pointer-events-none" title={resourceLabel}>
+          <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-full border-[2px] border-white/90 bg-white/20 backdrop-blur-md shadow-[inset_0_2px_6px_rgba(255,255,255,0.9),0_8px_16px_rgba(0,0,0,0.15)] flex items-center justify-center transform -rotate-12 group-hover/folder:scale-110 group-hover/folder:-translate-y-1 group-hover/folder:rotate-0 transition-all duration-300">
             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full border border-white/60 flex items-center justify-center">
               <span className="font-extrabold text-black/70 text-[9px] sm:text-[11px] tracking-tighter">
                 {formattedCount}

@@ -309,27 +309,26 @@ function Resources() {
       </section>
 
       {/* ─── CTA BANNER: "Can't find your resource?" ─── */}
-      <section className="py-10 pb-20 relative z-10">
+      <section className="py-8 sm:py-12 md:py-16 relative z-10">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
 
           {/* Dark CTA Box */}
-          <div
-            className="relative rounded-[32px] overflow-hidden shadow-2xl bg-[#0B132B]"
-          >
-            {/* Background elements */}
-            <div className="absolute top-6 left-6 w-6 h-6 rounded-full border-[3px] border-[#FBBF24] opacity-100 pointer-events-none" />
+          <div className="relative rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl bg-[#0B132B] border border-white/10">
+            
+            {/* Top Left Yellow Ring Accent */}
+            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-2 sm:border-[3px] border-[#FBBF24] opacity-90 pointer-events-none" />
 
-            {/* Paper Airplane Trail Image (Left Side) */}
-            <div className="absolute bottom-0 left-0 h-[90%] max-h-full w-auto pointer-events-none z-0 sm:z-10 flex items-end opacity-90">
+            {/* Paper Airplane Trail Image (Left Side) - Responsive scaling & opacity */}
+            <div className="absolute bottom-0 left-0 h-28 sm:h-44 md:h-[88%] max-h-full w-auto pointer-events-none z-0 sm:z-10 flex items-end opacity-40 sm:opacity-75 md:opacity-90">
               <img src="/images/paper-airplane-trail.png" alt="Paper Airplane Trail" className="h-full w-auto object-contain object-bottom" />
             </div>
 
-            {/* Top Right Blue Circle */}
-            <div className="absolute -top-32 -right-20 w-80 h-80 rounded-full bg-[#1D4ED8] pointer-events-none" />
+            {/* Top Right Royal Blue Circle - Responsive Sizing */}
+            <div className="absolute -top-16 -right-16 sm:-top-28 sm:-right-20 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#1D4ED8] pointer-events-none opacity-80 sm:opacity-100" />
 
-            {/* Top Right Yellow Dots */}
-            <div className="absolute top-8 right-12 pointer-events-none hidden sm:block z-10">
-              <svg className="w-24 h-16" viewBox="0 0 100 80">
+            {/* Top Right Yellow Dots Grid - Hidden on mobile */}
+            <div className="absolute top-6 right-8 sm:top-8 sm:right-12 pointer-events-none hidden sm:block z-10">
+              <svg className="w-20 h-14 md:w-24 md:h-16" viewBox="0 0 100 80">
                 <pattern id="cta-yellow-dots" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
                   <circle cx="4" cy="4" r="2.5" fill="#FBBF24" />
                 </pattern>
@@ -337,45 +336,49 @@ function Resources() {
               </svg>
             </div>
 
-            {/* Bottom Right Orange Circle */}
-            <div className="absolute -bottom-32 -right-12 w-80 h-80 rounded-full bg-[#F59E0B] shadow-xl pointer-events-none" />
+            {/* Bottom Right Orange Circle - Responsive Sizing */}
+            <div className="absolute -bottom-20 -right-10 sm:-bottom-28 sm:-right-12 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#F59E0B] shadow-xl pointer-events-none opacity-80 sm:opacity-100" />
 
-            {/* Content */}
-            <div className="relative z-10 px-8 py-16 md:px-14 md:py-20 text-center max-w-2xl mx-auto space-y-5">
-              <h2 className="text-3xl sm:text-[38px] font-black text-white leading-tight tracking-tight flex flex-col items-center">
+            {/* Content Container - Responsive Padding & Layout */}
+            <div className="relative z-10 px-5 py-10 sm:px-8 sm:py-14 md:px-14 md:py-20 text-center max-w-2xl mx-auto space-y-4 sm:space-y-5">
+              <h2 className="text-2xl sm:text-3xl md:text-[38px] font-black text-white leading-tight tracking-tight flex flex-col items-center">
                 <span>Can't find</span>
                 <span className="relative inline-block mt-1">
                   what you're looking for?
-                  <div className="absolute -bottom-2 left-0 w-full h-[3px] bg-white rounded-full"></div>
+                  <div className="absolute -bottom-1.5 sm:-bottom-2 left-0 w-full h-[2.5px] sm:h-[3px] bg-white rounded-full"></div>
                 </span>
               </h2>
-              <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-medium">
+
+              <p className="text-xs sm:text-sm md:text-base text-gray-300 font-medium max-w-lg mx-auto leading-relaxed">
                 Our community is constantly updating the resource library. If a specific paper or note is missing, let us know and we'll track it down for you.
               </p>
-              <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 pt-3">
+
+              {/* Responsive Buttons Container */}
+              <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-3 w-full sm:w-auto">
                 <button
                   onClick={() => setIsModalOpen(true)}
-                  className="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-hub-navy font-bold px-7 py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-sm inline-flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto bg-amber-400 hover:bg-amber-500 text-hub-navy font-black px-6 sm:px-7 py-3 sm:py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer active-press"
                 >
-                  <span className="material-symbols-outlined text-lg leading-none">upload</span>
+                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">upload</span>
                   <span>Upload Resource</span>
                 </button>
                 <Link
                   to="/contact"
-                  className="w-full sm:w-auto bg-white hover:bg-gray-100 text-hub-navy font-bold px-7 py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-sm inline-flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto bg-white hover:bg-gray-100 text-hub-navy font-black px-6 sm:px-7 py-3 sm:py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm inline-flex items-center justify-center gap-2 active-press"
                 >
-                  <span className="material-symbols-outlined text-lg leading-none">assignment_add</span>
+                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">assignment_add</span>
                   <span>Request Resource</span>
                 </Link>
                 <a
                   href="/community"
-                  className="w-full sm:w-auto border-[1.5px] border-white/60 hover:bg-white/10 text-white font-bold px-7 py-3.5 rounded-full transition-all duration-300 text-sm inline-flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto border-2 border-white/50 hover:border-white text-white font-bold px-6 sm:px-7 py-3 sm:py-3.5 rounded-full hover:bg-white/10 transition-all duration-300 text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer active-press"
                 >
-                  <span className="material-symbols-outlined text-lg leading-none">groups</span>
+                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">groups</span>
                   <span>Join Whatsapp Community</span>
                 </a>
               </div>
             </div>
+
           </div>
         </div>
       </section>

@@ -98,11 +98,11 @@ async function deleteSemester(req, res, next) {
 // POST /api/admin/catalog/subjects
 async function createSubject(req, res, next) {
   try {
-    const { semesterId, code, title, description, icon, bgColor, pinColor, cardType, path } = req.body;
+    const { semesterId, code, title, shortForm, description, icon, bgColor, pinColor, cardType, path } = req.body;
     if (!semesterId || !code || !title) {
       return sendError(res, 'semesterId, code, and title are required', 400);
     }
-    const subject = await catalogService.createSubject({ semesterId, code, title, description, icon, bgColor, pinColor, cardType, path });
+    const subject = await catalogService.createSubject({ semesterId, code, title, shortForm, description, icon, bgColor, pinColor, cardType, path });
     return sendSuccess(res, subject, 201, 'Subject created');
   } catch (err) {
     return next(err);

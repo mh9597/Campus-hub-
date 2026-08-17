@@ -115,17 +115,17 @@ export async function searchAllSubjects(query) {
     return allSubjects.filter(s => {
       const codeMatch = s.code.toLowerCase().includes(lowerQuery);
       const titleMatch = s.title.toLowerCase().includes(lowerQuery);
+      const shortFormMatch = s.shortForm ? s.shortForm.toLowerCase().includes(lowerQuery) : false;
 
       // Attempt alias matching (e.g. Design and Analysis of Algorithms -> DAA)
       const words = s.title.split(' ');
       const acronym = words.map(w => w[0]).join('').toLowerCase();
-      // Also filter out 'and', 'of' for acronyms like DAA
       const filteredWords = words.filter(w => !['and', 'of', '&'].includes(w.toLowerCase()));
       const strictAcronym = filteredWords.map(w => w[0]).join('').toLowerCase();
 
       const aliasMatch = acronym.includes(lowerQuery) || strictAcronym.includes(lowerQuery);
 
-      return codeMatch || titleMatch || aliasMatch;
+      return codeMatch || titleMatch || shortFormMatch || aliasMatch;
     });
   } catch (err) {
     console.warn(`[resourcesApi] searchAllSubjects failed, using fallback:`, err.message);
@@ -140,6 +140,7 @@ export async function searchAllSubjects(query) {
     return allSubjects.filter(s => {
       const codeMatch = s.code.toLowerCase().includes(lowerQuery);
       const titleMatch = s.title.toLowerCase().includes(lowerQuery);
+      const shortFormMatch = s.shortForm ? s.shortForm.toLowerCase().includes(lowerQuery) : false;
 
       const words = s.title.split(' ');
       const acronym = words.map(w => w[0]).join('').toLowerCase();
@@ -148,7 +149,7 @@ export async function searchAllSubjects(query) {
 
       const aliasMatch = acronym.includes(lowerQuery) || strictAcronym.includes(lowerQuery);
 
-      return codeMatch || titleMatch || aliasMatch;
+      return codeMatch || titleMatch || shortFormMatch || aliasMatch;
     });
   }
 }

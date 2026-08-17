@@ -150,7 +150,6 @@ function Semesters() {
                 whileHover={{ scale: 1.03, y: -8, zIndex: 30 }}
                 whileDrag={{ scale: 1.05, rotate: 2, zIndex: 50, cursor: 'grabbing' }}
                 onClick={(e) => {
-                  // Only navigate if it wasn't a drag event
                   if (!e.defaultPrevented) {
                     navigate(`/semesters/${sem.id}`);
                   }
@@ -168,8 +167,7 @@ function Semesters() {
 
                 {/* Card Body */}
                 <div className={`relative h-full overflow-hidden rounded-[24px] ${colors.innerBg} p-6 flex flex-col`}>
-
-                  {/* Decorative Logo / Emoji */}
+                  {/* Decorative Icon */}
                   <div className="absolute right-5 top-5">
                     {sem.semesterNumber === 1 ? (
                       <div className="w-14 h-14 sm:w-16 sm:h-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-[5deg]">
@@ -239,83 +237,80 @@ function Semesters() {
         </div>
       </section>
 
-      {/* CTA Section — matching Resources page CTA box */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div
-          className="relative rounded-[32px] overflow-hidden shadow-2xl"
-          style={{ background: 'linear-gradient(135deg, #050E2B 0%, #091742 50%, #0F2D8A 100%)' }}
-        >
-          {/* Top-Left Amber Ring */}
-          <div className="absolute top-6 left-6 w-7 h-7 rounded-full border-[3.5px] border-amber-400 opacity-90 pointer-events-none" />
+      {/* ─── CTA BANNER: "Can't find your resource?" ─── */}
+      <section className="py-8 sm:py-12 md:py-16 relative z-10">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
+          {/* Dark CTA Box */}
+          <div className="relative rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl bg-[#0B132B] border border-white/10">
+            
+            {/* Top Left Yellow Ring Accent */}
+            <div className="absolute top-4 left-4 sm:top-6 sm:left-6 w-4 h-4 sm:w-6 sm:h-6 rounded-full border-2 sm:border-[3px] border-[#FBBF24] opacity-90 pointer-events-none" />
 
-          {/* Bottom-Left Blue Glow Circle */}
-          <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-blue-600/30 blur-xl pointer-events-none" />
+            {/* Paper Airplane Trail Image (Left Side) */}
+            <div className="absolute bottom-0 left-0 h-28 sm:h-44 md:h-[88%] max-h-full w-auto pointer-events-none z-0 sm:z-10 flex items-end opacity-40 sm:opacity-75 md:opacity-90">
+              <img
+                src="/images/paper-airplane-trail.png"
+                alt="Paper Airplane Trail"
+                className="h-full w-auto object-contain object-bottom"
+              />
+            </div>
 
-          {/* Paper Airplane + S-Curve Dashed Trail */}
-          <div className="absolute bottom-0 left-0 h-[88%] max-h-full w-auto pointer-events-none z-0 sm:z-10 flex items-end opacity-20 sm:opacity-95">
-            <img
-              src="/images/paper-airplane-trail.png"
-              alt="Paper Airplane Trail"
-              className="h-full w-auto object-contain object-bottom"
-            />
-          </div>
+            {/* Top-Right Royal Blue Circle - Responsive Sizing */}
+            <div className="absolute -top-16 -right-16 sm:-top-28 sm:-right-20 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#1350E8] opacity-90 pointer-events-none" />
 
-          {/* Top-Right Royal Blue Circle */}
-          <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-[#1350E8] opacity-90 pointer-events-none" />
+            {/* Top-Right Yellow Dot Matrix Grid - Hidden on mobile */}
+            <div className="absolute top-6 right-8 sm:top-7 sm:right-8 pointer-events-none hidden sm:block z-10">
+              <svg className="w-24 h-18 md:w-32 md:h-24" viewBox="0 0 100 80">
+                <pattern id="cta-yellow-dots-sem" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+                  <circle cx="4" cy="4" r="2.2" fill="#FBBF24" />
+                </pattern>
+                <rect width="100" height="80" fill="url(#cta-yellow-dots-sem)" />
+              </svg>
+            </div>
 
-          {/* Top-Right Yellow Dot Matrix Grid (5x5) */}
-          <div className="absolute top-7 right-8 pointer-events-none hidden sm:block z-10">
-            <svg className="w-32 h-24" viewBox="0 0 100 80">
-              <pattern id="cta-yellow-dots-sem" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
-                <circle cx="4" cy="4" r="2.2" fill="#FBBF24" />
-              </pattern>
-              <rect width="100" height="80" fill="url(#cta-yellow-dots-sem)" />
-            </svg>
-          </div>
+            {/* Bottom-Right Amber/Yellow Burst Circle - Responsive Sizing */}
+            <div className="absolute -bottom-20 -right-10 sm:-bottom-24 sm:-right-12 w-44 h-44 sm:w-72 sm:h-72 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-xl pointer-events-none opacity-80 sm:opacity-100" />
 
-          {/* Bottom-Right Amber/Yellow Burst Circle */}
-          <div className="absolute -bottom-24 -right-12 w-72 h-72 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 shadow-xl pointer-events-none" />
+            {/* Content Container */}
+            <div className="relative z-10 px-5 py-10 sm:px-8 sm:py-14 md:px-14 md:py-20 text-center max-w-2xl mx-auto space-y-4 sm:space-y-5">
+              <h2 className="text-2xl sm:text-3xl md:text-[38px] font-black text-white leading-tight tracking-tight">
+                Can&apos;t find{' '}
+                <span className="relative inline-block mt-1">
+                  what you&apos;re looking for?
+                  <svg
+                    className="absolute -bottom-1 left-0 w-full h-2 text-white/70"
+                    viewBox="0 0 100 10"
+                    preserveAspectRatio="none"
+                  >
+                    <path d="M0 6 Q 50 0 100 6" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                  </svg>
+                </span>
+              </h2>
 
-          {/* Content */}
-          <div className="relative z-10 px-8 py-16 md:px-14 md:py-20 text-center max-w-2xl mx-auto space-y-5">
-            <h2 className="text-3xl sm:text-[38px] font-black text-white leading-tight tracking-tight">
-              Can&apos;t find{' '}
-              <span className="relative inline-block">
-                what you&apos;re looking for?
-                <svg
-                  className="absolute -bottom-1 left-0 w-full h-2 text-white/70"
-                  viewBox="0 0 100 10"
-                  preserveAspectRatio="none"
+              <p className="text-xs sm:text-sm md:text-base text-gray-300 leading-relaxed font-medium">
+                Our community is constantly updating the resource library. If a specific paper or note is missing, let us know and we&apos;ll track it down for you.
+              </p>
+
+              {/* Responsive Buttons Container */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-3 w-full sm:w-auto">
+                <Link
+                  to="/contact"
+                  className="w-full sm:w-auto bg-white hover:bg-amber-400 text-hub-navy hover:text-black font-black px-6 sm:px-7 py-3 sm:py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm inline-flex items-center justify-center gap-2 active-press"
                 >
-                  <path d="M0 6 Q 50 0 100 6" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-              </span>
-            </h2>
+                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">assignment_add</span>
+                  <span>Request Resource</span>
+                </Link>
 
-            <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-medium">
-              Our community is constantly updating the resource library. If a specific paper or note is missing, let us know and we&apos;ll track it down for you.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-3">
-              {/* White pill button */}
-              <Link
-                to="/contact"
-                className="w-full sm:w-auto bg-white hover:bg-gray-100 text-hub-navy font-bold px-7 py-3.5 rounded-full shadow-lg transition-all duration-300 hover:-translate-y-0.5 text-sm inline-flex items-center justify-center gap-2"
-              >
-                <span className="material-symbols-outlined text-lg leading-none">assignment_add</span>
-                <span>Request Resource</span>
-              </Link>
-
-              {/* Whatsapp Community button */}
-              <a
-                href="https://whatsapp.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto border-2 border-white/40 hover:bg-white/10 text-white font-bold px-7 py-3.5 rounded-full transition-all duration-300 text-sm inline-flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-lg leading-none">groups</span>
-                <span>Join Whatsapp Community</span>
-              </a>
+                <a
+                  href="https://whatsapp.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto border-2 border-white/50 hover:border-white text-white font-bold px-6 sm:px-7 py-3 sm:py-3.5 rounded-full hover:bg-white/10 transition-all duration-300 text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer active-press"
+                >
+                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">groups</span>
+                  <span>Join Whatsapp Community</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

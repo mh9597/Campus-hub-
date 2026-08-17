@@ -143,6 +143,7 @@ export const semestersData = [
       {
         "code": "MA0311",
         "title": "Probability, Statistics & Numerical Methods",
+        "shortForm": "PSNM",
         "description": "Study probability, statistics, numerical methods and mathematical modeling.",
         "bgColor": "#f0fdf4",
         "rotate": "",
@@ -154,6 +155,7 @@ export const semestersData = [
       {
         "code": "CE0320",
         "title": "Computer Organization & Architecture",
+        "shortForm": "COA",
         "description": "Learn processor architecture, memory hierarchy, and instruction sets.",
         "bgColor": "#f0f9ff",
         "rotate": "",
@@ -165,6 +167,7 @@ export const semestersData = [
       {
         "code": "EC0319",
         "title": "Digital Electronics",
+        "shortForm": "DE",
         "description": "Study Boolean algebra, logic gates, and sequential circuits.",
         "bgColor": "#fffbeb",
         "rotate": "",
@@ -176,6 +179,7 @@ export const semestersData = [
       {
         "code": "CE0316",
         "title": "Object Oriented Concepts with UML",
+        "shortForm": "OOCWU",
         "description": "Learn OOP concepts, UML diagrams and software design.",
         "bgColor": "#f5f3ff",
         "rotate": "",
@@ -187,6 +191,7 @@ export const semestersData = [
       {
         "code": "CE0317",
         "title": "Database Management System",
+        "shortForm": "DMS",
         "description": "Study SQL, normalization, ER models, and database design.",
         "bgColor": "#fdf2f8",
         "rotate": "",
@@ -198,6 +203,7 @@ export const semestersData = [
       {
         "code": "SS0301",
         "title": "Human Values and Professional Ethics",
+        "shortForm": "HVPE",
         "description": "Understand professional ethics, leadership, and human values.",
         "bgColor": "#fff7ed",
         "rotate": "",

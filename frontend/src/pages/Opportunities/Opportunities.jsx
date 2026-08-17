@@ -10,8 +10,6 @@ import AcademicCalendar from './components/AcademicCalendar';
 
 const FILTERS = ['All', 'Internships', 'Hackathons', 'Scholarships', 'Coding', 'Workshops', 'Remote', 'Online'];
 
-
-
 function Opportunities() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
@@ -43,7 +41,7 @@ function Opportunities() {
     if (submitStatus === 'error' && submitError) {
       addToast({ message: submitError, type: 'error', duration: 5000 });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitStatus, submitError]);
 
   const filteredOpportunities = opportunities.filter((opp) => {
@@ -54,254 +52,264 @@ function Opportunities() {
     return matchesSearch && matchesFilter;
   });
 
+  const getBadgeStyle = (category, tag) => {
+    const text = (tag || category || '').toLowerCase();
+    if (text.includes('campus') || text.includes('intern')) {
+      return 'bg-amber-100/90 text-amber-900 border border-amber-300/60';
+    }
+    if (text.includes('govt') || text.includes('hackathon') || text.includes('active')) {
+      return 'bg-rose-100/90 text-rose-900 border border-rose-300/60';
+    }
+    if (text.includes('source') || text.includes('coding') || text.includes('demand')) {
+      return 'bg-sky-100/90 text-sky-900 border border-sky-300/60';
+    }
+    if (text.includes('scholarship') || text.includes('funded')) {
+      return 'bg-emerald-100/90 text-emerald-900 border border-emerald-300/60';
+    }
+    return 'bg-slate-100 text-slate-800 border border-slate-200';
+  };
+
   return (
-    <div className="pt-20 bg-[#fffcf0] text-on-surface font-body-md min-h-screen pb-12 bulletin-board-bg">
-      <main className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-12">
-        {/* Breadcrumb */}
-        <nav className="flex mb-8 items-center gap-2 text-on-surface-variant font-body-md text-sm">
-          <Link className="hover:text-black opacity-60 transition-colors" to="/">Home</Link>
-          <span className="material-symbols-outlined text-sm">chevron_right</span>
-          <span className="text-black font-bold">Opportunities</span>
-        </nav>
+    <div className="pt-24 bg-[#f8fafc] text-slate-800 font-sans min-h-screen pb-16 relative overflow-hidden">
+      {/* ─── Background Theme Decorations (Soft Ambient Canvas) ─── */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 select-none">
+        {/* Base Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/70 via-transparent to-slate-100/50" />
 
-        <div className="flex flex-col lg:flex-row gap-gutter">
-          {/* Main Content Area (75%) */}
-          <div className="w-full lg:w-3/4">
-            <div className="mb-12 space-y-6">
-              <h1 className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-4 font-bold text-4xl leading-tight">
-                Explore Opportunities
-              </h1>
-              <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
-                Discover internships, hackathons, workshops, scholarships, coding competitions, webinars, certifications and career opportunities.
-              </p>
+        {/* Soft Ambient Aurora Mesh Glows */}
+        <div className="absolute -top-10 -left-20 w-[480px] h-[480px] bg-amber-200/35 rounded-full blur-3xl opacity-75" />
+        <div className="absolute top-[15%] right-[-10%] w-[450px] h-[450px] bg-sky-200/30 rounded-full blur-3xl opacity-70" />
+        <div className="absolute top-[50%] left-[-5%] w-[460px] h-[460px] bg-purple-200/25 rounded-full blur-3xl opacity-65" />
+        <div className="absolute bottom-[5%] right-[10%] w-[420px] h-[420px] bg-emerald-200/30 rounded-full blur-3xl opacity-70" />
 
-              {/* Search & Filter */}
-              <div className="mt-8 space-y-6">
-                <div className="relative max-w-xl">
-                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-black font-bold">
-                    search
-                  </span>
-                  <input
-                    type="text"
-                    id="opportunity-search"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 rounded-full border-2 border-amber-400/90 bg-white shadow-sm focus:ring-4 focus:ring-amber-400/25 focus:border-black outline-none transition-all font-semibold text-black"
-                    placeholder="Search opportunities..."
-                    aria-label="Search opportunities"
-                  />
-                </div>
-                <div className="flex flex-wrap gap-2.5" role="group" aria-label="Filter opportunities">
-                  {FILTERS.map((filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setActiveFilter(filter)}
-                      aria-pressed={activeFilter === filter}
-                      className={`px-4 py-2 rounded-full text-sm font-bold transition-all shadow-sm active-press cursor-pointer ${
-                        activeFilter === filter
-                          ? 'bg-black text-amber-400 border-2 border-amber-400 shadow-md'
-                          : 'bg-white border-2 border-amber-300/80 text-black hover:border-black hover:bg-amber-50'
-                      }`}
-                    >
-                      {filter}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
+        {/* Subtle Hollow Amber Accent Rings */}
+        <div className="hidden md:block absolute top-[16%] left-[48%] w-5 h-5 rounded-full border-2 border-amber-400/70 opacity-75" />
+        <div className="hidden md:block absolute top-[44%] right-[4%] w-6 h-6 rounded-full border-2 border-amber-400/70 opacity-80" />
+        <div className="hidden md:block absolute top-[75%] left-[5%] w-6 h-6 rounded-full border-2 border-amber-400/70 opacity-80" />
+      </div>
 
-            {/* Error state */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header Section */}
+        <div className="text-center max-w-3xl mx-auto mb-8 pt-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-4">
+            Explore Opportunities
+          </h1>
+
+          {/* Centered Search Bar */}
+          <div className="relative max-w-xl mx-auto mt-6">
+            <input
+              type="text"
+              id="opportunity-search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-6 pr-12 py-3.5 rounded-full border border-slate-200/90 bg-white/90 backdrop-blur-md shadow-xs focus:outline-none focus:ring-2 focus:ring-amber-400/60 focus:border-amber-400 text-sm font-medium text-slate-800 placeholder-slate-400 transition-all"
+              placeholder="Search opportunities..."
+              aria-label="Search opportunities"
+            />
+            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xl">
+              search
+            </span>
+          </div>
+
+          {/* Filter Pills */}
+          <div className="flex flex-wrap justify-center items-center gap-2 mt-8" role="group" aria-label="Filter opportunities">
+            {FILTERS.map((filter) => {
+              const isActive = activeFilter === filter;
+              return (
+                <button
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  aria-pressed={isActive}
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium cursor-pointer transition-all duration-150 ${
+                    isActive
+                      ? 'bg-[#FACC15] text-slate-950 font-bold border border-yellow-400 shadow-xs scale-[1.02]'
+                      : 'bg-white/90 text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:border-slate-300 shadow-2xs hover:bg-slate-50'
+                  }`}
+                >
+                  {filter}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Content Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-6">
+          {/* Main Opportunities Column (8 cols) */}
+          <div className="lg:col-span-8 space-y-4">
+            {/* Error State */}
             {oppError && !oppLoading && (
-              <ErrorState message={oppError} onRetry={refetchOpp} className="mb-8" />
+              <ErrorState message={oppError} onRetry={refetchOpp} className="mb-6" />
             )}
 
-            {/* Opportunities Bento Grid */}
-            <div className="relative">
-              <div className="absolute -top-4 left-0 w-full h-1 marching-ants opacity-20"></div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-                {/* Loading skeletons */}
-                {oppLoading && Array.from({ length: 6 }).map((_, i) => (
+            {/* Skeletons */}
+            {oppLoading && (
+              <div className="space-y-4">
+                {Array.from({ length: 4 }).map((_, i) => (
                   <OpportunityCardSkeleton key={i} />
                 ))}
+              </div>
+            )}
 
-                {/* Loaded opportunities */}
-                {!oppLoading && !oppError && filteredOpportunities.map((opp) => {
-                  const badgeClasses = {
-                    primary: 'bg-[#FEF3D6] text-black border-2 border-amber-400 font-bold',
-                    tertiary: 'bg-amber-100 text-amber-900 border-2 border-amber-500 font-bold',
-                    error: 'bg-red-100 text-red-800 border-2 border-red-400 font-bold',
-                  };
-                  const badgeClass = badgeClasses[opp.tagType] || badgeClasses.primary;
+            {/* Opportunities List */}
+            {!oppLoading && !oppError && (
+              <div className="space-y-4">
+                {filteredOpportunities.map((opp) => (
+                  <div
+                    key={opp.id}
+                    className="bg-white rounded-2xl p-6 border border-slate-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.06)] hover:border-slate-300 transition-all duration-200 group"
+                  >
+                    <div className="mb-3">
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${getBadgeStyle(opp.category, opp.tag)}`}>
+                        {opp.tag || opp.category || 'Opportunity'}
+                      </span>
+                    </div>
 
-                  return (
-                    <div
-                      key={opp.id}
-                      className="outlined-card p-8 rounded-2xl hover:rotate-0 transition-all duration-300 relative group"
-                      style={{
-                        '--rotate': opp.rotate,
-                        transform: `rotate(${opp.rotate})`,
-                      }}
-                    >
-                      {/* Push Pin */}
-                      <div
-                        className="push-pin"
-                        style={{
-                          background: opp.pinBg,
-                          transform: 'translateX(-50%)',
-                        }}
-                      ></div>
+                    <h3 className="text-lg md:text-xl font-bold text-slate-900 mb-2 leading-snug">
+                      {opp.title}
+                    </h3>
 
-                      <div className="flex items-start justify-between mb-6">
-                        <span className="text-4xl">{opp.emoji}</span>
-                        {opp.tag && (
-                          <span className={`px-3 py-1 rounded-lg text-xs tracking-wider shadow-2xs ${badgeClass}`}>
-                            {opp.tag}
-                          </span>
-                        )}
-                      </div>
+                    <p className="text-slate-600 text-sm leading-relaxed mb-4 line-clamp-3">
+                      {opp.description}
+                    </p>
 
-                      <h3 className="font-headline-md text-headline-md mb-4 text-black font-extrabold text-xl leading-snug">
-                        {opp.title}
-                      </h3>
-                      <p className="font-body-md text-body-md text-gray-600 mb-6 leading-relaxed font-medium">
-                        {opp.description}
-                      </p>
-                      <Link to="/resources" className="inline-flex items-center gap-2 text-black hover:text-amber-600 font-extrabold text-sm group/link">
+                    <div className="flex items-center justify-between text-xs text-slate-400 font-medium">
+                      <span>{opp.created_at ? formatRelativeTime(opp.created_at) : 'Aug 8, 2025'}</span>
+                      <Link
+                        to="/resources"
+                        className="inline-flex items-center gap-1 text-slate-700 hover:text-amber-600 font-semibold transition-colors group/link text-xs"
+                      >
                         <span>Explore</span>
-                        <span className="group-hover/link:translate-x-1.5 transition-transform font-bold">&rarr;</span>
+                        <span className="group-hover/link:translate-x-1 transition-transform">&rarr;</span>
                       </Link>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
 
-                {/* Empty state */}
-                {!oppLoading && !oppError && filteredOpportunities.length === 0 && (
-                  <div className="col-span-2 text-center py-12 text-gray-500 space-y-2">
-                    <span className="material-symbols-outlined text-5xl text-amber-400 block">search_off</span>
-                    <p className="font-bold text-black">No opportunities match your search.</p>
-                    <p className="text-sm">Try a different search term or filter.</p>
+                {/* Empty State */}
+                {filteredOpportunities.length === 0 && (
+                  <div className="bg-white rounded-2xl p-12 text-center border border-slate-200/70 shadow-xs">
+                    <span className="material-symbols-outlined text-4xl text-slate-300 block mb-2">search_off</span>
+                    <p className="font-bold text-slate-800 text-base mb-1">No opportunities match your search</p>
+                    <p className="text-xs text-slate-500">Try adjusting your filters or search keywords.</p>
                   </div>
                 )}
               </div>
-
-              <div className="absolute -bottom-8 left-0 w-full h-1 marching-ants opacity-20"></div>
-            </div>
+            )}
           </div>
 
-          {/* Sticky Sidebar (25%) */}
-          <div className="w-full lg:w-1/4">
-            <div className="sidebar-sticky space-y-6">
-              {/* Announcements Widget */}
-              <div className="bg-white p-6 rounded-[24px] shadow-md border-2 border-amber-300/70 hover:border-black transition-all">
-                <div className="flex items-center gap-2 mb-6">
-                  <span className="material-symbols-outlined text-black text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    campaign
-                  </span>
-                  <h2 className="font-headline-md text-headline-md text-black font-extrabold text-lg">
-                    Latest Announcements
-                  </h2>
-                </div>
-                <div className="space-y-6 mb-8 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
-                  {/* Loading skeletons */}
-                  {annLoading && Array.from({ length: 4 }).map((_, i) => (
-                    <AnnouncementSkeleton key={i} />
-                  ))}
+          {/* Right Sidebar Column (4 cols) */}
+          <div className="lg:col-span-4 space-y-6">
+            {/* Latest Announcements Widget */}
+            <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+              <h2 className="text-base font-bold text-slate-900 mb-4 tracking-tight">
+                Latest Announcements
+              </h2>
 
-                  {/* Loaded announcements */}
-                  {!annLoading && !annError && announcements.map((ann) => (
-                    <div key={ann.id} className="group cursor-pointer">
-                      <div className="flex items-start gap-3">
-                        <span className={`w-3 h-3 rounded-full ${ann.color} mt-1.5 shrink-0`}></span>
-                        <div>
-                          <div className="flex flex-wrap items-center gap-2 mb-1">
-                            <p className="font-body-md text-black leading-snug group-hover:text-amber-600 transition-colors text-sm font-semibold">
-                              {ann.text}
-                            </p>
-                            {ann.badge && (
-                              <span className="bg-black text-amber-400 text-[9px] font-extrabold px-2 py-0.5 rounded-md uppercase border border-amber-400">
-                                {ann.badge}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-[11px] text-gray-500 flex justify-between">
-                            <span>{formatRelativeTime(ann.created_at)}</span>
-                            {ann.deadline && <span className="text-red-600 font-bold">Deadline: {ann.deadline}</span>}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+              <div className="space-y-4">
+                {annLoading && Array.from({ length: 3 }).map((_, i) => (
+                  <AnnouncementSkeleton key={i} />
+                ))}
 
-                  {/* Announcement error */}
-                  {annError && !annLoading && (
-                    <p className="text-xs text-red-500 text-center font-semibold">Could not load announcements.</p>
-                  )}
-                </div>
-                <Link to="/resources" className="block text-center text-black font-extrabold border-t border-amber-200/80 pt-4 hover:translate-x-1 transition-transform text-sm">
-                  View All Announcements &rarr;
-                </Link>
+                {!annLoading && !annError && announcements.map((ann) => (
+                  <div key={ann.id} className="border-b border-slate-100 last:border-0 pb-3.5 mb-3.5 last:pb-0 last:mb-0 group cursor-pointer">
+                    <p className="text-xs sm:text-sm font-semibold text-slate-800 leading-snug group-hover:text-amber-600 transition-colors">
+                      {ann.text}
+                    </p>
+                    <p className="text-[11px] text-slate-400 mt-1 font-medium">
+                      {formatRelativeTime(ann.created_at)}
+                    </p>
+                  </div>
+                ))}
+
+                {annError && !annLoading && (
+                  <p className="text-xs text-rose-500 font-medium">Could not load announcements.</p>
+                )}
               </div>
-
-              {/* Academic Calendar Widget */}
-              <AcademicCalendar />
             </div>
+
+            {/* Closing This Week Widget */}
+            <div className="bg-white rounded-2xl p-5 md:p-6 border border-slate-200/70 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+              <h2 className="text-base font-bold text-slate-900 mb-3 tracking-tight">
+                Closing This Week
+              </h2>
+              <div className="text-xs sm:text-sm font-semibold text-slate-800 leading-snug">
+                Summer Researchity • Remote
+              </div>
+            </div>
+
+            {/* Academic Calendar Widget */}
+            <AcademicCalendar />
           </div>
         </div>
       </main>
 
-      {/* CTA Bottom Section */}
-      <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter mb-section-gap-md">
-        <div className="bg-white rounded-[32px] p-10 md:p-14 text-center border-2 border-black shadow-lg max-w-7xl mx-auto space-y-6">
-          <h2 className="font-display-lg-mobile md:font-headline-lg text-black font-black text-2xl sm:text-3xl">Can't find the right opportunity?</h2>
-          <p className="font-body-lg text-gray-600 mb-8 max-w-xl mx-auto leading-relaxed font-medium">
-            Help us grow the community by requesting a specific resource or submitting one you've found.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="btn-black-yellow px-8 py-3.5 rounded-full font-extrabold shadow-lg inline-block text-center cursor-pointer active-press text-sm"
-            >
-              Submit Opportunity
-            </button>
-            <Link
-              to="/contact"
-              className="btn-yellow-black px-8 py-3.5 rounded-full font-extrabold shadow-md cursor-pointer text-center inline-block active-press text-sm"
-            >
-              Request a Resource
-            </Link>
+      {/* Bottom CTA Banner */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 md:mt-16 relative z-10">
+        <div className="bg-[#0B132B] rounded-3xl p-8 md:p-12 text-center relative overflow-hidden shadow-xl border border-slate-800 text-white">
+          {/* Subtle Technical Pattern inside CTA Box */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <svg className="w-full h-full stroke-white" xmlns="http://www.w3.org/2000/svg" fill="none">
+              <pattern id="cta-grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" stroke="currentColor" strokeWidth="0.5" strokeDasharray="2 2" />
+              </pattern>
+              <rect width="100%" height="100%" fill="url(#cta-grid)" />
+            </svg>
+          </div>
+
+          <div className="relative z-10 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-extrabold mb-3 tracking-tight text-white">
+              Can't find the right opportunity?
+            </h2>
+            <p className="text-slate-300 text-sm sm:text-base max-w-xl mx-auto mb-8 leading-relaxed">
+              Help us grow the community by requesting a specific resource or submitting one you've found.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="w-full sm:w-auto bg-[#FACC15] hover:bg-yellow-400 text-slate-950 font-bold px-7 py-3 rounded-full text-sm shadow-md transition-all cursor-pointer"
+              >
+                Submit Opportunity
+              </button>
+              <Link
+                to="/contact"
+                className="w-full sm:w-auto bg-transparent hover:bg-white/10 text-white font-semibold border border-slate-600 hover:border-slate-400 px-7 py-3 rounded-full text-sm transition-all text-center inline-block"
+              >
+                Request a Resource
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Submit Opportunity Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full border border-outline-variant bg-white shadow-2xl relative animate-scale-up">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full border border-slate-200 shadow-2xl relative animate-scale-up">
             <button
               onClick={() => {
                 setIsModalOpen(false);
                 resetForm();
               }}
-              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-gray-100 transition-colors text-gray-500 cursor-pointer"
+              className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-slate-100 transition-colors text-slate-400 hover:text-slate-600 cursor-pointer"
               aria-label="Close modal"
             >
               <span className="material-symbols-outlined text-[20px]">close</span>
             </button>
 
-            <h3 className="font-bold text-2xl text-black mb-2 flex items-center gap-2">
+            <h3 className="font-bold text-xl text-slate-900 mb-2 flex items-center gap-2">
               <span className="material-symbols-outlined text-amber-500">publish</span>
               Submit an Opportunity
             </h3>
-            <p className="text-gray-600 text-sm mb-6 leading-relaxed font-medium">
+            <p className="text-slate-600 text-sm mb-6 leading-relaxed">
               Share internships, hackathons, scholarships, or other opportunities with the student community. Submissions will go live after admin moderation.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Title */}
               <div>
-                <label htmlFor="opp-title" className="block font-bold text-sm mb-1.5 text-black">
-                  Opportunity Title <span className="text-red-500">*</span>
+                <label htmlFor="opp-title" className="block font-semibold text-xs uppercase tracking-wider text-slate-700 mb-1">
+                  Opportunity Title <span className="text-rose-500">*</span>
                 </label>
                 <input
                   id="opp-title"
@@ -309,7 +317,7 @@ function Opportunities() {
                   value={formData.title}
                   onChange={(e) => handleChange('title', e.target.value)}
                   placeholder="e.g. Google STEP Internship 2026"
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 outline-none transition-all text-sm font-medium text-slate-800"
                   disabled={submitStatus === 'loading'}
                   required
                 />
@@ -317,29 +325,27 @@ function Opportunities() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Category */}
-                <div className="flex flex-col justify-between h-full">
-                  <label htmlFor="opp-category" className="block font-bold text-sm mb-1.5 text-black">
-                    Category <span className="text-red-500">*</span>
+                <div>
+                  <label htmlFor="opp-category" className="block font-semibold text-xs uppercase tracking-wider text-slate-700 mb-1">
+                    Category <span className="text-rose-500">*</span>
                   </label>
-                  <div className="relative mt-auto">
-                    <select
-                      id="opp-category"
-                      value={formData.category}
-                      onChange={(e) => handleChange('category', e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer"
-                      disabled={submitStatus === 'loading'}
-                    >
-                      {FILTERS.filter(f => f !== 'All').map(cat => (
-                        <option key={cat} value={cat}>{cat}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <select
+                    id="opp-category"
+                    value={formData.category}
+                    onChange={(e) => handleChange('category', e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 outline-none transition-all text-sm font-medium text-slate-800 appearance-none cursor-pointer"
+                    disabled={submitStatus === 'loading'}
+                  >
+                    {FILTERS.filter(f => f !== 'All').map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Submitter Email */}
-                <div className="flex flex-col justify-between h-full">
-                  <label htmlFor="opp-email" className="block font-bold text-sm mb-1.5 text-black">
-                    Your Email <span className="text-red-500">*</span> <span className="text-gray-400 font-normal">(must be @gmail.com)</span>
+                <div>
+                  <label htmlFor="opp-email" className="block font-semibold text-xs uppercase tracking-wider text-slate-700 mb-1">
+                    Your Email <span className="text-rose-500">*</span>
                   </label>
                   <input
                     id="opp-email"
@@ -350,7 +356,7 @@ function Opportunities() {
                     pattern="^[a-zA-Z0-9._%+-]+@gmail\.com$"
                     title="Please enter a valid @gmail.com address"
                     required
-                    className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black mt-auto"
+                    className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 outline-none transition-all text-sm font-medium text-slate-800"
                     disabled={submitStatus === 'loading'}
                   />
                 </div>
@@ -358,8 +364,8 @@ function Opportunities() {
 
               {/* Description */}
               <div>
-                <label htmlFor="opp-desc" className="block font-bold text-sm mb-1.5 text-black">
-                  Description <span className="text-red-500">*</span>
+                <label htmlFor="opp-desc" className="block font-semibold text-xs uppercase tracking-wider text-slate-700 mb-1">
+                  Description <span className="text-rose-500">*</span>
                 </label>
                 <textarea
                   id="opp-desc"
@@ -367,38 +373,38 @@ function Opportunities() {
                   onChange={(e) => handleChange('description', e.target.value)}
                   placeholder="Describe the opportunity, eligibility, deadlines, and how to apply..."
                   rows={4}
-                  className="w-full px-4 py-2.5 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black resize-none"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20 outline-none transition-all text-sm font-medium text-slate-800 resize-none"
                   disabled={submitStatus === 'loading'}
                   required
                 />
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end gap-3 pt-4 border-t border-amber-200">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => {
                     setIsModalOpen(false);
                     resetForm();
                   }}
-                  className="px-5 py-2.5 rounded-xl text-sm font-bold border-2 border-gray-300 hover:border-black transition-colors cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300 transition-colors cursor-pointer"
                   disabled={submitStatus === 'loading'}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="btn-black-yellow px-6 py-2.5 rounded-xl text-sm font-extrabold shadow-md flex items-center gap-2 cursor-pointer active-press"
+                  className="bg-[#FACC15] hover:bg-yellow-400 text-slate-950 font-bold px-6 py-2.5 rounded-xl text-xs shadow-xs flex items-center gap-2 cursor-pointer transition-all"
                   disabled={submitStatus === 'loading'}
                 >
                   {submitStatus === 'loading' ? (
                     <>
-                      <span className="w-4 h-4 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                      <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />
                       Submitting...
                     </>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined text-[18px]">send</span>
+                      <span className="material-symbols-outlined text-[16px]">send</span>
                       Submit
                     </>
                   )}
@@ -416,3 +422,4 @@ function Opportunities() {
 }
 
 export default Opportunities;
+

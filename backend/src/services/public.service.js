@@ -57,7 +57,7 @@ async function getResources(filters = {}) {
     orderBy: { createdAt: 'desc' },
     include: {
       subject: {
-        select: { id: true, code: true, title: true },
+        select: { id: true, code: true, title: true, shortForm: true },
       },
     },
   });
@@ -76,6 +76,7 @@ async function getResourceById(id) {
           id: true,
           code: true,
           title: true,
+          shortForm: true,
           icon: true,
           semester: {
             select: {

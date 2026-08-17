@@ -181,9 +181,9 @@ async function deleteSemester(id) {
 
 /**
  * Create a new subject under a semester.
- * @param {{ semesterId: number, code: string, title: string, description?: string, icon?: string }} data
+ * @param {{ semesterId: number, code: string, title: string, shortForm?: string, description?: string, icon?: string }} data
  */
-async function createSubject({ semesterId, code, title, description, icon, bgColor, pinColor, cardType, path }) {
+async function createSubject({ semesterId, code, title, shortForm, description, icon, bgColor, pinColor, cardType, path }) {
   const sem = await prisma.semester.findUnique({ where: { id: Number(semesterId) } });
   if (!sem) throw notFound('Semester', semesterId);
 
@@ -196,6 +196,7 @@ async function createSubject({ semesterId, code, title, description, icon, bgCol
       semesterId: Number(semesterId),
       code: upper,
       title: title.trim(),
+      shortForm: shortForm?.trim().toUpperCase() || null,
       description: description?.trim() || null,
       icon: icon || null,
       bgColor: bgColor || null,
@@ -211,12 +212,13 @@ async function createSubject({ semesterId, code, title, description, icon, bgCol
  * @param {string} id  Subject UUID
  * @param {object} data
  */
-async function updateSubject(id, { code, title, description, icon, bgColor, pinColor, cardType, path, sortOrder }) {
+async function updateSubject(id, { code, title, shortForm, description, icon, bgColor, pinColor, cardType, path, sortOrder }) {
   const subject = await prisma.subject.findUnique({ where: { id } });
   if (!subject) throw notFound('Subject', id);
 
   const updateData = {};
   if (title !== undefined) updateData.title = title.trim();
+  if (shortForm !== undefined) updateData.shortForm = shortForm?.trim().toUpperCase() || null;
   if (description !== undefined) updateData.description = description?.trim() || null;
   if (icon !== undefined) updateData.icon = icon || null;
   if (bgColor !== undefined) updateData.bgColor = bgColor || null;

@@ -347,6 +347,7 @@ function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
   const [form, setForm] = useState({
     code: initial?.code || '',
     title: initial?.title || '',
+    shortForm: initial?.shortForm || '',
     description: initial?.description || '',
     icon: initial?.icon || 'menu_book',
     pinColor: initial?.pinColor || 'blue',
@@ -396,13 +397,29 @@ function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
             />
           </Field>
         </div>
-        <Field label="Subject Title" required error={errors.title}>
-          <Input
-            value={form.title}
-            onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
-            placeholder="e.g. Data Structures & Algorithms"
-          />
-        </Field>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="md:col-span-2">
+            <Field label="Subject Title" required error={errors.title}>
+              <Input
+                value={form.title}
+                onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                placeholder="e.g. Database Management System"
+              />
+            </Field>
+          </div>
+          <div>
+            <Field label="Short Form / Alias">
+              <Input
+                value={form.shortForm}
+                onChange={e => setForm(f => ({ ...f, shortForm: e.target.value.toUpperCase() }))}
+                placeholder="e.g. DMS, OOCWU"
+                maxLength={30}
+              />
+            </Field>
+          </div>
+        </div>
+
         <Field label="Description">
           <TextArea
             value={form.description}
@@ -723,6 +740,9 @@ export default function AdminCatalogView() {
                                     <div className="flex items-center gap-2 flex-wrap">
                                       <span className="font-medium text-on-surface text-sm">{subject.title}</span>
                                       <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">{subject.code}</span>
+                                      {subject.shortForm && (
+                                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">{subject.shortForm}</span>
+                                      )}
                                       {subject._count?.resources > 0 && (
                                         <Badge count={subject._count.resources} label="resources" />
                                       )}
