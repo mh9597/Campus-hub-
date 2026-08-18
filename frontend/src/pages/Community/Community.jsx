@@ -2,9 +2,72 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
-import { useSpotify } from '../../context/SpotifyContext';
-import { SPOTIFY_STUDY_CATEGORIES } from '../../services/spotify/spotifyConfig';
-import { formatMsToTime } from '../../services/spotify/spotifyApi';
+// ─── Local Spotify Study Lounge Categories & Helper ─────────────────────────────
+const SPOTIFY_STUDY_CATEGORIES = [
+  {
+    id: 'lofi',
+    label: 'Lo-Fi Study',
+    name: 'Lofi Beats · Chill Study Session',
+    playlistId: '0vvXsWCC9xrXsKd4FyS8kM',
+    description: 'Slow, relaxing instrumental lofi hip hop beats to concentrate or destress.',
+    artwork: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&auto=format&fit=crop&q=80',
+    tracks: [
+      { id: '1', number: 1, title: 'Lofi Hip Hop Radio – Beats to Study To', artist: 'Chillhop Music', durationFormatted: '3:28', durationMs: 208000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '2', number: 2, title: 'Coffee Shop Ambience & Rain', artist: 'Lofi Girl', durationFormatted: '2:45', durationMs: 165000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '3', number: 3, title: 'Late Night Coding Sessions', artist: 'Kavvson', durationFormatted: '3:12', durationMs: 192000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '4', number: 4, title: 'Midnight Chill Vibes', artist: 'Purrple Cat', durationFormatted: '4:05', durationMs: 245000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+    ],
+  },
+  {
+    id: 'focus',
+    label: 'Deep Focus',
+    name: 'Deep Focus · Coding Flow',
+    playlistId: '37i9dQZF1DWZeKCadgRdKQ',
+    description: 'Atmospheric ambient soundscapes for prolonged exam revision and problem solving.',
+    artwork: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&auto=format&fit=crop&q=80',
+    tracks: [
+      { id: '10', number: 1, title: 'Alpha Brainwave Concentration', artist: 'Deep Focus Soundscapes', durationFormatted: '4:30', durationMs: 270000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
+      { id: '11', number: 2, title: 'Binaural Study Flow 40Hz', artist: 'Neural Ambient', durationFormatted: '5:15', durationMs: 315000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
+      { id: '12', number: 3, title: 'Minimalist Synthesizer Sound', artist: 'Solar Fields', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
+      { id: '13', number: 4, title: 'Endless Horizon Ambient', artist: 'Tycho', durationFormatted: '4:10', durationMs: 250000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
+    ],
+  },
+  {
+    id: 'bollywood',
+    label: 'Bollywood Chill',
+    name: 'Bollywood Acoustic Vibes',
+    playlistId: '37i9dQZF1DX0XUfTFmNBRM',
+    description: 'Unwind with smooth acoustic, indie, and chill Hindi tracks between study sessions.',
+    artwork: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&auto=format&fit=crop&q=80',
+    tracks: [
+      { id: '20', number: 1, title: 'Kesariya (Acoustic Unplugged)', artist: 'Arijit Singh', durationFormatted: '3:42', durationMs: 222000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '21', number: 2, title: 'Pasoori Nu (Chill Mix)', artist: 'Arijit Singh, Tulsi Kumar', durationFormatted: '3:15', durationMs: 195000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '22', number: 3, title: 'Choo Lo (Guitar Session)', artist: 'The Local Train', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '23', number: 4, title: 'Kabira (Acoustic Guitar)', artist: 'Tochi Raina, Rekha Bhardwaj', durationFormatted: '4:11', durationMs: 251000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+    ],
+  },
+  {
+    id: 'piano',
+    label: 'Peaceful Piano',
+    name: 'Calm Piano & Rain Flow',
+    playlistId: '37i9dQZF1DX4t95PaoR1zy',
+    description: 'Gentle piano melodies to calm your mind when feeling overwhelmed or bored.',
+    artwork: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=300&auto=format&fit=crop&q=80',
+    tracks: [
+      { id: '30', number: 1, title: 'Nuvole Bianche', artist: 'Ludovico Einaudi', durationFormatted: '5:57', durationMs: 357000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
+      { id: '31', number: 2, title: 'River Flows In You', artist: 'Yiruma', durationFormatted: '3:08', durationMs: 188000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
+      { id: '32', number: 3, title: 'Clair de Lune', artist: 'Claude Debussy', durationFormatted: '5:04', durationMs: 304000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
+      { id: '33', number: 4, title: 'Gymnopédie No. 1', artist: 'Erik Satie', durationFormatted: '3:15', durationMs: 195000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
+    ],
+  },
+];
+
+function formatMsToTime(ms = 0) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+}
 
 // ─── SVG Platform Icons ───────────────────────────────────────────────────────
 const WhatsAppIcon = ({ className = 'w-5 h-5' }) => (
@@ -189,45 +252,85 @@ export default function Community() {
     opt4: 5,
   });
 
-  // ─── Spotify Centralized Context ───────────────────────────────────────────
-  const {
-    isConnected: isSpotifyConnected,
-    isAuthenticating: isSpotifyAuthenticating,
-    user: spotifyUser,
-    activeCategoryId,
-    activeCategory,
-    activePlaylist,
-    playlistTracks,
-    isLoadingTracks,
-    currentTrack,
-    isPlaying,
-    position,
-    duration,
-    volume,
-    isMuted,
-    playbackError,
-    connectSpotify,
-    disconnectSpotify,
-    selectCategory,
-    playTrack,
-    togglePlayPause,
-    nextTrack,
-    previousTrack,
-    seekTo,
-    changeVolume,
-    toggleMute,
-  } = useSpotify();
 
-  const [showSpotifyLoginModal, setShowSpotifyLoginModal] = useState(false);
 
-  const handleConnectSpotify = () => {
-    setShowSpotifyLoginModal(false);
-    connectSpotify();
+  // ─── Local Spotify Study Lounge State ─────────────────────────────────────
+  const [activeCategoryId, setActiveCategoryId] = useState('lofi');
+  const [trackIndex, setTrackIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [position, setPosition] = useState(0);
+  const [volume, setVolume] = useState(80);
+  const [isMuted, setIsMuted] = useState(false);
+  const [previousVolume, setPreviousVolume] = useState(80);
+
+  const activeCategory = SPOTIFY_STUDY_CATEGORIES.find((c) => c.id === activeCategoryId) || SPOTIFY_STUDY_CATEGORIES[0];
+  const playlistTracks = activeCategory.tracks;
+  const currentTrack = playlistTracks[trackIndex] || playlistTracks[0];
+  const duration = currentTrack.durationMs;
+
+  // Real-time progress position ticker when playing
+  useEffect(() => {
+    let interval = null;
+    if (isPlaying) {
+      interval = setInterval(() => {
+        setPosition((prev) => {
+          if (prev >= duration) {
+            setTrackIndex((idx) => (idx + 1) % playlistTracks.length);
+            return 0;
+          }
+          return prev + 1000;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isPlaying, duration, playlistTracks]);
+
+  const selectCategory = (categoryId) => {
+    setActiveCategoryId(categoryId);
+    setTrackIndex(0);
+    setPosition(0);
   };
 
-  const handleDisconnectSpotify = () => {
-    disconnectSpotify();
-    addToast({ message: 'Disconnected from Spotify.', type: 'info' });
+  const playTrack = (track, index) => {
+    setTrackIndex(index);
+    setPosition(0);
+    setIsPlaying(true);
+  };
+
+  const togglePlayPause = () => {
+    setIsPlaying((prev) => !prev);
+  };
+
+  const nextTrack = () => {
+    setTrackIndex((prev) => (prev + 1) % playlistTracks.length);
+    setPosition(0);
+  };
+
+  const previousTrack = () => {
+    setTrackIndex((prev) => (prev - 1 + playlistTracks.length) % playlistTracks.length);
+    setPosition(0);
+  };
+
+  const seekTo = (pos) => {
+    setPosition(pos);
+  };
+
+  const changeVolume = (val) => {
+    setVolume(val);
+    if (isMuted && val > 0) setIsMuted(false);
+  };
+
+  const toggleMute = () => {
+    if (isMuted) {
+      setIsMuted(false);
+      setVolume(previousVolume || 80);
+    } else {
+      setPreviousVolume(volume);
+      setIsMuted(true);
+      setVolume(0);
+    }
   };
 
   // Floating Stamp / Hype Reactions
@@ -525,11 +628,11 @@ export default function Community() {
                   Bored or Tired? Play Study Beats
                 </h2>
                 <p className="text-xs text-slate-700 font-bold leading-relaxed mt-1">
-                  Listen to student-curated Lo-Fi beats, deep coding soundscapes, and chill acoustic tracks directly on Spotify while studying.
+                  Listen to student-curated Lo-Fi beats, deep coding soundscapes, and chill acoustic tracks directly while studying.
                 </p>
               </div>
 
-              {/* Playlist Category Quick Selectors (Single Line) */}
+              {/* Playlist Category Quick Selectors */}
               <div className="grid grid-cols-4 gap-1.5 sm:gap-2 pt-1">
                 {SPOTIFY_STUDY_CATEGORIES.map((cat) => {
                   const isSelected = cat.id === activeCategoryId;
@@ -550,314 +653,237 @@ export default function Community() {
                 })}
               </div>
 
-              {/* Single Unified Spotify Mini Player with Real Playback & Web Playback SDK */}
+              {/* Single Unified Spotify Mini Player */}
               <div className="rounded-[24px] overflow-hidden border-2 border-[#0F172A] shadow-[4px_4px_0px_#0F172A] bg-[#121212] flex flex-col text-white">
-                
-                {/* Active Track Header / Player Widget */}
-                {isSpotifyConnected ? (
-                  /* ── CONNECTED: Now Playing Widget ── */
-                  <>
-                    <div className="p-4 sm:p-5 flex items-center gap-4 bg-gradient-to-b from-[#1E1E1E] to-[#181818]">
-                      {/* Album Art */}
-                      <div className="relative shrink-0">
-                        <div className={`w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] rounded-xl overflow-hidden bg-black/60 border-2 transition-all duration-500 ${isPlaying ? 'border-[#1DB954] shadow-[0_0_16px_#1DB95455]' : 'border-white/10'}`}>
-                          {currentTrack?.artwork || activePlaylist?.artwork ? (
-                            <img
-                              src={currentTrack?.artwork || activePlaylist?.artwork}
-                              alt={currentTrack?.title || activePlaylist?.name}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-[#0F172A]">
-                              <SpotifyIcon className="w-9 h-9 text-[#1DB954]" />
-                            </div>
-                          )}
-                        </div>
-                        {isPlaying && (
-                          <div className="absolute -bottom-1 -right-1 flex items-end gap-0.5 h-4 bg-[#121212] rounded px-1 py-0.5 border border-[#1DB954]/30">
-                            {[40, 90, 60, 100, 50].map((h, i) => (
-                              <motion.div
-                                key={i}
-                                animate={{ height: [`${h * 0.3}%`, `${h}%`, `${h * 0.2}%`] }}
-                                transition={{ repeat: Infinity, duration: 0.45 + i * 0.1, ease: 'easeInOut' }}
-                                className="w-0.5 bg-[#1DB954] rounded-full"
-                              />
-                            ))}
-                          </div>
-                        )}
+                {/* Active Track Player Widget */}
+                <div className="p-4 sm:p-5 flex items-center gap-4 bg-gradient-to-b from-[#1E1E1E] to-[#181818]">
+                  {/* Album Art */}
+                  <div className="relative shrink-0">
+                    <div className={`w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] rounded-xl overflow-hidden bg-black/60 border-2 transition-all duration-500 ${isPlaying ? 'border-[#1DB954] shadow-[0_0_16px_#1DB95455]' : 'border-white/10'}`}>
+                      <img
+                        src={activeCategory.artwork}
+                        alt={currentTrack.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    {isPlaying && (
+                      <div className="absolute -bottom-1 -right-1 flex items-end gap-0.5 h-4 bg-[#121212] rounded px-1 py-0.5 border border-[#1DB954]/30">
+                        {[40, 90, 60, 100, 50].map((h, i) => (
+                          <motion.div
+                            key={i}
+                            animate={{ height: [`${h * 0.3}%`, `${h}%`, `${h * 0.2}%`] }}
+                            transition={{ repeat: Infinity, duration: 0.45 + i * 0.1, ease: 'easeInOut' }}
+                            className="w-0.5 bg-[#1DB954] rounded-full"
+                          />
+                        ))}
                       </div>
+                    )}
+                  </div>
 
-                      {/* Track Info + Controls */}
-                      <div className="flex-1 min-w-0 space-y-1.5">
-                        {/* Status pill */}
-                        <div className="flex items-center gap-2">
-                          <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${isPlaying ? 'bg-[#1DB954]/15 text-[#1DB954] border-[#1DB954]/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-[#1DB954] animate-pulse' : 'bg-white/30'}`} />
-                            {isPlaying ? 'Now Playing' : 'Paused'}
+                  {/* Track Info & Interactive Scrub Bar */}
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    {/* Status Pill */}
+                    <div className="flex items-center gap-2">
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${isPlaying ? 'bg-[#1DB954]/15 text-[#1DB954] border-[#1DB954]/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-[#1DB954] animate-pulse' : 'bg-white/30'}`} />
+                        {isPlaying ? 'Now Playing' : 'Study Beats'}
+                      </span>
+                      <span className="text-[9px] text-white/40 font-bold truncate">Indus Study Lounge</span>
+                    </div>
+
+                    <div className="flex items-start justify-between gap-2 min-w-0">
+                      <div className="min-w-0">
+                        <p className="font-black text-sm text-white truncate leading-tight">
+                          {currentTrack.title}
+                        </p>
+                        <p className="text-[11px] text-white/50 font-bold truncate mt-0.5">
+                          {currentTrack.artist}
+                        </p>
+                      </div>
+                      <a
+                        href={currentTrack.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 w-7 h-7 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/25 flex items-center justify-center transition-colors"
+                        title="Open on Spotify"
+                      >
+                        <SpotifyIcon className="w-4 h-4 text-[#1DB954]" />
+                      </a>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="space-y-1 pt-0.5">
+                      <input
+                        type="range"
+                        min="0"
+                        max={duration}
+                        value={position}
+                        onChange={(e) => seekTo(Number(e.target.value))}
+                        className="w-full h-1 bg-white/15 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
+                      />
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono text-white/40">{formatMsToTime(position)}</span>
+                        <span className="text-[10px] font-mono text-white/40">{formatMsToTime(duration)}</span>
+                      </div>
+                    </div>
+
+                    {/* Playback Controls */}
+                    <div className="flex items-center gap-3 pt-0.5">
+                      <button
+                        type="button"
+                        onClick={previousTrack}
+                        className="w-7 h-7 rounded-full bg-white/8 hover:bg-white/15 text-white/70 hover:text-white flex items-center justify-center cursor-pointer transition-all active:scale-90"
+                        title="Previous Track"
+                      >
+                        <span className="material-symbols-outlined text-[17px]">skip_previous</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={togglePlayPause}
+                        className="w-9 h-9 rounded-full bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 flex items-center justify-center cursor-pointer transition-all shadow-lg shadow-[#1DB954]/25 active:scale-90"
+                        title={isPlaying ? 'Pause' : 'Play'}
+                      >
+                        <span className="material-symbols-outlined text-[22px]">
+                          {isPlaying ? 'pause' : 'play_arrow'}
+                        </span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={nextTrack}
+                        className="w-7 h-7 rounded-full bg-white/8 hover:bg-white/15 text-white/70 hover:text-white flex items-center justify-center cursor-pointer transition-all active:scale-90"
+                        title="Next Track"
+                      >
+                        <span className="material-symbols-outlined text-[17px]">skip_next</span>
+                      </button>
+
+                      {/* Volume Slider */}
+                      <div className="ml-auto flex items-center gap-1.5 group/vol">
+                        <button
+                          type="button"
+                          onClick={toggleMute}
+                          className="text-white/40 hover:text-white cursor-pointer transition-colors"
+                          title={isMuted ? 'Unmute' : 'Mute'}
+                        >
+                          <span className="material-symbols-outlined text-[16px]">
+                            {isMuted || volume === 0 ? 'volume_off' : volume < 50 ? 'volume_down' : 'volume_up'}
                           </span>
-                          {spotifyUser?.display_name && (
-                            <span className="text-[9px] text-white/30 font-bold truncate">@{spotifyUser.display_name}</span>
-                          )}
-                        </div>
-
-                        <div className="flex items-start justify-between gap-2 min-w-0">
-                          <div className="min-w-0">
-                            <p className="font-black text-sm text-white truncate leading-tight">
-                              {currentTrack?.title || activePlaylist?.name || activeCategory.name}
-                            </p>
-                            <p className="text-[11px] text-white/50 font-bold truncate mt-0.5">
-                              {currentTrack?.artist || activePlaylist?.owner || 'Indus University Study Lounge'}
-                            </p>
-                          </div>
-                          <a
-                            href={currentTrack?.externalUrl || activePlaylist?.externalUrl || `https://open.spotify.com/playlist/${activeCategory?.playlistId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="shrink-0 w-7 h-7 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/25 flex items-center justify-center transition-colors"
-                            title="Open on Spotify"
-                          >
-                            <SpotifyIcon className="w-4 h-4 text-[#1DB954]" />
-                          </a>
-                        </div>
-
-                        {/* Progress bar */}
-                        <div className="space-y-1 pt-0.5">
+                        </button>
+                        <div className="w-0 group-hover/vol:w-16 opacity-0 group-hover/vol:opacity-100 overflow-hidden transition-all duration-300">
                           <input
                             type="range"
                             min="0"
-                            max={duration || 1000}
-                            value={position}
-                            onChange={(e) => seekTo(Number(e.target.value))}
-                            className="w-full h-1 bg-white/15 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
+                            max="100"
+                            value={isMuted ? 0 : volume}
+                            onChange={(e) => changeVolume(Number(e.target.value))}
+                            className="w-16 h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
                           />
-                          <div className="flex items-center justify-between">
-                            <span className="text-[10px] font-mono text-white/40">{formatMsToTime(position)}</span>
-                            <span className="text-[10px] font-mono text-white/40">{formatMsToTime(duration || currentTrack?.durationMs || 0)}</span>
-                          </div>
-                        </div>
-
-                        {/* Playback Buttons */}
-                        <div className="flex items-center gap-3 pt-0.5">
-                          <button type="button" onClick={previousTrack} title="Previous"
-                            className="w-7 h-7 rounded-full bg-white/8 hover:bg-white/15 text-white/70 hover:text-white flex items-center justify-center cursor-pointer transition-all active:scale-90">
-                            <span className="material-symbols-outlined text-[17px]">skip_previous</span>
-                          </button>
-                          <button type="button" onClick={togglePlayPause} title={isPlaying ? 'Pause' : 'Play'}
-                            className="w-9 h-9 rounded-full bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 flex items-center justify-center cursor-pointer transition-all shadow-lg shadow-[#1DB954]/25 active:scale-90">
-                            <span className="material-symbols-outlined text-[22px]">{isPlaying ? 'pause' : 'play_arrow'}</span>
-                          </button>
-                          <button type="button" onClick={nextTrack} title="Next"
-                            className="w-7 h-7 rounded-full bg-white/8 hover:bg-white/15 text-white/70 hover:text-white flex items-center justify-center cursor-pointer transition-all active:scale-90">
-                            <span className="material-symbols-outlined text-[17px]">skip_next</span>
-                          </button>
-
-                          {/* Volume */}
-                          <div className="ml-auto flex items-center gap-1.5 group/vol">
-                            <button type="button" onClick={toggleMute} className="text-white/40 hover:text-white cursor-pointer transition-colors">
-                              <span className="material-symbols-outlined text-[16px]">
-                                {isMuted || volume === 0 ? 'volume_off' : volume < 50 ? 'volume_down' : 'volume_up'}
-                              </span>
-                            </button>
-                            <div className="w-0 group-hover/vol:w-16 opacity-0 group-hover/vol:opacity-100 overflow-hidden transition-all duration-300">
-                              <input type="range" min="0" max="100" value={isMuted ? 0 : volume}
-                                onChange={(e) => changeVolume(Number(e.target.value))}
-                                className="w-16 h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-[#1DB954]" />
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
+                  </div>
+                </div>
 
-                    {/* Track List */}
-                    <div className="p-3 bg-[#181818] border-t border-white/8">
-                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-white/35 px-1 pb-1.5">
-                        <span className="flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-[13px] text-[#1DB954]">queue_music</span>
-                          <span>{activeCategory.label} · {isLoadingTracks ? '...' : `${playlistTracks.length} Tracks`}</span>
-                        </span>
-                        <span className="text-[9px] text-[#1DB954]/60">Click to play</span>
-                      </div>
+                {/* Playlist Tracks List */}
+                <div className="p-3 bg-[#181818] border-t border-white/8 space-y-1">
+                  <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-white/35 px-1 pb-1.5">
+                    <span className="flex items-center gap-1.5">
+                      <span className="material-symbols-outlined text-[13px] text-[#1DB954]">queue_music</span>
+                      <span>{activeCategory.label} Playlist · {playlistTracks.length} Tracks</span>
+                    </span>
+                    <span className="text-[9px] text-[#1DB954]/60">Click to play</span>
+                  </div>
 
-                      {isLoadingTracks ? (
-                        <div className="space-y-1.5 py-1">
-                          {[1, 2, 3, 4].map((n) => <div key={n} className="w-full h-9 bg-white/5 rounded-xl animate-pulse" />)}
-                        </div>
-                      ) : playlistTracks.length > 0 ? (
-                        <div className="max-h-52 overflow-y-auto space-y-0.5">
-                          {playlistTracks.map((track, idx) => {
-                            const isActive = currentTrack?.id === track.id;
-                            return (
-                              <button key={track.id || idx} type="button"
-                                onClick={() => playTrack(track, activePlaylist?.uri, idx)}
-                                className={`group/track w-full px-2.5 py-2 rounded-xl text-left flex items-center justify-between gap-2 cursor-pointer transition-all border ${
-                                  isActive ? 'bg-[#1DB954]/10 border-[#1DB954]/30' : 'bg-transparent border-transparent hover:bg-white/6 hover:border-white/10'
-                                }`}
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  <div className="w-5 flex items-center justify-center shrink-0">
-                                    {isActive && isPlaying ? (
-                                      <div className="flex items-end gap-0.5 h-3.5">
-                                        {[30, 80, 50].map((h, i) => (
-                                          <motion.div key={i} animate={{ height: [`${h * 0.3}%`, `${h}%`, `${h * 0.2}%`] }}
-                                            transition={{ repeat: Infinity, duration: 0.45 + i * 0.1, ease: 'easeInOut' }}
-                                            className="w-0.5 bg-[#1DB954] rounded-full" />
-                                        ))}
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <span className={`text-[11px] font-mono group-hover/track:hidden ${isActive ? 'text-[#1DB954]' : 'text-white/25'}`}>{track.number || idx + 1}</span>
-                                        <span className="material-symbols-outlined text-[14px] text-[#1DB954] hidden group-hover/track:block">play_arrow</span>
-                                      </>
-                                    )}
-                                  </div>
-                                  <div className="min-w-0">
-                                    <p className={`text-[11px] font-bold truncate leading-tight ${isActive ? 'text-[#1DB954]' : 'text-white/70 group-hover/track:text-white'}`}>{track.title}</p>
-                                    <p className="text-[10px] text-white/35 truncate">{track.artist}</p>
-                                  </div>
-                                </div>
-                                <div className="shrink-0 flex items-center gap-1.5">
-                                  <span className="text-[10px] text-white/25 font-mono group-hover/track:hidden">{track.durationFormatted}</span>
-                                  <span className="hidden group-hover/track:flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#1DB954] text-slate-950 text-[9px] font-black">Play</span>
-                                  {isActive && isPlaying && (
-                                    <span className="group-hover/track:hidden px-1.5 py-0.5 rounded-md bg-[#1DB954]/12 text-[#1DB954] text-[9px] font-black border border-[#1DB954]/20">♪</span>
-                                  )}
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      ) : (
-                        <div className="py-5 text-center">
-                          <span className="material-symbols-outlined text-3xl text-white/15 block mb-1">music_off</span>
-                          <p className="text-xs text-white/35 font-bold">Could not load tracks. Check your Spotify connection.</p>
-                        </div>
-                      )}
-                    </div>
+                  <div className="max-h-52 overflow-y-auto space-y-0.5">
+                    {playlistTracks.map((track, idx) => {
+                      const isActive = trackIndex === idx;
 
-                    {/* Connected footer */}
-                    <div className="px-4 py-2.5 bg-[#0F0F0F] border-t border-white/8 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-2 h-2 rounded-full bg-[#1DB954] animate-pulse shrink-0" />
-                        <span className="text-[11px] font-bold text-white/50 truncate">
-                          Connected · {spotifyUser?.display_name || 'CampusHub Listener'}
-                        </span>
-                      </div>
-                      <button type="button" onClick={handleDisconnectSpotify}
-                        className="text-[10px] font-bold text-rose-400 hover:text-rose-300 underline cursor-pointer shrink-0 transition-colors">
-                        Disconnect
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  /* ── NOT CONNECTED: Rich Locked Preview State ── */
-                  <>
-                    {/* Locked Showcase Header */}
-                    <div className="p-5 bg-gradient-to-b from-[#1a1a2e] to-[#121212]">
-                      <div className="flex items-center gap-4">
-                        <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-[#0F172A] border border-white/10 shrink-0 flex items-center justify-center">
-                          <SpotifyIcon className="w-10 h-10 text-[#1DB954]/40" />
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-2xl text-white/30">lock</span>
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/8 text-white/40 border border-white/10 inline-block mb-1.5">
-                            Locked Preview
-                          </span>
-                          <p className="font-black text-sm text-white/80 truncate">{activeCategory.name}</p>
-                          <p className="text-[11px] text-white/40 font-bold mt-0.5 truncate">{activeCategory.description}</p>
-                        </div>
-                      </div>
-
-                      {/* Fake disabled scrub */}
-                      <div className="mt-4 space-y-1">
-                        <div className="w-full h-1 bg-white/10 rounded-full relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/20 to-white/5 animate-pulse" />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono text-white/20">0:00</span>
-                          <span className="text-[10px] font-mono text-white/20">3:24</span>
-                        </div>
-                      </div>
-
-                      {/* Fake disabled controls */}
-                      <div className="flex items-center gap-3 mt-3">
-                        <div className="w-7 h-7 rounded-full bg-white/5 border border-white/8 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[17px] text-white/20">skip_previous</span>
-                        </div>
-                        <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[22px] text-white/30">play_arrow</span>
-                        </div>
-                        <div className="w-7 h-7 rounded-full bg-white/5 border border-white/8 flex items-center justify-center">
-                          <span className="material-symbols-outlined text-[17px] text-white/20">skip_next</span>
-                        </div>
-                        <span className="ml-auto material-symbols-outlined text-[16px] text-white/20">volume_up</span>
-                      </div>
-                    </div>
-
-                    {/* Locked blurred track list */}
-                    <div className="p-3 bg-[#181818] border-t border-white/8 space-y-1">
-                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-white/30 px-1 pb-1">
-                        <span className="flex items-center gap-1.5">
-                          <span className="material-symbols-outlined text-[13px] text-[#1DB954]/40">queue_music</span>
-                          {activeCategory.label} Playlist
-                        </span>
-                        <span className="text-[9px] text-white/20">Connect to unlock</span>
-                      </div>
-                      {[
-                        { title: 'Lofi Hip Hop Radio', artist: 'Chillhop Music' },
-                        { title: 'Study With Me – Calm', artist: 'Soft Ambient Works' },
-                        { title: 'Brain Focus Waves', artist: 'Deep Concentration' },
-                        { title: 'Midnight Piano Sessions', artist: 'Piano & Rain Sounds' },
-                      ].map((t, idx) => (
-                        <div key={idx} className="w-full px-2.5 py-2 rounded-xl flex items-center justify-between gap-2 bg-white/3 border border-white/5 select-none">
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <span className="text-[11px] font-mono text-white/15 shrink-0 w-4">{idx + 1}</span>
-                            <div className="min-w-0">
-                              <p className="text-[11px] font-bold text-white/25 truncate blur-[3px]">{t.title}</p>
-                              <p className="text-[10px] text-white/15 truncate blur-[2px]">{t.artist}</p>
-                            </div>
-                          </div>
-                          <span className="material-symbols-outlined text-[15px] text-white/15 shrink-0">lock</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* CTA Connect Button */}
-                    <div className="p-4 bg-[#0F0F0F] border-t border-white/8">
-                      {isSpotifyAuthenticating ? (
-                        <div className="flex items-center justify-center gap-3 py-1">
-                          <div className="w-5 h-5 border-2 border-[#1DB954] border-t-transparent rounded-full animate-spin" />
-                          <span className="text-sm font-black text-white/70">Connecting to Spotify...</span>
-                        </div>
-                      ) : (
+                      return (
                         <button
+                          key={track.id}
                           type="button"
-                          onClick={() => setShowSpotifyLoginModal(true)}
-                          className="w-full py-3 px-4 rounded-2xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-sm border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] flex items-center justify-center gap-2.5 cursor-pointer transition-all hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                          onClick={() => playTrack(track, idx)}
+                          className={`group/track w-full px-2.5 py-2 rounded-xl text-left flex items-center justify-between gap-2 cursor-pointer transition-all border ${
+                            isActive
+                              ? 'bg-[#1DB954]/12 border-[#1DB954]/40 shadow-inner'
+                              : 'bg-transparent border-transparent hover:bg-white/6 hover:border-white/10'
+                          }`}
                         >
-                          <SpotifyIcon className="w-5 h-5 text-slate-950" />
-                          <span>Connect Spotify to Unlock</span>
-                          <span className="material-symbols-outlined text-sm">lock_open</span>
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-5 flex items-center justify-center shrink-0">
+                              {isActive && isPlaying ? (
+                                <div className="flex items-end gap-0.5 h-3.5">
+                                  {[30, 80, 50].map((h, i) => (
+                                    <motion.div
+                                      key={i}
+                                      animate={{ height: [`${h * 0.3}%`, `${h}%`, `${h * 0.2}%`] }}
+                                      transition={{ repeat: Infinity, duration: 0.45 + i * 0.1, ease: 'easeInOut' }}
+                                      className="w-0.5 bg-[#1DB954] rounded-full"
+                                    />
+                                  ))}
+                                </div>
+                              ) : (
+                                <>
+                                  <span className={`text-[11px] font-mono group-hover/track:hidden ${isActive ? 'text-[#1DB954]' : 'text-white/30'}`}>
+                                    {track.number}
+                                  </span>
+                                  <span className="material-symbols-outlined text-[14px] text-[#1DB954] hidden group-hover/track:block">
+                                    play_arrow
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <p className={`text-[11px] font-bold truncate leading-tight ${isActive ? 'text-[#1DB954]' : 'text-white/80 group-hover/track:text-white'}`}>
+                                {track.title}
+                              </p>
+                              <p className="text-[10px] text-white/40 truncate">{track.artist}</p>
+                            </div>
+                          </div>
+                          <div className="shrink-0 flex items-center gap-1.5">
+                            <span className="text-[10px] text-white/30 font-mono group-hover/track:hidden">
+                              {track.durationFormatted}
+                            </span>
+                            <span className="hidden group-hover/track:flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#1DB954] text-slate-950 text-[9px] font-black">
+                              Play
+                            </span>
+                            {isActive && isPlaying && (
+                              <span className="group-hover/track:hidden px-1.5 py-0.5 rounded-md bg-[#1DB954]/15 text-[#1DB954] text-[9px] font-black uppercase border border-[#1DB954]/25">
+                                ♪
+                              </span>
+                            )}
+                          </div>
                         </button>
-                      )}
-                      <p className="text-center text-[10px] text-white/30 font-bold mt-2">
-                        🔒 Session expires when you close the tab · No data stored
-                      </p>
-                    </div>
-                  </>
-                )}
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Player Footer */}
+                <div className="px-4 py-2.5 bg-[#0F0F0F] border-t border-white/8 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-[#1DB954] animate-pulse shrink-0" />
+                    <span className="text-[11px] font-bold text-white/60 truncate">
+                      Indus University Study Beats
+                    </span>
+                  </div>
+                  <a
+                    href={currentTrack.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[10px] font-bold text-[#1DB954] hover:underline cursor-pointer shrink-0"
+                  >
+                    Open in Spotify →
+                  </a>
+                </div>
               </div>
             </div>
 
             {/* Action Trigger */}
             <div className="pt-4 mt-4 border-t-2 border-slate-900/10 flex flex-wrap items-center justify-between gap-3">
               <a
-                href={
-                  currentTrack?.externalUrl ||
-                  activePlaylist?.externalUrl ||
-                  `https://open.spotify.com/playlist/${activeCategory?.playlistId || '0vvXsWCC9xrXsKd4FyS8kM'}`
-                }
+                href={currentTrack.externalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 rounded-xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
@@ -1125,67 +1151,6 @@ export default function Community() {
         </div>
 
       </main>
-
-      {/* Spotify Session Login Modal */}
-      <AnimatePresence>
-        {showSpotifyLoginModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="bg-[#FFFDF9] rounded-[28px] p-6 sm:p-8 max-w-md w-full border-3 border-[#0F172A] shadow-[8px_8px_0px_#0F172A] space-y-5 relative"
-            >
-              <button
-                type="button"
-                onClick={() => setShowSpotifyLoginModal(false)}
-                className="absolute top-4 right-4 text-slate-500 hover:text-slate-900 cursor-pointer"
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-
-              <div className="w-12 h-12 rounded-2xl bg-[#0F172A] text-[#1DB954] flex items-center justify-center border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A]">
-                <SpotifyIcon className="w-6 h-6 text-[#1DB954]" />
-              </div>
-
-              <div>
-                <h3 className="text-xl font-black text-slate-900">
-                  Connect Spotify for Full Songs
-                </h3>
-                <p className="text-xs text-slate-600 font-bold mt-1.5 leading-relaxed">
-                  Spotify embeds play 30-second previews by default when not logged in. Signing in unlocks uninterrupted, full-length songs directly on CampusHub.
-                </p>
-              </div>
-
-              <div className="p-3 rounded-xl bg-amber-50 border-2 border-amber-300 text-[11px] text-amber-950 font-extrabold flex items-start gap-2">
-                <span className="material-symbols-outlined text-sm shrink-0 text-amber-700 mt-0.5">lock_clock</span>
-                <span>
-                  <strong>Privacy First:</strong> Your login session is temporary and automatically expires the moment you close the website.
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={handleConnectSpotify}
-                  className="flex-1 py-3 px-4 rounded-xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-xs sm:text-sm border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] flex items-center justify-center gap-2 cursor-pointer transition-all active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
-                >
-                  <SpotifyIcon className="w-4 h-4 text-slate-950" />
-                  <span>Log in with Spotify</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setShowSpotifyLoginModal(false)}
-                  className="py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-black text-xs border-2 border-slate-300 cursor-pointer"
-                >
-                  Cancel
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
