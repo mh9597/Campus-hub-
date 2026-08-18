@@ -4,6 +4,7 @@
 
 import { Outlet, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import { useAdminAuth } from '../context/AdminAuthContext';
+import ScrollToTop from '../components/common/ScrollToTop';
 
 export default function AdminLayout() {
   const { admin, isLoading, logout } = useAdminAuth();
@@ -38,6 +39,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-background flex">
+      <ScrollToTop />
       {/* Sidebar */}
       <aside className="w-64 shrink-0 bg-surface-container border-r border-outline-variant/20 flex flex-col">
         {/* Brand */}

@@ -26,6 +26,7 @@ const NotFound = lazy(() => import('../pages/NotFound/NotFound'));
 const SubjectDetails = lazy(() => import('../pages/Subject/SubjectDetails'));
 const ComingSoon = lazy(() => import('../pages/ComingSoon/ComingSoon'));
 const ResourceViewer = lazy(() => import('../pages/ResourceViewer/ResourceViewer'));
+const SpotifyCallback = lazy(() => import('../pages/SpotifyCallback/SpotifyCallback'));
 
 function DepartmentRouteHandler() {
   const { code } = useParams();
@@ -64,6 +65,9 @@ export const router = createBrowserRouter([
       { path: '*', element: withSuspense(NotFound) },
     ],
   },
+
+  // ── Spotify OAuth Callback (standalone) ─────────────────────
+  { path: '/callback', element: withSuspense(SpotifyCallback) },
 
   // ── Resource Viewer (full-screen, no navbar) ────────────────
   { path: '/resource/:id', element: withSuspense(ResourceViewer) },

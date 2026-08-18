@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import HomeSearchBar from '../HomeSearchBar';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [hoveredPath, setHoveredPath] = useState(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,20 +52,49 @@ function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Nav Links */}
-        <div className="hidden lg:flex items-center gap-8">
+        {/* Center: Nav Links - Apple Dock Hover Effect */}
+        <div 
+          className="hidden lg:flex items-center gap-8"
+          onMouseLeave={() => setHoveredPath(null)}
+        >
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
+              onMouseEnter={() => setHoveredPath(link.path)}
               className={({ isActive }) =>
-                `text-sm font-semibold transition-all duration-200 hover:text-amber-500 relative py-1 ${isActive
-                  ? 'text-hub-navy font-bold after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-amber-400 after:rounded-full'
-                  : 'text-gray-600'
+                `text-sm relative py-1 font-bold transition-colors duration-200 select-none ${
+                  isActive ? 'text-hub-navy' : 'text-gray-600 hover:text-hub-navy'
                 }`
               }
             >
-              {link.name}
+              {({ isActive }) => (
+                <motion.div
+                  className="flex flex-col items-center justify-center relative"
+                  whileHover={{ scale: 1.15, y: -2 }}
+                  transition={{ type: 'spring', stiffness: 450, damping: 22 }}
+                >
+                  <span>{link.name}</span>
+
+                  {/* Apple Dock Hover Sliding Underline */}
+                  {hoveredPath === link.path && (
+                    <motion.div
+                      layoutId="dock-hover-underline"
+                      className="absolute -bottom-1 left-0 right-0 h-[3px] bg-amber-400 rounded-full shadow-xs"
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
+
+                  {/* macOS Dock Active Dot Indicator when not hovering */}
+                  {isActive && hoveredPath !== link.path && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -bottom-1.5 w-1.5 h-1.5 bg-amber-500 rounded-full shadow-xs"
+                    />
+                  )}
+                </motion.div>
+              )}
             </NavLink>
           ))}
         </div>

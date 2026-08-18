@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { getResourceById } from '../../services/resources/resourcesApi';
+import ScrollToTop from '../../components/common/ScrollToTop';
 
 // ─── Helpers ──────────────────────────────────────────────────
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
@@ -109,6 +110,7 @@ function ResourceViewer() {
 
   return (
     <div className="h-screen flex flex-col bg-[#0f1117] text-white overflow-hidden">
+      <ScrollToTop />
 
       {/* ── Top Bar ─────────────────────────────────────────── */}
       <header className="shrink-0 bg-[#1a1d27] border-b border-white/10 px-4 py-3 flex items-center gap-3">

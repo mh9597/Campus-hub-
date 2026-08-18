@@ -402,7 +402,7 @@ function Resources() {
         <section className="py-10 sm:py-16 relative">
           <div className="relative rounded-3xl overflow-hidden shadow-2xl bg-[#0B132B] border border-white/10 text-white">
             {/* Paper Airplane Trail Decor */}
-            <div className="absolute bottom-0 left-0 h-28 sm:h-44 md:h-[88%] max-h-full w-auto pointer-events-none z-0 sm:z-10 flex items-end opacity-40 sm:opacity-75 md:opacity-90">
+            <div className="absolute bottom-0 -left-10 sm:left-0 md:-left-12 lg:left-0 h-28 sm:h-44 md:h-[75%] lg:h-[85%] max-h-full w-auto pointer-events-none z-0 flex items-end opacity-40 sm:opacity-50 md:opacity-60">
               <img src="/images/paper-airplane-trail.png" alt="Paper Airplane Trail" className="h-full w-auto object-contain object-bottom" />
             </div>
 
