@@ -66,6 +66,19 @@ app.use(cookieParser());
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// ─── Welcome / Root Route ──────────────────────────────────────
+app.get('/', (_req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'Student Resource Hub — Backend API',
+    message: 'Backend server is running and ready for traffic.',
+    health: '/health',
+    api: '/api',
+    frontend: process.env.ALLOWED_ORIGIN || 'https://campus-hub-eight-omega.vercel.app',
+    version: '1.0.0',
+  });
+});
+
 // ─── Health Check ─────────────────────────────────────────────
 app.get('/health', (_req, res) => {
   res.json({
