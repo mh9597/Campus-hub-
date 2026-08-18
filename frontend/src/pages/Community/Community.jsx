@@ -12,14 +12,14 @@ const SPOTIFY_STUDY_CATEGORIES = [
     description: 'Relaxing lofi hip hop beats for deep focus & calm study sessions.',
     artwork: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '1', number: 1, title: 'Misty Meadows', artist: 'eleven, Mondo Loops', durationFormatted: '3:28', durationMs: 208000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '2', number: 2, title: 'Thinking Spot', artist: 'xander.', durationFormatted: '2:45', durationMs: 165000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '3', number: 3, title: 'Late Night Coding', artist: 'Kavvson', durationFormatted: '3:12', durationMs: 192000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '4', number: 4, title: 'Midnight Chill Vibes', artist: 'Purrple Cat', durationFormatted: '4:05', durationMs: 245000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '5', number: 5, title: 'Rainy Window Study', artist: 'Lofi Girl', durationFormatted: '2:55', durationMs: 175000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '6', number: 6, title: 'Coffee & Books', artist: 'Chillhop Music', durationFormatted: '3:40', durationMs: 220000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '7', number: 7, title: 'Exam Eve Focus', artist: 'Kudasa', durationFormatted: '3:15', durationMs: 195000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '8', number: 8, title: 'Quiet Library Corner', artist: 'Kupla', durationFormatted: '3:02', durationMs: 182000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '1', number: 1, title: 'Misty Meadows', artist: 'eleven, Mondo Loops', durationFormatted: '3:28', durationMs: 208000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '2', number: 2, title: 'Thinking Spot', artist: 'xander.', durationFormatted: '2:45', durationMs: 165000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '3', number: 3, title: 'Late Night Coding', artist: 'Kavvson', durationFormatted: '3:12', durationMs: 192000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '4', number: 4, title: 'Midnight Chill Vibes', artist: 'Purrple Cat', durationFormatted: '4:05', durationMs: 245000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '5', number: 5, title: 'Rainy Window Study', artist: 'Lofi Girl', durationFormatted: '2:55', durationMs: 175000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '6', number: 6, title: 'Coffee & Books', artist: 'Chillhop Music', durationFormatted: '3:40', durationMs: 220000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '7', number: 7, title: 'Exam Eve Focus', artist: 'Kudasa', durationFormatted: '3:15', durationMs: 195000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '8', number: 8, title: 'Quiet Library Corner', artist: 'Kupla', durationFormatted: '3:02', durationMs: 182000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
     ],
   },
   {
@@ -30,14 +30,14 @@ const SPOTIFY_STUDY_CATEGORIES = [
     description: 'High-energy futuristic synthwave for fast coding & late-night debugging.',
     artwork: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '10', number: 1, title: 'Resonance', artist: 'HOME', durationFormatted: '3:32', durationMs: 212000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '11', number: 2, title: 'Tech Noir', artist: 'GUNSHIP', durationFormatted: '4:57', durationMs: 297000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '12', number: 3, title: 'Turbulence', artist: 'Daniel Deluxe', durationFormatted: '3:45', durationMs: 225000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '13', number: 4, title: 'Overdrive', artist: 'Lazerhawk', durationFormatted: '4:15', durationMs: 255000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '14', number: 5, title: 'Sunset Synth', artist: 'The Midnight', durationFormatted: '5:26', durationMs: 326000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '15', number: 6, title: 'Cyber City 2077', artist: 'Synthwave Boy', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '16', number: 7, title: 'Nightcall Drive', artist: 'Kavinsky', durationFormatted: '4:18', durationMs: 258000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '17', number: 8, title: 'Neon Blade Flow', artist: 'Moondeity', durationFormatted: '2:40', durationMs: 160000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '10', number: 1, title: 'Resonance', artist: 'HOME', durationFormatted: '3:32', durationMs: 212000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '11', number: 2, title: 'Tech Noir', artist: 'GUNSHIP', durationFormatted: '4:57', durationMs: 297000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '12', number: 3, title: 'Turbulence', artist: 'Daniel Deluxe', durationFormatted: '3:45', durationMs: 225000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '13', number: 4, title: 'Overdrive', artist: 'Lazerhawk', durationFormatted: '4:15', durationMs: 255000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '14', number: 5, title: 'Sunset Synth', artist: 'The Midnight', durationFormatted: '5:26', durationMs: 326000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '15', number: 6, title: 'Cyber City 2077', artist: 'Synthwave Boy', durationFormatted: '3:50', durationMs: 230000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '16', number: 7, title: 'Nightcall Drive', artist: 'Kavinsky', durationFormatted: '4:18', durationMs: 258000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '17', number: 8, title: 'Neon Blade Flow', artist: 'Moondeity', durationFormatted: '2:40', durationMs: 160000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
     ],
   },
   {
@@ -48,14 +48,14 @@ const SPOTIFY_STUDY_CATEGORIES = [
     description: 'Arijit, Pritam & energetic Hindi study remixes for high morale.',
     artwork: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '20', number: 1, title: 'Kesariya (Unplugged Hype)', artist: 'Arijit Singh', durationFormatted: '3:42', durationMs: 222000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '21', number: 2, title: 'Apna Bana Le (Chill Bass)', artist: 'Arijit Singh, Sachin-Jigar', durationFormatted: '3:20', durationMs: 200000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '22', number: 3, title: 'Choo Lo (Indie Acoustic)', artist: 'The Local Train', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '23', number: 4, title: 'Kabira (Session Remix)', artist: 'Tochi Raina, Rekha Bhardwaj', durationFormatted: '4:11', durationMs: 251000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '24', number: 5, title: 'Tum Se Hi (Lo-Fi Mix)', artist: 'Mohit Chauhan', durationFormatted: '4:02', durationMs: 242000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '25', number: 6, title: 'Jo Tum Mere Ho (Chill Session)', artist: 'Anuv Jain', durationFormatted: '3:10', durationMs: 190000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '26', number: 7, title: 'Husn (Acoustic Unplugged)', artist: 'Anuv Jain', durationFormatted: '3:35', durationMs: 215000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '27', number: 8, title: 'Kun Faya Kun (Sufi Ambient)', artist: 'A.R. Rahman', durationFormatted: '7:50', durationMs: 470000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '20', number: 1, title: 'Kesariya (Unplugged Hype)', artist: 'Arijit Singh', durationFormatted: '3:42', durationMs: 222000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '21', number: 2, title: 'Apna Bana Le (Chill Bass)', artist: 'Arijit Singh, Sachin-Jigar', durationFormatted: '3:20', durationMs: 200000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '22', number: 3, title: 'Choo Lo (Indie Acoustic)', artist: 'The Local Train', durationFormatted: '3:50', durationMs: 230000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '23', number: 4, title: 'Kabira (Session Remix)', artist: 'Tochi Raina, Rekha Bhardwaj', durationFormatted: '4:11', durationMs: 251000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '24', number: 5, title: 'Tum Se Hi (Lo-Fi Mix)', artist: 'Mohit Chauhan', durationFormatted: '4:02', durationMs: 242000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '25', number: 6, title: 'Jo Tum Mere Ho (Chill Session)', artist: 'Anuv Jain', durationFormatted: '3:10', durationMs: 190000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '26', number: 7, title: 'Husn (Acoustic Unplugged)', artist: 'Anuv Jain', durationFormatted: '3:35', durationMs: 215000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '27', number: 8, title: 'Kun Faya Kun (Sufi Ambient)', artist: 'A.R. Rahman', durationFormatted: '7:50', durationMs: 470000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
     ],
   },
   {
@@ -66,14 +66,14 @@ const SPOTIFY_STUDY_CATEGORIES = [
     description: 'Heavy 808 basslines & aggressive drift phonk for 3 AM exam revision.',
     artwork: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '30', number: 1, title: 'MURDER IN MY MIND', artist: 'KORDHELL', durationFormatted: '2:25', durationMs: 145000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '31', number: 2, title: 'RAVE', artist: 'Dxrk 🚪', durationFormatted: '2:49', durationMs: 169000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '32', number: 3, title: 'Metamorphosis', artist: 'INTERWORLD', durationFormatted: '2:22', durationMs: 142000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '33', number: 4, title: 'PHONK TOWN', artist: 'Playaphonk', durationFormatted: '2:10', durationMs: 130000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '34', number: 5, title: 'Shadow Drift', artist: 'ONIX', durationFormatted: '2:15', durationMs: 135000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '35', number: 6, title: 'Sahara Bass', artist: 'Hensonn', durationFormatted: '2:51', durationMs: 171000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '36', number: 7, title: 'Live Another Day', artist: 'KORDHELL', durationFormatted: '2:14', durationMs: 134000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '37', number: 8, title: 'Automotive Phonk', artist: 'MC Orsen', durationFormatted: '2:30', durationMs: 150000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '30', number: 1, title: 'MURDER IN MY MIND', artist: 'KORDHELL', durationFormatted: '2:25', durationMs: 145000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '31', number: 2, title: 'RAVE', artist: 'Dxrk 🚪', durationFormatted: '2:49', durationMs: 169000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '32', number: 3, title: 'Metamorphosis', artist: 'INTERWORLD', durationFormatted: '2:22', durationMs: 142000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '33', number: 4, title: 'PHONK TOWN', artist: 'Playaphonk', durationFormatted: '2:10', durationMs: 130000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '34', number: 5, title: 'Shadow Drift', artist: 'ONIX', durationFormatted: '2:15', durationMs: 135000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '35', number: 6, title: 'Sahara Bass', artist: 'Hensonn', durationFormatted: '2:51', durationMs: 171000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '36', number: 7, title: 'Live Another Day', artist: 'KORDHELL', durationFormatted: '2:14', durationMs: 134000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '37', number: 8, title: 'Automotive Phonk', artist: 'MC Orsen', durationFormatted: '2:30', durationMs: 150000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
     ],
   },
 ];
@@ -268,9 +268,8 @@ export default function Community() {
     opt4: 5,
   });
 
-
-
-  // ─── Local Spotify Study Lounge State ─────────────────────────────────────
+  // ─── Local Spotify Study Lounge State & Audio Control ─────────────────────
+  const audioRef = useRef(null);
   const [activeCategoryId, setActiveCategoryId] = useState('lofi');
   const [trackIndex, setTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -285,24 +284,33 @@ export default function Community() {
   const currentTrack = playlistTracks[trackIndex] || playlistTracks[0];
   const duration = currentTrack.durationMs;
 
-  // Real-time progress position ticker when playing
+  // Sync actual HTML5 Audio playback with isPlaying state
   useEffect(() => {
-    let interval = null;
+    if (!audioRef.current) return;
     if (isPlaying) {
-      interval = setInterval(() => {
-        setPosition((prev) => {
-          if (prev >= duration) {
-            setTrackIndex((idx) => (idx + 1) % playlistTracks.length);
-            return 0;
-          }
-          return prev + 1000;
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('Audio playback waiting for user action:', err);
         });
-      }, 1000);
+      }
+    } else {
+      audioRef.current.pause();
     }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isPlaying, duration, playlistTracks]);
+  }, [isPlaying, trackIndex, activeCategoryId]);
+
+  // Sync volume and mute with HTML5 Audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume / 100;
+    }
+  }, [volume, isMuted]);
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setPosition(Math.floor(audioRef.current.currentTime * 1000));
+    }
+  };
 
   const selectCategory = (categoryId) => {
     setActiveCategoryId(categoryId);
@@ -332,11 +340,17 @@ export default function Community() {
 
   const seekTo = (pos) => {
     setPosition(pos);
+    if (audioRef.current) {
+      audioRef.current.currentTime = pos / 1000;
+    }
   };
 
   const changeVolume = (val) => {
     setVolume(val);
     if (isMuted && val > 0) setIsMuted(false);
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : val / 100;
+    }
   };
 
   const toggleMute = () => {
@@ -892,6 +906,15 @@ export default function Community() {
                     </div>
                   </div>
                 </div>
+
+                {/* HTML5 Audio Stream Element */}
+                <audio
+                  ref={audioRef}
+                  src={currentTrack.audioUrl}
+                  onTimeUpdate={handleTimeUpdate}
+                  onEnded={nextTrack}
+                  preload="auto"
+                />
               </div>
             </div>
 
