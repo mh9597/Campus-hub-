@@ -262,6 +262,7 @@ export default function Community() {
   const [volume, setVolume] = useState(80);
   const [isMuted, setIsMuted] = useState(false);
   const [previousVolume, setPreviousVolume] = useState(80);
+  const [isTracklistOpen, setIsTracklistOpen] = useState(false);
 
   const activeCategory = SPOTIFY_STUDY_CATEGORIES.find((c) => c.id === activeCategoryId) || SPOTIFY_STUDY_CATEGORIES[0];
   const playlistTracks = activeCategory.tracks;
@@ -772,28 +773,107 @@ export default function Community() {
                 </div>
 
                 {/* Status Footer Bar */}
-                <div className="px-4 py-2 bg-[#121212] border-t border-white/10 flex items-center justify-between text-[11px] text-white/50 font-bold">
-                  <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-0.5 text-[#1DB954]">
-                      <span className="w-1 h-2 bg-[#1DB954] rounded-xs animate-pulse" />
-                      <span className="w-1 h-3 bg-[#1DB954] rounded-xs animate-pulse delay-75" />
-                      <span className="w-1 h-1.5 bg-[#1DB954] rounded-xs animate-pulse delay-150" />
-                    </span>
-                    <span>Full HD Stream</span>
-                    <span className="text-rose-400 font-extrabold ml-1">Live Beat</span>
+                <div className="px-4 py-2.5 bg-[#121212] border-t border-white/10 flex items-center justify-between text-[11px] text-white/60 font-bold relative z-20">
+                  {/* Left: Full HD Stream Live Beat (Hover or Click to open tracklist menu) */}
+                  <div className="relative group/stream-pill">
+                    <button
+                      type="button"
+                      onClick={() => setIsTracklistOpen((prev) => !prev)}
+                      className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 hover:bg-[#1DB954]/20 border border-white/10 hover:border-[#1DB954]/40 text-white transition-all cursor-pointer"
+                    >
+                      <span className="flex items-center gap-0.5 text-[#1DB954]">
+                        <span className="w-1 h-2 bg-[#1DB954] rounded-xs animate-pulse" />
+                        <span className="w-1 h-3 bg-[#1DB954] rounded-xs animate-pulse delay-75" />
+                        <span className="w-1 h-1.5 bg-[#1DB954] rounded-xs animate-pulse delay-150" />
+                      </span>
+                      <span className="font-extrabold text-white">Full HD Stream</span>
+                      <span className="text-rose-400 font-extrabold">Live Beat</span>
+                      <span className="text-[10px] text-[#1DB954] font-black group-hover/stream-pill:translate-y-[-1px] transition-transform">
+                        🎵 Songs ▾
+                      </span>
+                    </button>
+
+                    {/* Track Selector Popover on Hover / Click */}
+                    <div className={`absolute bottom-full left-0 mb-2 w-64 sm:w-72 bg-[#181818] border-2 border-[#1DB954]/40 rounded-2xl p-3 shadow-2xl transition-all duration-250 z-50 ${
+                      isTracklistOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover/stream-pill:opacity-100 group-hover/stream-pill:pointer-events-auto'
+                    }`}>
+                      <div className="flex items-center justify-between pb-2 border-b border-white/10">
+                        <div className="flex items-center gap-1.5 text-xs font-black text-white">
+                          <SpotifyIcon className="w-4 h-4 text-[#1DB954]" />
+                          <span>{activeCategory.label} Songs</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setIsTracklistOpen(false)}
+                          className="text-[9px] text-[#1DB954] hover:underline font-extrabold cursor-pointer"
+                        >
+                          Close ✕
+                        </button>
+                      </div>
+
+                      <div className="space-y-1 my-2 max-h-48 overflow-y-auto pr-1">
+                        {playlistTracks.map((tr, idx) => {
+                          const isActive = trackIndex === idx;
+                          return (
+                            <button
+                              key={tr.id}
+                              type="button"
+                              onClick={() => {
+                                playTrack(tr, idx);
+                                setIsTracklistOpen(false);
+                              }}
+                              className={`w-full px-2.5 py-1.5 rounded-xl text-left flex items-center justify-between gap-2 text-xs transition-all cursor-pointer border ${
+                                isActive
+                                  ? 'bg-[#1DB954]/20 border-[#1DB954]/50 text-[#1DB954] font-black'
+                                  : 'bg-white/5 border-transparent text-white/80 hover:bg-white/10 hover:text-white'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <span className="font-mono text-[10px] text-white/40">{idx + 1}</span>
+                                <div className="min-w-0">
+                                  <p className="truncate font-bold leading-tight text-[11px]">{tr.title}</p>
+                                  <p className="text-[9px] text-white/40 truncate">{tr.artist}</p>
+                                </div>
+                              </div>
+                              <span className="font-mono text-[9px] text-white/40 shrink-0">{tr.durationFormatted}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <div className="pt-1.5 border-t border-white/10 flex items-center justify-between text-[10px] text-white/40 font-bold">
+                        <span>Click song to play live</span>
+                        <span className="text-[#1DB954]">Indus Lounge</span>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  {/* Right: Working Interactive Volume Control (Hover/Click to adjust volume) */}
+                  <div className="flex items-center gap-2 group/volume relative">
                     <button
                       type="button"
                       onClick={toggleMute}
-                      className="hover:text-white cursor-pointer transition-colors"
+                      className="p-1 rounded-full hover:bg-white/10 text-white/70 hover:text-white cursor-pointer transition-colors"
                       title={isMuted ? 'Unmute' : 'Mute'}
                     >
-                      <span className="material-symbols-outlined text-base">
-                        {isMuted || volume === 0 ? 'volume_off' : 'volume_up'}
+                      <span className="material-symbols-outlined text-base text-white/80">
+                        {isMuted || volume === 0 ? 'volume_off' : volume < 50 ? 'volume_down' : 'volume_up'}
                       </span>
                     </button>
+
+                    <div className="flex items-center gap-1.5">
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={isMuted ? 0 : volume}
+                        onChange={(e) => changeVolume(Number(e.target.value))}
+                        className="w-16 sm:w-20 h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
+                      />
+                      <span className="font-mono text-[10px] text-white/60 min-w-6 text-right font-bold">
+                        {isMuted ? '0%' : `${volume}%`}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
