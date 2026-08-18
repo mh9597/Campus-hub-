@@ -671,7 +671,7 @@ export default function Community() {
               </div>
 
               {/* Compact Spotify Player Widget matching screenshot with Hover Playlist Reveal Drawer */}
-              <div className="group/player rounded-[24px] overflow-visible border-2 border-[#0F172A] shadow-[4px_4px_0px_#0F172A] bg-[#1a1a1a] text-white relative transition-all duration-300">
+              <div className="group/player rounded-[24px] overflow-visible border-2 border-[#0F172A] shadow-xl shadow-black/50 bg-[#1a1a1a] text-white relative transition-all duration-300">
                 {/* Player Main Content Container */}
                 <div className="p-4 sm:p-5 flex flex-col justify-between space-y-3 relative z-10">
                   <div className="flex items-start gap-4">
@@ -789,7 +789,7 @@ export default function Community() {
                 </div>
 
                 {/* Status Footer Bar */}
-                <div className="px-4 py-2.5 bg-[#121212] border-t border-white/10 flex items-center justify-between text-[11px] text-white/60 font-bold relative z-20">
+                <div className="px-4 py-2.5 bg-[#121212] border-t border-white/10 flex items-center justify-between text-[11px] text-white/60 font-bold relative z-20 rounded-b-[22px]">
                   {/* Left: Full HD Stream Live Beat (Hover or Click to open tracklist menu) */}
                   <div className="relative group/stream-pill">
                     <button
