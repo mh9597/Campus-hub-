@@ -2,95 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
-// ─── Local Spotify Study Lounge Categories & Helper ─────────────────────────────
-const SPOTIFY_STUDY_CATEGORIES = [
-  {
-    id: 'lofi',
-    label: 'Lo-Fi Study',
-    name: 'Lofi Beats · Beats to Relax/Study To',
-    playlistId: '0vvXsWCC9xrXsKd4FyS8kM',
-    description: 'Relaxing lofi hip hop beats for deep focus & calm study sessions.',
-    artwork: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&auto=format&fit=crop&q=80',
-    tracks: [
-      { id: '1', number: 1, title: 'Misty Meadows', artist: 'eleven, Mondo Loops', durationFormatted: '3:28', durationMs: 208000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '2', number: 2, title: 'Thinking Spot', artist: 'xander.', durationFormatted: '2:45', durationMs: 165000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '3', number: 3, title: 'Snowfall', artist: 'Oneheart, reidenshi', durationFormatted: '2:03', durationMs: 123000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '4', number: 4, title: 'Coffee & Cigarettes', artist: 'Lofi Girl', durationFormatted: '2:50', durationMs: 170000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '5', number: 5, title: 'Night Trouble', artist: 'Petit Biscuit', durationFormatted: '3:10', durationMs: 190000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '6', number: 6, title: 'Affection', artist: 'Jinsang', durationFormatted: '2:40', durationMs: 160000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '7', number: 7, title: 'Controlla', artist: 'Idealism', durationFormatted: '2:25', durationMs: 145000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '8', number: 8, title: "I'm Closing My Eyes", artist: 'Potsu', durationFormatted: '2:15', durationMs: 135000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '9', number: 9, title: '5:32 PM', artist: 'The Deli', durationFormatted: '2:38', durationMs: 158000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '10', number: 10, title: 'Soft Rain Study', artist: 'Lofi Study Lounge', durationFormatted: '3:05', durationMs: 185000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '11', number: 11, title: 'Midnight Call', artist: 'Kavvson', durationFormatted: '3:12', durationMs: 192000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '12', number: 12, title: 'Sleepwell', artist: 'Purrple Cat', durationFormatted: '4:05', durationMs: 245000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '13', number: 13, title: 'Late Night Study', artist: 'SwuM', durationFormatted: '2:58', durationMs: 178000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '14', number: 14, title: 'Warm Tea Session', artist: 'Kupla', durationFormatted: '3:02', durationMs: 182000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '15', number: 15, title: 'Quiet Library Corner', artist: 'Kudasa', durationFormatted: '3:15', durationMs: 195000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3', externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-    ],
-  },
-  {
-    id: 'cyberpunk',
-    label: 'Cyberpunk Flow',
-    name: 'High Octane Synthwave · 140 BPM Coding',
-    playlistId: '37i9dQZF1DXdLENZaqioXM',
-    description: 'High-energy futuristic synthwave for fast coding & late-night debugging.',
-    artwork: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&auto=format&fit=crop&q=80',
-    tracks: [
-      { id: '10', number: 1, title: 'Resonance', artist: 'HOME', durationFormatted: '3:32', durationMs: 212000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '11', number: 2, title: 'Tech Noir', artist: 'GUNSHIP', durationFormatted: '4:57', durationMs: 297000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '12', number: 3, title: 'Turbulence', artist: 'Daniel Deluxe', durationFormatted: '3:45', durationMs: 225000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '13', number: 4, title: 'Overdrive', artist: 'Lazerhawk', durationFormatted: '4:15', durationMs: 255000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '14', number: 5, title: 'Sunset Synth', artist: 'The Midnight', durationFormatted: '5:26', durationMs: 326000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '15', number: 6, title: 'Cyber City 2077', artist: 'Synthwave Boy', durationFormatted: '3:50', durationMs: 230000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '16', number: 7, title: 'Nightcall Drive', artist: 'Kavinsky', durationFormatted: '4:18', durationMs: 258000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b1a37c38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-      { id: '17', number: 8, title: 'Neon Blade Flow', artist: 'Moondeity', durationFormatted: '2:40', durationMs: 160000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/10/25/audio_24e3c3f875.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
-    ],
-  },
-  {
-    id: 'bollywood',
-    label: 'Bollywood Hype',
-    name: 'Bollywood Acoustic & Hype Remixes',
-    playlistId: '37i9dQZF1DX0XUfTFmNBRM',
-    description: 'Arijit, Pritam & energetic Hindi study remixes for high morale.',
-    artwork: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&auto=format&fit=crop&q=80',
-    tracks: [
-      { id: '20', number: 1, title: 'Kesariya (Unplugged Hype)', artist: 'Arijit Singh', durationFormatted: '3:42', durationMs: 222000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '21', number: 2, title: 'Apna Bana Le (Chill Bass)', artist: 'Arijit Singh, Sachin-Jigar', durationFormatted: '3:20', durationMs: 200000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '22', number: 3, title: 'Choo Lo (Indie Acoustic)', artist: 'The Local Train', durationFormatted: '3:50', durationMs: 230000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '23', number: 4, title: 'Kabira (Session Remix)', artist: 'Tochi Raina, Rekha Bhardwaj', durationFormatted: '4:11', durationMs: 251000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '24', number: 5, title: 'Tum Se Hi (Lo-Fi Mix)', artist: 'Mohit Chauhan', durationFormatted: '4:02', durationMs: 242000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '25', number: 6, title: 'Jo Tum Mere Ho (Chill Session)', artist: 'Anuv Jain', durationFormatted: '3:10', durationMs: 190000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '26', number: 7, title: 'Husn (Acoustic Unplugged)', artist: 'Anuv Jain', durationFormatted: '3:35', durationMs: 215000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '27', number: 8, title: 'Kun Faya Kun (Sufi Ambient)', artist: 'A.R. Rahman', durationFormatted: '7:50', durationMs: 470000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/04/18/audio_651a5c6ee1.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-    ],
-  },
-  {
-    id: 'phonk',
-    label: 'Drift Phonk',
-    name: 'Hard Phonk & Bass · Exam Grind Mode',
-    playlistId: '37i9dQZF1DWZq93646i9Z6',
-    description: 'Heavy 808 basslines & aggressive drift phonk for 3 AM exam revision.',
-    artwork: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=80',
-    tracks: [
-      { id: '30', number: 1, title: 'MURDER IN MY MIND', artist: 'KORDHELL', durationFormatted: '2:25', durationMs: 145000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '31', number: 2, title: 'RAVE', artist: 'Dxrk 🚪', durationFormatted: '2:49', durationMs: 169000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '32', number: 3, title: 'Metamorphosis', artist: 'INTERWORLD', durationFormatted: '2:22', durationMs: 142000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '33', number: 4, title: 'PHONK TOWN', artist: 'Playaphonk', durationFormatted: '2:10', durationMs: 130000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '34', number: 5, title: 'Shadow Drift', artist: 'ONIX', durationFormatted: '2:15', durationMs: 135000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '35', number: 6, title: 'Sahara Bass', artist: 'Hensonn', durationFormatted: '2:51', durationMs: 171000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '36', number: 7, title: 'Live Another Day', artist: 'KORDHELL', durationFormatted: '2:14', durationMs: 134000, audioUrl: 'https://cdn.pixabay.com/download/audio/2023/01/17/audio_4fb4cf9a38.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-      { id: '37', number: 8, title: 'Automotive Phonk', artist: 'MC Orsen', durationFormatted: '2:30', durationMs: 150000, audioUrl: 'https://cdn.pixabay.com/download/audio/2022/11/06/audio_2c4187f547.mp3', externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
-    ],
-  },
-];
+import { SPOTIFY_STUDY_CATEGORIES } from '../../data/spotifyStudyPlaylists';
 
-function formatMsToTime(ms = 0) {
-  const totalSeconds = Math.floor(ms / 1000);
-  const minutes = Math.floor(totalSeconds / 60);
-  const seconds = totalSeconds % 60;
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-}
+
 
 // ─── SVG Platform Icons ───────────────────────────────────────────────────────
 const WhatsAppIcon = ({ className = 'w-5 h-5' }) => (
@@ -275,101 +189,11 @@ export default function Community() {
     opt4: 5,
   });
 
-  // ─── Local Spotify Study Lounge State & Audio Control ─────────────────────
-  const audioRef = useRef(null);
+  // ─── Local Spotify Study Lounge State ─────────────────────────────────────
   const [activeCategoryId, setActiveCategoryId] = useState('lofi');
-  const [trackIndex, setTrackIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [position, setPosition] = useState(0);
-  const [volume, setVolume] = useState(80);
-  const [isMuted, setIsMuted] = useState(false);
-  const [previousVolume, setPreviousVolume] = useState(80);
-  const [isTracklistOpen, setIsTracklistOpen] = useState(false);
-
+  const [isPlayerLoaded, setIsPlayerLoaded] = useState(false);
   const activeCategory = SPOTIFY_STUDY_CATEGORIES.find((c) => c.id === activeCategoryId) || SPOTIFY_STUDY_CATEGORIES[0];
-  const playlistTracks = activeCategory.tracks;
-  const currentTrack = playlistTracks[trackIndex] || playlistTracks[0];
-  const duration = currentTrack.durationMs;
 
-  // Sync actual HTML5 Audio playback with isPlaying state
-  useEffect(() => {
-    if (!audioRef.current) return;
-    if (isPlaying) {
-      const playPromise = audioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((err) => {
-          console.warn('Audio playback waiting for user action:', err);
-        });
-      }
-    } else {
-      audioRef.current.pause();
-    }
-  }, [isPlaying, trackIndex, activeCategoryId]);
-
-  // Sync volume and mute with HTML5 Audio element
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume / 100;
-    }
-  }, [volume, isMuted]);
-
-  const handleTimeUpdate = () => {
-    if (audioRef.current) {
-      setPosition(Math.floor(audioRef.current.currentTime * 1000));
-    }
-  };
-
-  const selectCategory = (categoryId) => {
-    setActiveCategoryId(categoryId);
-    setTrackIndex(0);
-    setPosition(0);
-  };
-
-  const playTrack = (track, index) => {
-    setTrackIndex(index);
-    setPosition(0);
-    setIsPlaying(true);
-  };
-
-  const togglePlayPause = () => {
-    setIsPlaying((prev) => !prev);
-  };
-
-  const nextTrack = () => {
-    setTrackIndex((prev) => (prev + 1) % playlistTracks.length);
-    setPosition(0);
-  };
-
-  const previousTrack = () => {
-    setTrackIndex((prev) => (prev - 1 + playlistTracks.length) % playlistTracks.length);
-    setPosition(0);
-  };
-
-  const seekTo = (pos) => {
-    setPosition(pos);
-    if (audioRef.current) {
-      audioRef.current.currentTime = pos / 1000;
-    }
-  };
-
-  const changeVolume = (val) => {
-    setVolume(val);
-    if (isMuted && val > 0) setIsMuted(false);
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : val / 100;
-    }
-  };
-
-  const toggleMute = () => {
-    if (isMuted) {
-      setIsMuted(false);
-      setVolume(previousVolume || 80);
-    } else {
-      setPreviousVolume(volume);
-      setIsMuted(true);
-      setVolume(0);
-    }
-  };
 
   // Floating Stamp / Hype Reactions
   const [stampCount, setStampCount] = useState({
@@ -456,11 +280,12 @@ export default function Community() {
               </div>
 
               {/* Display Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] text-[#0F172A]">
-                Your Campus Hub for <br />
-                <span className="bg-[#FACC15] px-2 py-0.5 rounded-xl border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] inline-block mt-1">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black tracking-tight leading-[1.12] text-[#0F172A]">
+                Your Campus Hub for{' '}
+                <span className="bg-[#FACC15] px-2.5 py-0.5 rounded-xl border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] inline-block my-1">
                   Peer Power
-                </span> &amp; Notes.
+                </span>{' '}
+                &amp; Notes.
               </h1>
 
               {/* Subtitle */}
@@ -671,256 +496,54 @@ export default function Community() {
               </div>
 
               {/* Playlist Category Quick Selectors */}
-              <div className="grid grid-cols-4 gap-1.5 sm:gap-2 pt-1">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
                 {SPOTIFY_STUDY_CATEGORIES.map((cat) => {
                   const isSelected = cat.id === activeCategoryId;
                   return (
                     <button
                       key={cat.id}
                       type="button"
-                      onClick={() => selectCategory(cat.id)}
-                      className={`py-2 px-1 text-center rounded-xl text-[11px] sm:text-xs font-black transition-all cursor-pointer border-2 border-[#0F172A] whitespace-nowrap truncate ${
+                      onClick={() => {
+                        if (activeCategoryId !== cat.id) {
+                          setActiveCategoryId(cat.id);
+                          setIsPlayerLoaded(false);
+                        }
+                      }}
+                      className={`py-2.5 px-3 text-center rounded-xl text-xs font-black transition-all cursor-pointer border-2 border-[#0F172A] truncate flex items-center justify-center ${
                         isSelected
-                          ? 'bg-[#1DB954] text-slate-950 shadow-[2px_2px_0px_#0F172A]'
-                          : 'bg-white text-slate-800 hover:bg-[#FFFDF9]'
+                          ? 'bg-[#1DB954] text-slate-950 shadow-[3px_3px_0px_#0F172A] scale-[1.02]'
+                          : 'bg-white text-slate-800 hover:bg-[#FFFDF9] shadow-[1px_1px_0px_#0F172A]'
                       }`}
                     >
-                      {cat.label}
+                      <span>{cat.label}</span>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Compact Spotify Player Widget matching screenshot with Hover Playlist Reveal Drawer */}
-              <div className="group/player rounded-[24px] overflow-visible border-2 border-[#0F172A] shadow-xl shadow-black/50 bg-[#1a1a1a] text-white relative transition-all duration-300">
-                {/* Player Main Content Container */}
-                <div className="p-4 sm:p-5 flex flex-col justify-between space-y-3 relative z-10">
-                  <div className="flex items-start gap-4">
-                    {/* Album Cover */}
-                    <div className="relative shrink-0 group-hover/player:scale-105 transition-transform duration-300">
-                      <img
-                        src={activeCategory.artwork}
-                        alt={currentTrack.title}
-                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border border-white/10 shadow-md"
-                      />
-                      {isPlaying && (
-                        <div className="absolute -bottom-1 -right-1 flex items-end gap-0.5 h-4 bg-[#121212] rounded px-1.5 py-0.5 border border-[#1DB954]/30">
-                          {[40, 90, 60, 100, 50].map((h, i) => (
-                            <motion.div
-                              key={i}
-                              animate={{ height: [`${h * 0.3}%`, `${h}%`, `${h * 0.2}%`] }}
-                              transition={{ repeat: Infinity, duration: 0.45 + i * 0.1, ease: 'easeInOut' }}
-                              className="w-0.5 bg-[#1DB954] rounded-full"
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Track Preview List & Playlist Header */}
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="space-y-1 min-w-0">
-                          {playlistTracks.slice(0, 2).map((tr, idx) => (
-                            <div
-                              key={tr.id}
-                              onClick={() => playTrack(tr, idx)}
-                              className={`flex items-center gap-2 text-xs font-semibold truncate cursor-pointer transition-colors ${
-                                trackIndex === idx ? 'text-[#1DB954]' : 'text-white/80 hover:text-white'
-                              }`}
-                            >
-                              <span className="font-mono text-white/40 text-[11px]">{idx + 1}</span>
-                              <span className="truncate font-bold">{tr.title}</span>
-                              <span className="text-white/40 text-[11px]">· {tr.artist}</span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <a
-                          href={currentTrack.externalUrl || `https://open.spotify.com/playlist/${activeCategory.playlistId}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="shrink-0 p-1 hover:bg-white/10 rounded-full transition-colors"
-                          title="Open on Spotify"
-                        >
-                          <SpotifyIcon className="w-5 h-5 text-white/80 hover:text-[#1DB954]" />
-                        </a>
-                      </div>
-
-                      {/* Playlist Subtitle */}
-                      <p className="text-xs font-bold text-white/60 truncate pt-0.5">
-                        {activeCategory.name}
-                      </p>
-                    </div>
+              {/* Official Spotify Mini Player Embed */}
+              <div className="rounded-[28px] overflow-hidden border-3 border-[#0F172A] shadow-[6px_6px_0px_#0F172A] bg-[#121212] p-1.5 relative transition-all group/player min-h-[352px]">
+                {/* Sleek Spotify Loading State */}
+                {!isPlayerLoaded && (
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#121212] rounded-[22px] text-white">
+                    <div className="w-8 h-8 rounded-full border-2 border-[#1DB954] border-t-transparent animate-spin mb-2" />
+                    <span className="text-xs text-white/60 font-mono">Syncing Spotify Player...</span>
                   </div>
+                )}
 
-                  {/* Scrub Bar & Controls */}
-                  <div className="flex items-center gap-3 pt-1">
-                    <button
-                      type="button"
-                      onClick={previousTrack}
-                      className="text-white/70 hover:text-white cursor-pointer transition-colors active:scale-90"
-                      title="Previous Track"
-                    >
-                      <span className="material-symbols-outlined text-xl">skip_previous</span>
-                    </button>
-
-                    {/* Scrub Bar */}
-                    <div className="flex-1 flex items-center gap-2 min-w-0">
-                      <input
-                        type="range"
-                        min="0"
-                        max={duration}
-                        value={position}
-                        onChange={(e) => seekTo(Number(e.target.value))}
-                        className="w-full h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
-                      />
-                      <span className="text-[10px] font-mono text-white/50 shrink-0">
-                        {formatMsToTime(position)}
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="text-white/50 hover:text-white cursor-pointer transition-colors"
-                      title="Add to library"
-                    >
-                      <span className="material-symbols-outlined text-lg">add_circle_outline</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="text-white/50 hover:text-white cursor-pointer transition-colors"
-                      title="More options"
-                    >
-                      <span className="material-symbols-outlined text-lg">more_horiz</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={togglePlayPause}
-                      className="w-9 h-9 rounded-full bg-white hover:bg-slate-100 text-slate-950 flex items-center justify-center cursor-pointer transition-all shadow-md active:scale-90 shrink-0"
-                      title={isPlaying ? 'Pause' : 'Play'}
-                    >
-                      <span className="material-symbols-outlined text-2xl text-slate-950">
-                        {isPlaying ? 'pause' : 'play_arrow'}
-                      </span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Status Footer Bar */}
-                <div className="px-4 py-2.5 bg-[#121212] border-t border-white/10 flex items-center justify-between text-[11px] text-white/60 font-bold relative z-20 rounded-b-[22px]">
-                  {/* Left: Full HD Stream Live Beat (Hover or Click to open tracklist menu) */}
-                  <div className="relative group/stream-pill">
-                    <button
-                      type="button"
-                      onClick={() => setIsTracklistOpen((prev) => !prev)}
-                      className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 hover:bg-[#1DB954]/20 border border-white/10 hover:border-[#1DB954]/40 text-white transition-all cursor-pointer"
-                    >
-                      <span className="flex items-center gap-0.5 text-[#1DB954]">
-                        <span className="w-1 h-2 bg-[#1DB954] rounded-xs animate-pulse" />
-                        <span className="w-1 h-3 bg-[#1DB954] rounded-xs animate-pulse delay-75" />
-                        <span className="w-1 h-1.5 bg-[#1DB954] rounded-xs animate-pulse delay-150" />
-                      </span>
-                      <span className="font-extrabold text-white">Full HD Stream</span>
-                      <span className="text-rose-400 font-extrabold">Live Beat</span>
-                      <span className="text-[10px] text-[#1DB954] font-black group-hover/stream-pill:translate-y-[-1px] transition-transform">
-                        🎵 Songs ▾
-                      </span>
-                    </button>
-
-                    {/* Track Selector Popover on Hover / Click */}
-                    <div className={`absolute bottom-full left-0 mb-2 w-72 sm:w-80 bg-[#181818] border-2 border-[#1DB954]/50 rounded-2xl p-3.5 shadow-2xl transition-all duration-250 z-50 ${
-                      isTracklistOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover/stream-pill:opacity-100 group-hover/stream-pill:pointer-events-auto'
-                    }`}>
-                      <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                        <div className="flex items-center gap-1.5 text-xs font-black text-white">
-                          <SpotifyIcon className="w-4 h-4 text-[#1DB954]" />
-                          <span>{activeCategory.label} Playlist ({playlistTracks.length} Songs)</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setIsTracklistOpen(false)}
-                          className="text-[9px] text-[#1DB954] hover:underline font-extrabold cursor-pointer"
-                        >
-                          Close ✕
-                        </button>
-                      </div>
-
-                      <div className="space-y-1 my-2 max-h-52 overflow-y-auto pr-1">
-                        {playlistTracks.map((tr, idx) => {
-                          const isActive = trackIndex === idx;
-                          return (
-                            <button
-                              key={tr.id}
-                              type="button"
-                              onClick={() => {
-                                playTrack(tr, idx);
-                                setIsTracklistOpen(false);
-                              }}
-                              className={`w-full px-2.5 py-1.5 rounded-xl text-left flex items-center justify-between gap-2 text-xs transition-all cursor-pointer border ${
-                                isActive
-                                  ? 'bg-[#1DB954]/20 border-[#1DB954]/50 text-[#1DB954] font-black'
-                                  : 'bg-white/5 border-transparent text-white/80 hover:bg-white/10 hover:text-white'
-                              }`}
-                            >
-                              <div className="flex items-center gap-2 min-w-0">
-                                <span className="font-mono text-[10px] text-white/40">{idx + 1}</span>
-                                <div className="min-w-0">
-                                  <p className="truncate font-bold leading-tight text-[11px]">{tr.title}</p>
-                                  <p className="text-[9px] text-white/40 truncate">{tr.artist}</p>
-                                </div>
-                              </div>
-                              <span className="font-mono text-[9px] text-white/40 shrink-0">{tr.durationFormatted}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      <div className="pt-1.5 border-t border-white/10 flex items-center justify-between text-[10px] text-white/40 font-bold">
-                        <span>Click song to play live</span>
-                        <span className="text-[#1DB954]">Indus Lounge</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right: Working Interactive Volume Control (Hover/Click to adjust volume) */}
-                  <div className="flex items-center gap-2 group/volume relative">
-                    <button
-                      type="button"
-                      onClick={toggleMute}
-                      className="p-1 rounded-full hover:bg-white/10 text-white/70 hover:text-white cursor-pointer transition-colors"
-                      title={isMuted ? 'Unmute' : 'Mute'}
-                    >
-                      <span className="material-symbols-outlined text-base text-white/80">
-                        {isMuted || volume === 0 ? 'volume_off' : volume < 50 ? 'volume_down' : 'volume_up'}
-                      </span>
-                    </button>
-
-                    <div className="flex items-center gap-1.5">
-                      <input
-                        type="range"
-                        min="0"
-                        max="100"
-                        value={isMuted ? 0 : volume}
-                        onChange={(e) => changeVolume(Number(e.target.value))}
-                        className="w-16 sm:w-20 h-1.5 bg-white/20 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
-                      />
-                      <span className="font-mono text-[10px] text-white/60 min-w-6 text-right font-bold">
-                        {isMuted ? '0%' : `${volume}%`}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* HTML5 Audio Stream Element */}
-                <audio
-                  ref={audioRef}
-                  src={currentTrack.audioUrl}
-                  onTimeUpdate={handleTimeUpdate}
-                  onEnded={nextTrack}
-                  preload="auto"
+                <iframe
+                  key={activeCategory.playlistId}
+                  onLoad={() => setIsPlayerLoaded(true)}
+                  style={{ borderRadius: '22px' }}
+                  src={`https://open.spotify.com/embed/playlist/${activeCategory.playlistId}?utm_source=generator&theme=0`}
+                  width="100%"
+                  height="352"
+                  frameBorder="0"
+                  allowFullScreen=""
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  title={`Spotify Web Player - ${activeCategory.name}`}
+                  className="w-full rounded-[22px]"
                 />
               </div>
             </div>
@@ -928,13 +551,13 @@ export default function Community() {
             {/* Action Trigger */}
             <div className="pt-4 mt-4 border-t-2 border-slate-900/10 flex flex-wrap items-center justify-between gap-3">
               <a
-                href={`https://open.spotify.com/playlist/${activeCategory.playlistId || '0vvXsWCC9xrXsKd4FyS8kM'}`}
+                href={`https://open.spotify.com/playlist/${activeCategory.playlistId || '37i9dQZF1DX0XUfTFmNBRM'}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-5 py-2.5 rounded-2xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
               >
                 <SpotifyIcon className="w-5 h-5 text-slate-950" />
-                <span>Open in Spotify App</span>
+                <span>Open &quot;{activeCategory.label}&quot; in Spotify</span>
                 <span className="w-5 h-5 rounded-md border border-slate-950/40 flex items-center justify-center bg-slate-950/10">
                   <span className="material-symbols-outlined text-xs text-slate-950">open_in_new</span>
                 </span>
@@ -947,27 +570,33 @@ export default function Community() {
           </div>
 
           {/* Right: The Student Ballot Box */}
-          <div className="lg:col-span-6 bg-white rounded-[32px] p-7 sm:p-8 border-3 border-[#0F172A] shadow-[6px_6px_0px_#0F172A] flex flex-col justify-between relative overflow-hidden">
+          <div className="lg:col-span-6 bg-white rounded-[32px] p-6 sm:p-8 border-3 border-[#0F172A] shadow-[6px_6px_0px_#0F172A] flex flex-col justify-between relative overflow-hidden gap-5">
             <div>
               <div className="flex items-center justify-between mb-3">
-                <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#FEF3D6] text-slate-900 border-2 border-[#0F172A] text-xs font-black">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3D6] text-slate-900 border-2 border-[#0F172A] text-xs font-black shadow-[2px_2px_0px_#0F172A]">
                   <span className="material-symbols-outlined text-sm">how_to_vote</span>
                   Campus Referendum Box
                 </span>
-                <span className="text-xs text-slate-500 font-black">{totalVotes} Ballots Cast</span>
+                <span className="text-xs text-slate-500 font-black flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  {totalVotes} Ballots Cast
+                </span>
               </div>
 
-              <h2 className="text-lg font-black text-slate-900">
+              <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-snug">
                 What is your biggest blocker for upcoming university exams?
               </h2>
+              <p className="text-xs text-slate-600 font-bold mt-1">
+                Vote to prioritize which solved papers and study notes the guild uploads next.
+              </p>
 
-              {/* Poll Options */}
+              {/* Poll Options with Icons */}
               <div className="space-y-2.5 mt-4">
                 {[
-                  { key: 'opt1', label: 'Missing step-by-step solved PYQ papers', votes: pollVotes.opt1 },
-                  { key: 'opt2', label: 'Complex numerical derivations & formulas', votes: pollVotes.opt2 },
-                  { key: 'opt3', label: 'Viva questions & practical experiment files', votes: pollVotes.opt3 },
-                  { key: 'opt4', label: 'Time management & sudden date changes', votes: pollVotes.opt4 },
+                  { key: 'opt1', icon: 'description', label: 'Missing step-by-step solved PYQ papers', votes: pollVotes.opt1 },
+                  { key: 'opt2', icon: 'calculate', label: 'Complex numerical derivations & formulas', votes: pollVotes.opt2 },
+                  { key: 'opt3', icon: 'science', label: 'Viva questions & practical experiment files', votes: pollVotes.opt3 },
+                  { key: 'opt4', icon: 'schedule', label: 'Time management & sudden date changes', votes: pollVotes.opt4 },
                 ].map((opt) => {
                   const pct = Math.round((opt.votes / totalVotes) * 100);
                   const isChosen = pollSelected === opt.key;
@@ -976,10 +605,10 @@ export default function Community() {
                       key={opt.key}
                       onClick={() => handleVote(opt.key)}
                       disabled={!!pollSelected}
-                      className={`w-full p-3 rounded-xl border-2 text-left text-xs sm:text-sm font-black transition-all relative overflow-hidden cursor-pointer ${
+                      className={`w-full p-3 sm:p-3.5 rounded-2xl border-2 text-left text-xs sm:text-sm font-black transition-all relative overflow-hidden cursor-pointer flex items-center justify-between ${
                         isChosen
-                          ? 'border-[#0F172A] bg-amber-100 text-slate-900 shadow-[2px_2px_0px_#0F172A]'
-                          : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-[#0F172A] hover:bg-white'
+                          ? 'border-[#0F172A] bg-amber-100 text-slate-900 shadow-[3px_3px_0px_#0F172A] scale-[1.01]'
+                          : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-[#0F172A] hover:bg-white hover:shadow-[2px_2px_0px_#0F172A]'
                       }`}
                     >
                       {pollSelected && (
@@ -987,12 +616,25 @@ export default function Community() {
                           initial={{ width: 0 }}
                           animate={{ width: `${pct}%` }}
                           transition={{ duration: 0.5 }}
-                          className={`absolute top-0 left-0 bottom-0 ${isChosen ? 'bg-amber-300/40' : 'bg-slate-200/50'} pointer-events-none`}
+                          className={`absolute top-0 left-0 bottom-0 ${isChosen ? 'bg-amber-300/50' : 'bg-slate-200/60'} pointer-events-none`}
                         />
                       )}
-                      <div className="relative z-10 flex items-center justify-between">
-                        <span>{opt.label}</span>
-                        {pollSelected && <span className="font-black text-slate-900">{pct}%</span>}
+                      <div className="relative z-10 flex items-center gap-2.5 min-w-0 pr-2">
+                        <span className={`material-symbols-outlined text-base shrink-0 ${isChosen ? 'text-[#0F172A]' : 'text-slate-500'}`}>
+                          {opt.icon}
+                        </span>
+                        <span className="truncate">{opt.label}</span>
+                      </div>
+                      <div className="relative z-10 shrink-0">
+                        {pollSelected ? (
+                          <span className="font-black text-xs font-mono text-slate-900 px-2 py-0.5 rounded-lg bg-white/80 border border-slate-300">
+                            {pct}%
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Vote
+                          </span>
+                        )}
                       </div>
                     </button>
                   );
@@ -1000,9 +642,52 @@ export default function Community() {
               </div>
             </div>
 
-            <p className="text-[11px] text-slate-500 font-bold mt-4 pt-3 border-t border-slate-100">
-              💡 Solutions for the winning topic get uploaded to the Resource Vault every Friday.
-            </p>
+            {/* Live Referendum Impact & Drop Schedule Grid */}
+            <div className="grid grid-cols-3 gap-2.5 pt-1">
+              <div className="bg-[#FEF3D6] p-3 rounded-2xl border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] text-center">
+                <span className="text-[10px] uppercase font-black tracking-wider text-amber-800 block">
+                  Top Demand
+                </span>
+                <span className="text-xs font-black text-slate-900 truncate block mt-0.5">
+                  Solved PYQs (48%)
+                </span>
+              </div>
+              <div className="bg-[#E0F2FE] p-3 rounded-2xl border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] text-center">
+                <span className="text-[10px] uppercase font-black tracking-wider text-sky-800 block">
+                  Vault Drop
+                </span>
+                <span className="text-xs font-black text-slate-900 block mt-0.5">
+                  Friday @ 6 PM
+                </span>
+              </div>
+              <div className="bg-[#DCFCE7] p-3 rounded-2xl border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] text-center">
+                <span className="text-[10px] uppercase font-black tracking-wider text-emerald-800 block">
+                  Resolved Total
+                </span>
+                <span className="text-xs font-black text-slate-900 block mt-0.5">
+                  480+ Papers
+                </span>
+              </div>
+            </div>
+
+            {/* Bottom Action Trigger matching Spotify card */}
+            <div className="pt-4 border-t-2 border-slate-900/10 flex flex-wrap items-center justify-between gap-3">
+              <Link
+                to="/resources"
+                className="px-5 py-2.5 rounded-2xl bg-[#0F172A] hover:bg-slate-800 text-white font-black text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+              >
+                <span className="material-symbols-outlined text-base text-[#FACC15]">folder_special</span>
+                <span>Open Study Resource Vault</span>
+                <span className="w-5 h-5 rounded-md border border-white/20 flex items-center justify-center bg-white/10">
+                  <span className="material-symbols-outlined text-xs text-white">arrow_forward</span>
+                </span>
+              </Link>
+
+              <span className="text-xs sm:text-sm text-slate-800 font-extrabold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+                100% Peer Verified
+              </span>
+            </div>
           </div>
 
         </div>
