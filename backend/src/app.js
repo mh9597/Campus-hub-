@@ -32,6 +32,7 @@ const allowedOrigins = [
   'http://localhost:5173', // Local Vite development
   'http://localhost:3000', // Alternative local dev port
   'http://127.0.0.1:5173',
+  'https://campus-hub-eight-omega.vercel.app', // Live Vercel production deployment
   ...(process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',').map((o) => o.trim()) : []),
   ...(process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',').map((o) => o.trim()) : []),
 ].filter(Boolean);
