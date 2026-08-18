@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
 import { WordReveal, TextGradientSheen, BlurText, BlurCategoryScroller } from '../../components/ui/TextAnimations';
+import { semestersData } from '../../data/semestersData';
 
 const DEPARTMENTS = [
   {
@@ -214,7 +215,7 @@ function Resources() {
               <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-slate-700">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs">
                   <span className="material-symbols-outlined text-amber-500 text-[18px]">school</span>
-                  <span>8 Full Semesters</span>
+                  <span>{semestersData.length} Full Semesters</span>
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs">
                   <span className="material-symbols-outlined text-emerald-500 text-[18px]">verified</span>
