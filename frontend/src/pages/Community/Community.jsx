@@ -16,6 +16,10 @@ const SPOTIFY_STUDY_CATEGORIES = [
       { id: '2', number: 2, title: 'Thinking Spot', artist: 'xander.', durationFormatted: '2:45', durationMs: 165000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
       { id: '3', number: 3, title: 'Late Night Coding', artist: 'Kavvson', durationFormatted: '3:12', durationMs: 192000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
       { id: '4', number: 4, title: 'Midnight Chill Vibes', artist: 'Purrple Cat', durationFormatted: '4:05', durationMs: 245000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '5', number: 5, title: 'Rainy Window Study', artist: 'Lofi Girl', durationFormatted: '2:55', durationMs: 175000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '6', number: 6, title: 'Coffee & Books', artist: 'Chillhop Music', durationFormatted: '3:40', durationMs: 220000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '7', number: 7, title: 'Exam Eve Focus', artist: 'Kudasa', durationFormatted: '3:15', durationMs: 195000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '8', number: 8, title: 'Quiet Library Corner', artist: 'Kupla', durationFormatted: '3:02', durationMs: 182000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
     ],
   },
   {
@@ -30,6 +34,10 @@ const SPOTIFY_STUDY_CATEGORIES = [
       { id: '11', number: 2, title: 'Tech Noir', artist: 'GUNSHIP', durationFormatted: '4:57', durationMs: 297000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
       { id: '12', number: 3, title: 'Turbulence', artist: 'Daniel Deluxe', durationFormatted: '3:45', durationMs: 225000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
       { id: '13', number: 4, title: 'Overdrive', artist: 'Lazerhawk', durationFormatted: '4:15', durationMs: 255000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '14', number: 5, title: 'Sunset Synth', artist: 'The Midnight', durationFormatted: '5:26', durationMs: 326000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '15', number: 6, title: 'Cyber City 2077', artist: 'Synthwave Boy', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '16', number: 7, title: 'Nightcall Drive', artist: 'Kavinsky', durationFormatted: '4:18', durationMs: 258000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '17', number: 8, title: 'Neon Blade Flow', artist: 'Moondeity', durationFormatted: '2:40', durationMs: 160000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
     ],
   },
   {
@@ -44,6 +52,10 @@ const SPOTIFY_STUDY_CATEGORIES = [
       { id: '21', number: 2, title: 'Apna Bana Le (Chill Bass)', artist: 'Arijit Singh, Sachin-Jigar', durationFormatted: '3:20', durationMs: 200000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
       { id: '22', number: 3, title: 'Choo Lo (Indie Acoustic)', artist: 'The Local Train', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
       { id: '23', number: 4, title: 'Kabira (Session Remix)', artist: 'Tochi Raina, Rekha Bhardwaj', durationFormatted: '4:11', durationMs: 251000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '24', number: 5, title: 'Tum Se Hi (Lo-Fi Mix)', artist: 'Mohit Chauhan', durationFormatted: '4:02', durationMs: 242000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '25', number: 6, title: 'Jo Tum Mere Ho (Chill Session)', artist: 'Anuv Jain', durationFormatted: '3:10', durationMs: 190000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '26', number: 7, title: 'Husn (Acoustic Unplugged)', artist: 'Anuv Jain', durationFormatted: '3:35', durationMs: 215000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '27', number: 8, title: 'Kun Faya Kun (Sufi Ambient)', artist: 'A.R. Rahman', durationFormatted: '7:50', durationMs: 470000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
     ],
   },
   {
@@ -58,6 +70,10 @@ const SPOTIFY_STUDY_CATEGORIES = [
       { id: '31', number: 2, title: 'RAVE', artist: 'Dxrk 🚪', durationFormatted: '2:49', durationMs: 169000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
       { id: '32', number: 3, title: 'Metamorphosis', artist: 'INTERWORLD', durationFormatted: '2:22', durationMs: 142000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
       { id: '33', number: 4, title: 'PHONK TOWN', artist: 'Playaphonk', durationFormatted: '2:10', durationMs: 130000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '34', number: 5, title: 'Shadow Drift', artist: 'ONIX', durationFormatted: '2:15', durationMs: 135000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '35', number: 6, title: 'Sahara Bass', artist: 'Hensonn', durationFormatted: '2:51', durationMs: 171000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '36', number: 7, title: 'Live Another Day', artist: 'KORDHELL', durationFormatted: '2:14', durationMs: 134000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '37', number: 8, title: 'Automotive Phonk', artist: 'MC Orsen', durationFormatted: '2:30', durationMs: 150000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
     ],
   },
 ];
@@ -655,7 +671,7 @@ export default function Community() {
               </div>
 
               {/* Compact Spotify Player Widget matching screenshot with Hover Playlist Reveal Drawer */}
-              <div className="group/player rounded-[24px] overflow-hidden border-2 border-[#0F172A] shadow-[4px_4px_0px_#0F172A] bg-[#1a1a1a] text-white relative transition-all duration-300">
+              <div className="group/player rounded-[24px] overflow-visible border-2 border-[#0F172A] shadow-[4px_4px_0px_#0F172A] bg-[#1a1a1a] text-white relative transition-all duration-300">
                 {/* Player Main Content Container */}
                 <div className="p-4 sm:p-5 flex flex-col justify-between space-y-3 relative z-10">
                   <div className="flex items-start gap-4">
@@ -794,13 +810,13 @@ export default function Community() {
                     </button>
 
                     {/* Track Selector Popover on Hover / Click */}
-                    <div className={`absolute bottom-full left-0 mb-2 w-64 sm:w-72 bg-[#181818] border-2 border-[#1DB954]/40 rounded-2xl p-3 shadow-2xl transition-all duration-250 z-50 ${
+                    <div className={`absolute bottom-full left-0 mb-2 w-72 sm:w-80 bg-[#181818] border-2 border-[#1DB954]/50 rounded-2xl p-3.5 shadow-2xl transition-all duration-250 z-50 ${
                       isTracklistOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none group-hover/stream-pill:opacity-100 group-hover/stream-pill:pointer-events-auto'
                     }`}>
                       <div className="flex items-center justify-between pb-2 border-b border-white/10">
                         <div className="flex items-center gap-1.5 text-xs font-black text-white">
                           <SpotifyIcon className="w-4 h-4 text-[#1DB954]" />
-                          <span>{activeCategory.label} Songs</span>
+                          <span>{activeCategory.label} Playlist ({playlistTracks.length} Songs)</span>
                         </div>
                         <button
                           type="button"
@@ -811,7 +827,7 @@ export default function Community() {
                         </button>
                       </div>
 
-                      <div className="space-y-1 my-2 max-h-48 overflow-y-auto pr-1">
+                      <div className="space-y-1 my-2 max-h-52 overflow-y-auto pr-1">
                         {playlistTracks.map((tr, idx) => {
                           const isActive = trackIndex === idx;
                           return (
