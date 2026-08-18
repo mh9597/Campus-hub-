@@ -7,57 +7,57 @@ const SPOTIFY_STUDY_CATEGORIES = [
   {
     id: 'lofi',
     label: 'Lo-Fi Study',
-    name: 'Lofi Beats · Chill Study Session',
+    name: 'Lofi Beats · Beats to Relax/Study To',
     playlistId: '0vvXsWCC9xrXsKd4FyS8kM',
-    description: 'Slow, relaxing instrumental lofi hip hop beats to concentrate or destress.',
+    description: 'Relaxing lofi hip hop beats for deep focus & calm study sessions.',
     artwork: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '1', number: 1, title: 'Lofi Hip Hop Radio – Beats to Study To', artist: 'Chillhop Music', durationFormatted: '3:28', durationMs: 208000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '2', number: 2, title: 'Coffee Shop Ambience & Rain', artist: 'Lofi Girl', durationFormatted: '2:45', durationMs: 165000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
-      { id: '3', number: 3, title: 'Late Night Coding Sessions', artist: 'Kavvson', durationFormatted: '3:12', durationMs: 192000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '1', number: 1, title: 'Misty Meadows', artist: 'eleven, Mondo Loops', durationFormatted: '3:28', durationMs: 208000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '2', number: 2, title: 'Thinking Spot', artist: 'xander.', durationFormatted: '2:45', durationMs: 165000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
+      { id: '3', number: 3, title: 'Late Night Coding', artist: 'Kavvson', durationFormatted: '3:12', durationMs: 192000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
       { id: '4', number: 4, title: 'Midnight Chill Vibes', artist: 'Purrple Cat', durationFormatted: '4:05', durationMs: 245000, externalUrl: 'https://open.spotify.com/playlist/0vvXsWCC9xrXsKd4FyS8kM' },
     ],
   },
   {
-    id: 'focus',
-    label: 'Deep Focus',
-    name: 'Deep Focus · Coding Flow',
-    playlistId: '37i9dQZF1DWZeKCadgRdKQ',
-    description: 'Atmospheric ambient soundscapes for prolonged exam revision and problem solving.',
+    id: 'cyberpunk',
+    label: 'Cyberpunk Flow',
+    name: 'High Octane Synthwave · 140 BPM Coding',
+    playlistId: '37i9dQZF1DXdLENZaqioXM',
+    description: 'High-energy futuristic synthwave for fast coding & late-night debugging.',
     artwork: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '10', number: 1, title: 'Alpha Brainwave Concentration', artist: 'Deep Focus Soundscapes', durationFormatted: '4:30', durationMs: 270000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
-      { id: '11', number: 2, title: 'Binaural Study Flow 40Hz', artist: 'Neural Ambient', durationFormatted: '5:15', durationMs: 315000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
-      { id: '12', number: 3, title: 'Minimalist Synthesizer Sound', artist: 'Solar Fields', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
-      { id: '13', number: 4, title: 'Endless Horizon Ambient', artist: 'Tycho', durationFormatted: '4:10', durationMs: 250000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
+      { id: '10', number: 1, title: 'Resonance', artist: 'HOME', durationFormatted: '3:32', durationMs: 212000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '11', number: 2, title: 'Tech Noir', artist: 'GUNSHIP', durationFormatted: '4:57', durationMs: 297000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '12', number: 3, title: 'Turbulence', artist: 'Daniel Deluxe', durationFormatted: '3:45', durationMs: 225000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
+      { id: '13', number: 4, title: 'Overdrive', artist: 'Lazerhawk', durationFormatted: '4:15', durationMs: 255000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DXdLENZaqioXM' },
     ],
   },
   {
     id: 'bollywood',
-    label: 'Bollywood Chill',
-    name: 'Bollywood Acoustic Vibes',
+    label: 'Bollywood Hype',
+    name: 'Bollywood Acoustic & Hype Remixes',
     playlistId: '37i9dQZF1DX0XUfTFmNBRM',
-    description: 'Unwind with smooth acoustic, indie, and chill Hindi tracks between study sessions.',
+    description: 'Arijit, Pritam & energetic Hindi study remixes for high morale.',
     artwork: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '20', number: 1, title: 'Kesariya (Acoustic Unplugged)', artist: 'Arijit Singh', durationFormatted: '3:42', durationMs: 222000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '21', number: 2, title: 'Pasoori Nu (Chill Mix)', artist: 'Arijit Singh, Tulsi Kumar', durationFormatted: '3:15', durationMs: 195000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '22', number: 3, title: 'Choo Lo (Guitar Session)', artist: 'The Local Train', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
-      { id: '23', number: 4, title: 'Kabira (Acoustic Guitar)', artist: 'Tochi Raina, Rekha Bhardwaj', durationFormatted: '4:11', durationMs: 251000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '20', number: 1, title: 'Kesariya (Unplugged Hype)', artist: 'Arijit Singh', durationFormatted: '3:42', durationMs: 222000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '21', number: 2, title: 'Apna Bana Le (Chill Bass)', artist: 'Arijit Singh, Sachin-Jigar', durationFormatted: '3:20', durationMs: 200000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '22', number: 3, title: 'Choo Lo (Indie Acoustic)', artist: 'The Local Train', durationFormatted: '3:50', durationMs: 230000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
+      { id: '23', number: 4, title: 'Kabira (Session Remix)', artist: 'Tochi Raina, Rekha Bhardwaj', durationFormatted: '4:11', durationMs: 251000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX0XUfTFmNBRM' },
     ],
   },
   {
-    id: 'piano',
-    label: 'Peaceful Piano',
-    name: 'Calm Piano & Rain Flow',
-    playlistId: '37i9dQZF1DX4t95PaoR1zy',
-    description: 'Gentle piano melodies to calm your mind when feeling overwhelmed or bored.',
-    artwork: 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=300&auto=format&fit=crop&q=80',
+    id: 'phonk',
+    label: 'Drift Phonk',
+    name: 'Hard Phonk & Bass · Exam Grind Mode',
+    playlistId: '37i9dQZF1DWZq93646i9Z6',
+    description: 'Heavy 808 basslines & aggressive drift phonk for 3 AM exam revision.',
+    artwork: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300&auto=format&fit=crop&q=80',
     tracks: [
-      { id: '30', number: 1, title: 'Nuvole Bianche', artist: 'Ludovico Einaudi', durationFormatted: '5:57', durationMs: 357000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
-      { id: '31', number: 2, title: 'River Flows In You', artist: 'Yiruma', durationFormatted: '3:08', durationMs: 188000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
-      { id: '32', number: 3, title: 'Clair de Lune', artist: 'Claude Debussy', durationFormatted: '5:04', durationMs: 304000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
-      { id: '33', number: 4, title: 'Gymnopédie No. 1', artist: 'Erik Satie', durationFormatted: '3:15', durationMs: 195000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DX4t95PaoR1zy' },
+      { id: '30', number: 1, title: 'MURDER IN MY MIND', artist: 'KORDHELL', durationFormatted: '2:25', durationMs: 145000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '31', number: 2, title: 'RAVE', artist: 'Dxrk 🚪', durationFormatted: '2:49', durationMs: 169000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '32', number: 3, title: 'Metamorphosis', artist: 'INTERWORLD', durationFormatted: '2:22', durationMs: 142000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
+      { id: '33', number: 4, title: 'PHONK TOWN', artist: 'Playaphonk', durationFormatted: '2:10', durationMs: 130000, externalUrl: 'https://open.spotify.com/playlist/37i9dQZF1DWZq93646i9Z6' },
     ],
   },
 ];
@@ -784,71 +784,16 @@ export default function Community() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] uppercase font-black tracking-wider text-white/40 group-hover/player:text-[#1DB954] transition-colors">
-                      Hover to open playlist 🎵
-                    </span>
                     <button
                       type="button"
                       onClick={toggleMute}
                       className="hover:text-white cursor-pointer transition-colors"
+                      title={isMuted ? 'Unmute' : 'Mute'}
                     >
                       <span className="material-symbols-outlined text-base">
                         {isMuted || volume === 0 ? 'volume_off' : 'volume_up'}
                       </span>
                     </button>
-                  </div>
-                </div>
-
-                {/* ─── HOVER OVERLAY: PLAYLIST OPENS ON HOVER ─── */}
-                <div className="absolute inset-0 bg-[#121212]/95 backdrop-blur-md opacity-0 pointer-events-none group-hover/player:opacity-100 group-hover/player:pointer-events-auto transition-all duration-300 flex flex-col justify-between p-4 z-20 border border-[#1DB954]/40 rounded-[24px]">
-                  <div className="flex items-center justify-between pb-2 border-b border-white/10">
-                    <div className="flex items-center gap-2">
-                      <SpotifyIcon className="w-4 h-4 text-[#1DB954]" />
-                      <span className="text-xs font-black text-white uppercase tracking-wider">
-                        {activeCategory.label} · Track List
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-[#1DB954] font-bold">Click to play track</span>
-                  </div>
-
-                  <div className="space-y-1 my-2 overflow-y-auto max-h-44 pr-1">
-                    {playlistTracks.map((tr, idx) => {
-                      const isActive = trackIndex === idx;
-                      return (
-                        <button
-                          key={tr.id}
-                          type="button"
-                          onClick={() => playTrack(tr, idx)}
-                          className={`w-full px-3 py-2 rounded-xl text-left flex items-center justify-between gap-2 text-xs transition-all cursor-pointer border ${
-                            isActive
-                              ? 'bg-[#1DB954]/20 border-[#1DB954]/50 text-[#1DB954] font-black'
-                              : 'bg-white/5 border-transparent text-white/80 hover:bg-white/10 hover:text-white'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <span className="font-mono text-[11px] text-white/40">{idx + 1}</span>
-                            <div className="min-w-0">
-                              <p className="truncate font-bold leading-tight">{tr.title}</p>
-                              <p className="text-[10px] text-white/40 truncate">{tr.artist}</p>
-                            </div>
-                          </div>
-                          <span className="font-mono text-[10px] text-white/40 shrink-0">{tr.durationFormatted}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-[11px]">
-                    <span className="text-white/40 font-semibold">Indus Quad Study Beats</span>
-                    <a
-                      href={currentTrack.externalUrl || `https://open.spotify.com/playlist/${activeCategory.playlistId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#1DB954] font-black hover:underline flex items-center gap-1"
-                    >
-                      <span>Open Spotify</span>
-                      <span className="material-symbols-outlined text-xs">arrow_outward</span>
-                    </a>
                   </div>
                 </div>
               </div>
