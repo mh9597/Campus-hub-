@@ -653,247 +653,38 @@ export default function Community() {
                 })}
               </div>
 
-              {/* Single Unified Spotify Mini Player */}
-              <div className="rounded-[24px] overflow-hidden border-2 border-[#0F172A] shadow-[4px_4px_0px_#0F172A] bg-[#121212] flex flex-col text-white">
-                {/* Active Track Player Widget */}
-                <div className="p-4 sm:p-5 flex items-center gap-4 bg-gradient-to-b from-[#1E1E1E] to-[#181818]">
-                  {/* Album Art */}
-                  <div className="relative shrink-0">
-                    <div className={`w-[72px] h-[72px] sm:w-[80px] sm:h-[80px] rounded-xl overflow-hidden bg-black/60 border-2 transition-all duration-500 ${isPlaying ? 'border-[#1DB954] shadow-[0_0_16px_#1DB95455]' : 'border-white/10'}`}>
-                      <img
-                        src={activeCategory.artwork}
-                        alt={currentTrack.title}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    {isPlaying && (
-                      <div className="absolute -bottom-1 -right-1 flex items-end gap-0.5 h-4 bg-[#121212] rounded px-1 py-0.5 border border-[#1DB954]/30">
-                        {[40, 90, 60, 100, 50].map((h, i) => (
-                          <motion.div
-                            key={i}
-                            animate={{ height: [`${h * 0.3}%`, `${h}%`, `${h * 0.2}%`] }}
-                            transition={{ repeat: Infinity, duration: 0.45 + i * 0.1, ease: 'easeInOut' }}
-                            className="w-0.5 bg-[#1DB954] rounded-full"
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Track Info & Interactive Scrub Bar */}
-                  <div className="flex-1 min-w-0 space-y-1.5">
-                    {/* Status Pill */}
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${isPlaying ? 'bg-[#1DB954]/15 text-[#1DB954] border-[#1DB954]/30' : 'bg-white/5 text-white/40 border-white/10'}`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${isPlaying ? 'bg-[#1DB954] animate-pulse' : 'bg-white/30'}`} />
-                        {isPlaying ? 'Now Playing' : 'Study Beats'}
-                      </span>
-                      <span className="text-[9px] text-white/40 font-bold truncate">Indus Study Lounge</span>
-                    </div>
-
-                    <div className="flex items-start justify-between gap-2 min-w-0">
-                      <div className="min-w-0">
-                        <p className="font-black text-sm text-white truncate leading-tight">
-                          {currentTrack.title}
-                        </p>
-                        <p className="text-[11px] text-white/50 font-bold truncate mt-0.5">
-                          {currentTrack.artist}
-                        </p>
-                      </div>
-                      <a
-                        href={currentTrack.externalUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shrink-0 w-7 h-7 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/25 flex items-center justify-center transition-colors"
-                        title="Open on Spotify"
-                      >
-                        <SpotifyIcon className="w-4 h-4 text-[#1DB954]" />
-                      </a>
-                    </div>
-
-                    {/* Progress Bar */}
-                    <div className="space-y-1 pt-0.5">
-                      <input
-                        type="range"
-                        min="0"
-                        max={duration}
-                        value={position}
-                        onChange={(e) => seekTo(Number(e.target.value))}
-                        className="w-full h-1 bg-white/15 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
-                      />
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono text-white/40">{formatMsToTime(position)}</span>
-                        <span className="text-[10px] font-mono text-white/40">{formatMsToTime(duration)}</span>
-                      </div>
-                    </div>
-
-                    {/* Playback Controls */}
-                    <div className="flex items-center gap-3 pt-0.5">
-                      <button
-                        type="button"
-                        onClick={previousTrack}
-                        className="w-7 h-7 rounded-full bg-white/8 hover:bg-white/15 text-white/70 hover:text-white flex items-center justify-center cursor-pointer transition-all active:scale-90"
-                        title="Previous Track"
-                      >
-                        <span className="material-symbols-outlined text-[17px]">skip_previous</span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={togglePlayPause}
-                        className="w-9 h-9 rounded-full bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 flex items-center justify-center cursor-pointer transition-all shadow-lg shadow-[#1DB954]/25 active:scale-90"
-                        title={isPlaying ? 'Pause' : 'Play'}
-                      >
-                        <span className="material-symbols-outlined text-[22px]">
-                          {isPlaying ? 'pause' : 'play_arrow'}
-                        </span>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={nextTrack}
-                        className="w-7 h-7 rounded-full bg-white/8 hover:bg-white/15 text-white/70 hover:text-white flex items-center justify-center cursor-pointer transition-all active:scale-90"
-                        title="Next Track"
-                      >
-                        <span className="material-symbols-outlined text-[17px]">skip_next</span>
-                      </button>
-
-                      {/* Volume Slider */}
-                      <div className="ml-auto flex items-center gap-1.5 group/vol">
-                        <button
-                          type="button"
-                          onClick={toggleMute}
-                          className="text-white/40 hover:text-white cursor-pointer transition-colors"
-                          title={isMuted ? 'Unmute' : 'Mute'}
-                        >
-                          <span className="material-symbols-outlined text-[16px]">
-                            {isMuted || volume === 0 ? 'volume_off' : volume < 50 ? 'volume_down' : 'volume_up'}
-                          </span>
-                        </button>
-                        <div className="w-0 group-hover/vol:w-16 opacity-0 group-hover/vol:opacity-100 overflow-hidden transition-all duration-300">
-                          <input
-                            type="range"
-                            min="0"
-                            max="100"
-                            value={isMuted ? 0 : volume}
-                            onChange={(e) => changeVolume(Number(e.target.value))}
-                            className="w-16 h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-[#1DB954]"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Playlist Tracks List */}
-                <div className="p-3 bg-[#181818] border-t border-white/8 space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-wider text-white/35 px-1 pb-1.5">
-                    <span className="flex items-center gap-1.5">
-                      <span className="material-symbols-outlined text-[13px] text-[#1DB954]">queue_music</span>
-                      <span>{activeCategory.label} Playlist · {playlistTracks.length} Tracks</span>
-                    </span>
-                    <span className="text-[9px] text-[#1DB954]/60">Click to play</span>
-                  </div>
-
-                  <div className="max-h-52 overflow-y-auto space-y-0.5">
-                    {playlistTracks.map((track, idx) => {
-                      const isActive = trackIndex === idx;
-
-                      return (
-                        <button
-                          key={track.id}
-                          type="button"
-                          onClick={() => playTrack(track, idx)}
-                          className={`group/track w-full px-2.5 py-2 rounded-xl text-left flex items-center justify-between gap-2 cursor-pointer transition-all border ${
-                            isActive
-                              ? 'bg-[#1DB954]/12 border-[#1DB954]/40 shadow-inner'
-                              : 'bg-transparent border-transparent hover:bg-white/6 hover:border-white/10'
-                          }`}
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="w-5 flex items-center justify-center shrink-0">
-                              {isActive && isPlaying ? (
-                                <div className="flex items-end gap-0.5 h-3.5">
-                                  {[30, 80, 50].map((h, i) => (
-                                    <motion.div
-                                      key={i}
-                                      animate={{ height: [`${h * 0.3}%`, `${h}%`, `${h * 0.2}%`] }}
-                                      transition={{ repeat: Infinity, duration: 0.45 + i * 0.1, ease: 'easeInOut' }}
-                                      className="w-0.5 bg-[#1DB954] rounded-full"
-                                    />
-                                  ))}
-                                </div>
-                              ) : (
-                                <>
-                                  <span className={`text-[11px] font-mono group-hover/track:hidden ${isActive ? 'text-[#1DB954]' : 'text-white/30'}`}>
-                                    {track.number}
-                                  </span>
-                                  <span className="material-symbols-outlined text-[14px] text-[#1DB954] hidden group-hover/track:block">
-                                    play_arrow
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                            <div className="min-w-0">
-                              <p className={`text-[11px] font-bold truncate leading-tight ${isActive ? 'text-[#1DB954]' : 'text-white/80 group-hover/track:text-white'}`}>
-                                {track.title}
-                              </p>
-                              <p className="text-[10px] text-white/40 truncate">{track.artist}</p>
-                            </div>
-                          </div>
-                          <div className="shrink-0 flex items-center gap-1.5">
-                            <span className="text-[10px] text-white/30 font-mono group-hover/track:hidden">
-                              {track.durationFormatted}
-                            </span>
-                            <span className="hidden group-hover/track:flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-[#1DB954] text-slate-950 text-[9px] font-black">
-                              Play
-                            </span>
-                            {isActive && isPlaying && (
-                              <span className="group-hover/track:hidden px-1.5 py-0.5 rounded-md bg-[#1DB954]/15 text-[#1DB954] text-[9px] font-black uppercase border border-[#1DB954]/25">
-                                ♪
-                              </span>
-                            )}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Player Footer */}
-                <div className="px-4 py-2.5 bg-[#0F0F0F] border-t border-white/8 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="w-2 h-2 rounded-full bg-[#1DB954] animate-pulse shrink-0" />
-                    <span className="text-[11px] font-bold text-white/60 truncate">
-                      Indus University Study Beats
-                    </span>
-                  </div>
-                  <a
-                    href={currentTrack.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-[10px] font-bold text-[#1DB954] hover:underline cursor-pointer shrink-0"
-                  >
-                    Open in Spotify →
-                  </a>
-                </div>
+              {/* Single Unified Spotify Embed Player Box */}
+              <div className="rounded-[24px] overflow-hidden border-2 border-[#0F172A] shadow-[4px_4px_0px_#0F172A] bg-[#121212] flex flex-col p-1 min-h-[352px]">
+                <iframe
+                  style={{ borderRadius: '20px' }}
+                  src={`https://open.spotify.com/embed/playlist/${activeCategory.playlistId || '0vvXsWCC9xrXsKd4FyS8kM'}?utm_source=generator&theme=0`}
+                  width="100%"
+                  height="352"
+                  frameBorder="0"
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                  loading="lazy"
+                  className="w-full rounded-[20px]"
+                  title="Spotify Study Lounge Playlist Player"
+                />
               </div>
             </div>
 
             {/* Action Trigger */}
             <div className="pt-4 mt-4 border-t-2 border-slate-900/10 flex flex-wrap items-center justify-between gap-3">
               <a
-                href={currentTrack.externalUrl}
+                href={`https://open.spotify.com/playlist/${activeCategory.playlistId || '0vvXsWCC9xrXsKd4FyS8kM'}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 rounded-xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 cursor-pointer border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                className="px-5 py-2.5 rounded-2xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
               >
-                <SpotifyIcon className="w-4 h-4 text-slate-950" />
+                <SpotifyIcon className="w-5 h-5 text-slate-950" />
                 <span>Open in Spotify App</span>
-                <span className="material-symbols-outlined text-xs">open_in_new</span>
+                <span className="w-5 h-5 rounded-md border border-slate-950/40 flex items-center justify-center bg-slate-950/10">
+                  <span className="material-symbols-outlined text-xs text-slate-950">open_in_new</span>
+                </span>
               </a>
 
-              <span className="text-[11px] text-slate-700 font-bold">
+              <span className="text-xs sm:text-sm text-slate-800 font-extrabold">
                 Curated for Indus University Peers
               </span>
             </div>
