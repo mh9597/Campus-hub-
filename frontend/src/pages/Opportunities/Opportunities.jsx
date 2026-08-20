@@ -339,19 +339,17 @@ function Opportunities() {
                   key={tab.id}
                   onClick={() => setActiveFilter(tab.id)}
                   aria-pressed={isActive}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
-                    isActive
+                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${isActive
                       ? 'bg-amber-400 text-slate-950 shadow-sm shadow-amber-400/30 border border-amber-400 scale-[1.03]'
                       : 'bg-white/90 text-slate-600 hover:text-slate-900 border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50 shadow-2xs'
-                  }`}
+                    }`}
                 >
                   <span className="material-symbols-outlined text-[16px] leading-none">{tab.icon}</span>
                   <span>{tab.label}</span>
                   {typeof count === 'number' && count > 0 && (
                     <span
-                      className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${
-                        isActive ? 'bg-slate-900 text-amber-300' : 'bg-slate-100 text-slate-600'
-                      }`}
+                      className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${isActive ? 'bg-slate-900 text-amber-300' : 'bg-slate-100 text-slate-600'
+                        }`}
                     >
                       {count}
                     </span>
@@ -365,11 +363,10 @@ function Opportunities() {
               <button
                 onClick={() => setActiveFilter('Saved')}
                 aria-pressed={activeFilter === 'Saved'}
-                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
-                  activeFilter === 'Saved'
+                className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${activeFilter === 'Saved'
                     ? 'bg-amber-400 text-slate-950 shadow-sm border border-amber-400 scale-[1.03]'
                     : 'bg-white/90 text-amber-700 hover:text-amber-900 border border-amber-200/80 hover:bg-amber-50/60 shadow-2xs'
-                }`}
+                  }`}
               >
                 <span className="material-symbols-outlined text-[16px] text-amber-500 font-fill">bookmark</span>
                 <span>Watchlist ({bookmarkedIds.length})</span>
@@ -431,74 +428,75 @@ function Opportunities() {
                       whileHover={{ y: -3 }}
                       transition={{ duration: 0.2 }}
                       onClick={() => setSelectedOpp(opp)}
-                      className={`group relative bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)] ${theme.borderHover} ${theme.glow} transition-all duration-300 overflow-hidden cursor-pointer`}
+                      className={`group relative bg-white rounded-2xl p-3.5 sm:p-5 md:p-6 border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.08)] ${theme.borderHover} ${theme.glow} transition-all duration-300 overflow-hidden cursor-pointer flex flex-col justify-between min-h-[140px] sm:min-h-[160px]`}
                     >
                       {/* Left Color Accent Line */}
                       <div className={`absolute top-0 left-0 bottom-0 w-1.5 ${theme.pillColor}`} />
 
-                      <div className="flex items-start justify-between gap-4 mb-3">
-                        {/* Tags & Badges */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <motion.span
-                            layoutId={`opp-tag-${opp.id}`}
-                            className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${theme.badge}`}
-                          >
-                            <span className="material-symbols-outlined text-[13px]">{theme.icon}</span>
-                            <DecipherText text={opp.tag || opp.category || 'Opportunity'} trigger="hover" speed={20} />
-                          </motion.span>
+                      <div>
+                        <div className="flex items-start justify-between gap-3 mb-2.5 sm:mb-3">
+                          {/* Tags & Badges */}
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                            <motion.span
+                              layoutId={`opp-tag-${opp.id}`}
+                              className={`inline-flex items-center gap-1 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold border ${theme.badge}`}
+                            >
+                              <span className="material-symbols-outlined text-[12px] sm:text-[13px]">{theme.icon}</span>
+                              <DecipherText text={opp.tag || opp.category || 'Opportunity'} trigger="hover" speed={20} />
+                            </motion.span>
 
-                          <span className="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400">
-                            <span className="material-symbols-outlined text-[14px]">schedule</span>
-                            {opp.created_at || opp.createdAt ? formatRelativeTime(opp.created_at || opp.createdAt) : 'Recently added'}
-                          </span>
-                        </div>
-
-                        {/* Top Actions: Share & Bookmark */}
-                        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={(e) => handleShareLink(opp, e)}
-                            className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                            title="Copy link"
-                            aria-label="Share opportunity"
-                          >
-                            <span className="material-symbols-outlined text-[17px] leading-none">share</span>
-                          </button>
-
-                          <button
-                            onClick={(e) => toggleBookmark(opp.id, e)}
-                            className={`p-2 rounded-xl border transition-all duration-200 cursor-pointer ${
-                              isSaved
-                                ? 'bg-amber-50 text-amber-500 border-amber-300 shadow-2xs'
-                                : 'bg-slate-50 text-slate-400 hover:text-slate-700 hover:bg-slate-100 border-slate-200'
-                            }`}
-                            title={isSaved ? 'Remove from saved' : 'Save opportunity'}
-                            aria-label="Bookmark opportunity"
-                          >
-                            <span className={`material-symbols-outlined text-[18px] leading-none ${isSaved ? 'font-fill text-amber-500' : ''}`}>
-                              {isSaved ? 'bookmark' : 'bookmark_border'}
+                            <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-medium text-slate-400">
+                              <span className="material-symbols-outlined text-[13px] sm:text-[14px]">schedule</span>
+                              {opp.created_at || opp.createdAt ? formatRelativeTime(opp.created_at || opp.createdAt) : 'Recently added'}
                             </span>
-                          </button>
+                          </div>
+
+                          {/* Top Actions: Share & Bookmark */}
+                          <div className="flex items-center gap-1 sm:gap-1.5" onClick={(e) => e.stopPropagation()}>
+                            <button
+                              onClick={(e) => handleShareLink(opp, e)}
+                              className="p-1.5 sm:p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                              title="Copy link"
+                              aria-label="Share opportunity"
+                            >
+                              <span className="material-symbols-outlined text-[15px] sm:text-[17px] leading-none">share</span>
+                            </button>
+
+                            <button
+                              onClick={(e) => toggleBookmark(opp.id, e)}
+                              className={`p-1.5 sm:p-2 rounded-xl border transition-all duration-200 cursor-pointer ${isSaved
+                                  ? 'bg-amber-50 text-amber-500 border-amber-300 shadow-2xs'
+                                  : 'bg-slate-50 text-slate-400 hover:text-slate-700 hover:bg-slate-100 border-slate-200'
+                                }`}
+                              title={isSaved ? 'Remove from saved' : 'Save opportunity'}
+                              aria-label="Bookmark opportunity"
+                            >
+                              <span className={`material-symbols-outlined text-[16px] sm:text-[18px] leading-none ${isSaved ? 'font-fill text-amber-500' : ''}`}>
+                                {isSaved ? 'bookmark' : 'bookmark_border'}
+                              </span>
+                            </button>
+                          </div>
                         </div>
+
+                        {/* Card Title */}
+                        <motion.h2
+                          layoutId={`opp-title-${opp.id}`}
+                          className="text-base sm:text-lg md:text-xl font-bold text-slate-900 mb-1.5 sm:mb-2 leading-snug group-hover:text-amber-600 transition-colors line-clamp-2 break-words"
+                        >
+                          {opp.title}
+                        </motion.h2>
+
+                        {/* Description */}
+                        <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-3 sm:mb-4 line-clamp-2 break-words">
+                          {opp.description}
+                        </p>
                       </div>
 
-                      {/* Card Title */}
-                      <motion.h2
-                        layoutId={`opp-title-${opp.id}`}
-                        className="text-lg sm:text-xl font-bold text-slate-900 mb-2 leading-snug group-hover:text-amber-600 transition-colors"
-                      >
-                        {opp.title}
-                      </motion.h2>
-
-                      {/* Description */}
-                      <p className="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4 line-clamp-2">
-                        {opp.description}
-                      </p>
-
                       {/* Card Footer */}
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs font-semibold">
+                      <div className="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-slate-100 text-xs font-semibold">
                         <div className="flex items-center gap-2 text-slate-500">
-                          <span className="inline-flex items-center gap-1 text-emerald-700 font-medium bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200/60 text-[11px]">
-                            <span className="material-symbols-outlined text-[13px]">verified</span>
+                          <span className="inline-flex items-center gap-1 text-emerald-700 font-medium bg-emerald-50 px-2 sm:px-2.5 py-0.5 rounded-md border border-emerald-200/60 text-[10px] sm:text-[11px]">
+                            <span className="material-symbols-outlined text-[12px] sm:text-[13px]">verified</span>
                             <span>Verified Hub Post</span>
                           </span>
                         </div>
@@ -509,10 +507,10 @@ function Opportunities() {
                             e.stopPropagation();
                             setSelectedOpp(opp);
                           }}
-                          className="inline-flex items-center gap-1.5 text-amber-600 hover:text-amber-700 font-bold transition-colors cursor-pointer"
+                          className="inline-flex items-center gap-1 sm:gap-1.5 text-amber-600 hover:text-amber-700 font-bold transition-colors cursor-pointer text-xs sm:text-sm"
                         >
                           <span>Inquire / Apply</span>
-                          <span className="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">
+                          <span className="material-symbols-outlined text-[14px] sm:text-[16px] group-hover:translate-x-1 transition-transform">
                             arrow_forward
                           </span>
                         </button>
@@ -774,11 +772,10 @@ function Opportunities() {
                   <div className="flex items-center gap-2 w-full sm:w-auto">
                     <button
                       onClick={(e) => toggleBookmark(selectedOpp.id, e)}
-                      className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                        isSaved
+                      className={`flex-1 sm:flex-initial px-4 py-2.5 rounded-xl border text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${isSaved
                           ? 'bg-amber-50 text-amber-600 border-amber-300'
                           : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
-                      }`}
+                        }`}
                     >
                       <span className={`material-symbols-outlined text-[18px] ${isSaved ? 'font-fill text-amber-500' : ''}`}>
                         {isSaved ? 'bookmark' : 'bookmark_border'}

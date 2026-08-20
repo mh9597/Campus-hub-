@@ -229,7 +229,7 @@ export default function Community() {
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
       {/* ── Cork & Tactile Pinboard Pattern Background ── */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none opacity-30 -z-10"
         style={{
           backgroundImage: 'radial-gradient(#b45309 1px, transparent 1px)',
@@ -258,7 +258,7 @@ export default function Community() {
             HERO CONCEPT: THE CAMPUS QUAD NOTICEBOARD & OFFICIAL STUDENT PASS
         ══════════════════════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          
+
           {/* Left: The Official Student Guild Card / Lanyard Pass */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -272,7 +272,7 @@ export default function Community() {
             </div>
 
             <div className="space-y-6">
-              
+
               {/* College Marquee Pill */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF3D6] border-2 border-[#0F172A] text-[#0F172A] text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#0F172A]">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse border border-slate-900" />
@@ -364,7 +364,7 @@ export default function Community() {
             className="lg:col-span-5 flex flex-col"
           >
             <div className="bg-[#FAF6ED] rounded-[36px] p-6 sm:p-7 border-3 border-[#0F172A] shadow-[8px_8px_0px_#0F172A] flex-grow flex flex-col justify-between relative overflow-hidden">
-              
+
               <div>
                 {/* Header */}
                 <div className="flex items-center justify-between pb-3.5 border-b-2 border-slate-200">
@@ -469,7 +469,7 @@ export default function Community() {
             SECTION 3: THE QUAD ACOUSTIC STAGE & STUDENT BALLOT BOX
         ══════════════════════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          
+
           {/* Left: The Spotify Study & Chill Lounge */}
           <div className="lg:col-span-6 bg-[#FEF3D6] rounded-[32px] p-6 sm:p-8 border-3 border-[#0F172A] shadow-[6px_6px_0px_#0F172A] flex flex-col justify-between relative overflow-hidden">
             <div className="space-y-4">
@@ -509,11 +509,10 @@ export default function Community() {
                           setIsPlayerLoaded(false);
                         }
                       }}
-                      className={`py-2.5 px-3 text-center rounded-xl text-xs font-black transition-all cursor-pointer border-2 border-[#0F172A] truncate flex items-center justify-center ${
-                        isSelected
+                      className={`py-2.5 px-3 text-center rounded-xl text-xs font-black transition-all cursor-pointer border-2 border-[#0F172A] truncate flex items-center justify-center ${isSelected
                           ? 'bg-[#1DB954] text-slate-950 shadow-[3px_3px_0px_#0F172A] scale-[1.02]'
                           : 'bg-white text-slate-800 hover:bg-[#FFFDF9] shadow-[1px_1px_0px_#0F172A]'
-                      }`}
+                        }`}
                     >
                       <span>{cat.label}</span>
                     </button>
@@ -605,11 +604,10 @@ export default function Community() {
                       key={opt.key}
                       onClick={() => handleVote(opt.key)}
                       disabled={!!pollSelected}
-                      className={`w-full p-3 sm:p-3.5 rounded-2xl border-2 text-left text-xs sm:text-sm font-black transition-all relative overflow-hidden cursor-pointer flex items-center justify-between ${
-                        isChosen
+                      className={`w-full p-3 sm:p-3.5 rounded-2xl border-2 text-left text-xs sm:text-sm font-black transition-all relative overflow-hidden cursor-pointer flex items-center justify-between ${isChosen
                           ? 'border-[#0F172A] bg-amber-100 text-slate-900 shadow-[3px_3px_0px_#0F172A] scale-[1.01]'
                           : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-[#0F172A] hover:bg-white hover:shadow-[2px_2px_0px_#0F172A]'
-                      }`}
+                        }`}
                     >
                       {pollSelected && (
                         <motion.div
@@ -743,7 +741,7 @@ export default function Community() {
             SECTION 5: CODE OF CONDUCT & HELPDESK ACCORDION
         ══════════════════════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* FAQ Column */}
           <div className="lg:col-span-7 space-y-4">
             <div className="mb-4">
@@ -771,9 +769,8 @@ export default function Community() {
                     >
                       <span>{faq.question}</span>
                       <span
-                        className={`material-symbols-outlined text-lg text-slate-600 transition-transform duration-300 ${
-                          isOpen ? 'rotate-180 text-amber-700' : ''
-                        }`}
+                        className={`material-symbols-outlined text-lg text-slate-600 transition-transform duration-300 ${isOpen ? 'rotate-180 text-amber-700' : ''
+                          }`}
                       >
                         expand_more
                       </span>

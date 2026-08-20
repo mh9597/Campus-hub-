@@ -10,6 +10,9 @@ export default defineConfig({
     allowedHosts: ['smirk-guise-frigidity.ngrok-free.dev'],
   },
   build: {
+    target: 'es2020',
+    cssMinify: true,
+    minify: true,
     rollupOptions: {
       output: {
         manualChunks(id) {

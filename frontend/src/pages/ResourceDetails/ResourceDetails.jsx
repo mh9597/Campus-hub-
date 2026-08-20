@@ -1,4 +1,4 @@
-import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { useSemesterById } from '../../hooks/useSemesterById';
 import { SubjectCardSkeleton } from '../../components/ui/LoadingSkeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
@@ -7,7 +7,6 @@ import FolderSubjectCard from '../../components/subjects/FolderSubjectCard';
 function SemesterDetails() {
   const { id } = useParams();
   const semesterId = parseInt(id || '5', 10);
-  const navigate = useNavigate();
 
   const { semester, loading, error, refetch } = useSemesterById(semesterId);
 
@@ -39,11 +38,11 @@ function SemesterDetails() {
 
       <main className="relative z-10">
         {/* Header Section Container Box */}
-        <section className="relative pt-10 pb-4 max-w-container-max mx-auto px-margin-mobile md:px-gutter">
-          <div className="bg-white/90 backdrop-blur-md border-2 border-black rounded-[28px] p-6 sm:p-8 shadow-[6px_6px_0px_rgba(0,0,0,0.9)] relative overflow-hidden">
+        <section className="relative pt-6 sm:pt-10 pb-4 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white/90 backdrop-blur-md border-2 border-black rounded-[28px] p-4 sm:p-6 md:p-8 shadow-[6px_6px_0px_rgba(0,0,0,0.9)] relative overflow-hidden">
             
             {/* Breadcrumb Navigation */}
-            <nav className="flex items-center gap-2 mb-6 text-xs sm:text-sm text-gray-600 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar">
+            <nav className="flex items-center gap-2 mb-4 sm:mb-6 text-xs sm:text-sm text-gray-600 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar flex-wrap">
               <Link to="/" className="hover:text-amber-600 font-bold transition-colors">Home</Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
               <Link to="/resources" className="hover:text-amber-600 font-bold transition-colors">Resources</Link>
@@ -59,11 +58,11 @@ function SemesterDetails() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               
               {/* Left Column: Icon + Semester Info */}
-              <div className="flex items-start gap-4 sm:gap-6">
+              <div className="flex items-start gap-3 sm:gap-6">
                 
                 {/* Semester Avatar Icon Badge */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-400 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center shrink-0 text-black">
-                  <span className="material-symbols-outlined text-[36px] sm:text-[44px]">
+                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-amber-400 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center shrink-0 text-black">
+                  <span className="material-symbols-outlined text-[28px] sm:text-[44px]">
                     school
                   </span>
                 </div>
@@ -71,7 +70,7 @@ function SemesterDetails() {
                 <div>
                   {/* Badges Row */}
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="bg-[#0F172A] text-[#FBBF24] border-2 border-[#FBBF24] px-3 py-0.5 rounded-lg text-xs font-black tracking-wider uppercase shadow-xs">
+                    <span className="bg-[#0F172A] text-[#FBBF24] border-2 border-[#FBBF24] px-2.5 py-0.5 rounded-lg text-xs font-black tracking-wider uppercase shadow-xs">
                       SEM 0{semester?.semesterNumber || semesterId}
                     </span>
                     <span className="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-lg text-xs font-extrabold flex items-center gap-1.5">
@@ -84,12 +83,12 @@ function SemesterDetails() {
                   </div>
 
                   {/* Main Title */}
-                  <h1 className="text-2xl sm:text-4xl font-black text-black tracking-tight leading-tight mb-2">
+                  <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-black tracking-tight leading-tight mb-2">
                     {loading ? <span className="inline-block w-48 h-9 rounded bg-gray-200 animate-pulse" /> : semester?.name}
                   </h1>
 
                   {/* Subtitle */}
-                  <p className="text-sm sm:text-base text-gray-700 font-medium max-w-2xl leading-relaxed">
+                  <p className="text-xs sm:text-sm md:text-base text-gray-700 font-medium max-w-2xl leading-relaxed">
                     Choose a subject to access Notes, Previous Year Papers, Practical Files, Viva Questions, Question Banks, and Syllabus.
                   </p>
                 </div>
@@ -97,9 +96,9 @@ function SemesterDetails() {
 
               {/* Right Column: Quick Stat Box */}
               {semester?.subjects && (
-                <div className="bg-[#FEF3D6] border-2 border-black rounded-2xl px-5 py-3 shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center shrink-0 w-full md:w-auto">
-                  <span className="text-xs font-black uppercase tracking-wider text-black/60 block">Subjects Available</span>
-                  <span className="text-2xl sm:text-3xl font-black text-black">
+                <div className="bg-[#FEF3D6] border-2 border-black rounded-2xl px-4 py-2.5 sm:px-5 sm:py-3 shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center shrink-0 w-full md:w-auto">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-black/60 block">Subjects Available</span>
+                  <span className="text-xl sm:text-3xl font-black text-black">
                     {semester.subjects.length}
                   </span>
                 </div>
@@ -115,7 +114,7 @@ function SemesterDetails() {
         </section>
 
         {/* The "Bulletin Board" Grid Section */}
-        <section className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-12 relative">
+        <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative">
 
           {/* Subjects Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-6 sm:gap-x-6 sm:gap-y-8 relative z-10 max-w-7xl mx-auto justify-items-center">

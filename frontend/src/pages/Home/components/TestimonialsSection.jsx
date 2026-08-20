@@ -55,7 +55,7 @@ function TestimonialsSection() {
   return (
     <section className="py-16 md:py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="flex items-center justify-between mb-12">
           <div>
@@ -117,7 +117,7 @@ function TestimonialsSection() {
                     <div>
                       <h4 className="font-extrabold text-base text-hub-navy">{t.name}</h4>
                       <p className="text-xs font-semibold text-gray-400">{t.role}</p>
-                      
+
                       {/* Star Rating */}
                       <div className="flex items-center gap-0.5 mt-1 text-amber-400">
                         {Array.from({ length: t.rating }).map((_, i) => (

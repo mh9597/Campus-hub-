@@ -6,22 +6,22 @@
 /** Skeleton for a semester note-card (Semesters.jsx) */
 export function SemesterCardSkeleton() {
   return (
-    <div className="animate-pulse w-full sm:w-[calc(50%-16px)] lg:w-[calc(25%-24px)] min-h-[420px] rounded-[20px] bg-gray-100 flex flex-col items-center p-8 gap-4">
-      <div className="w-12 h-12 rounded-full bg-gray-200 mb-4" />
+    <div className="animate-pulse w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.5rem)] min-h-[220px] sm:min-h-[300px] rounded-[24px] sm:rounded-[32px] bg-gray-100 flex flex-col items-center p-4 sm:p-6 gap-3 sm:gap-4">
+      <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gray-200 mb-2" />
       <div className="h-5 w-3/4 rounded bg-gray-200" />
       <div className="h-3 w-full rounded bg-gray-200" />
       <div className="h-3 w-5/6 rounded bg-gray-200" />
       <div className="mt-auto h-3 w-1/2 rounded-full bg-gray-200" />
-      <div className="h-10 w-full rounded-[16px] bg-gray-200" />
+      <div className="h-9 sm:h-10 w-full rounded-[16px] bg-gray-200 animate-pulse" />
     </div>
   );
 }
 
-/** Skeleton for a subject card (ResourceDetails.jsx) */
+/** Skeleton for a subject card (ResourceDetails.jsx or SubjectDetails.jsx) */
 export function SubjectCardSkeleton() {
   return (
-    <div className="animate-pulse rounded-[20px] bg-gray-100 p-8 flex flex-col gap-4 min-h-[260px]">
-      <div className="w-14 h-14 rounded-2xl bg-gray-200" />
+    <div className="animate-pulse rounded-[20px] sm:rounded-[24px] bg-gray-100 p-4 sm:p-6 flex flex-col gap-3 sm:gap-4 min-h-[140px] sm:min-h-[180px]">
+      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gray-200" />
       <div className="h-3 w-1/3 rounded bg-gray-200" />
       <div className="h-5 w-3/4 rounded bg-gray-200" />
       <div className="h-3 w-full rounded bg-gray-200" />
@@ -38,10 +38,10 @@ export function SubjectCardSkeleton() {
 /** Skeleton for an opportunity paper-card (Opportunities.jsx) */
 export function OpportunityCardSkeleton() {
   return (
-    <div className="animate-pulse rounded-xl bg-gray-100 p-8 flex flex-col gap-4 min-h-[220px]">
+    <div className="animate-pulse rounded-2xl bg-gray-100 p-4 sm:p-6 flex flex-col gap-3 sm:gap-4 min-h-[140px] sm:min-h-[160px]">
       <div className="flex justify-between">
-        <div className="w-10 h-10 rounded-lg bg-gray-200" />
-        <div className="h-6 w-20 rounded-lg bg-gray-200" />
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gray-200" />
+        <div className="h-6 w-16 sm:w-20 rounded-lg bg-gray-200" />
       </div>
       <div className="h-5 w-3/4 rounded bg-gray-200 mt-2" />
       <div className="h-3 w-full rounded bg-gray-200" />

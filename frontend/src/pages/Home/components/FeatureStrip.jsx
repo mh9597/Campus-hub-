@@ -32,9 +32,8 @@ function FeatureStrip() {
             {features.map((feat, idx) => (
               <div
                 key={idx}
-                className={`flex items-center gap-4 ${
-                  idx !== 0 ? 'pt-4 sm:pt-0 sm:pl-6 lg:pl-8' : ''
-                }`}
+                className={`flex items-center gap-4 ${idx !== 0 ? 'pt-4 sm:pt-0 sm:pl-6 lg:pl-8' : ''
+                  }`}
               >
                 <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center shrink-0 shadow-sm">
                   <span className="material-symbols-outlined text-2xl font-bold">{feat.icon}</span>

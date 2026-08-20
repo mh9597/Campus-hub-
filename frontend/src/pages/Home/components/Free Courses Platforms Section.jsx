@@ -144,8 +144,8 @@ function LearningPlatformsSection() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`inline-flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold transition-all ${p.isLight
-                    ? 'bg-amber-400 text-hub-navy hover:bg-amber-500 shadow-xs'
-                    : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs border border-white/30'
+                  ? 'bg-amber-400 text-hub-navy hover:bg-amber-500 shadow-xs'
+                  : 'bg-white/20 hover:bg-white/30 text-white backdrop-blur-xs border border-white/30'
                   }`}
               >
                 <span>Explore</span>

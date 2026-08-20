@@ -19,7 +19,6 @@ function HomeSearchBar({ size = 'large' }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
-  const [isFocused, setIsFocused] = useState(false);
 
   // Animated sliding placeholder states
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
@@ -116,11 +115,11 @@ function HomeSearchBar({ size = 'large' }) {
   };
 
   const inputClasses = size === 'large'
-    ? "w-full bg-white/90 backdrop-blur-md border-2 border-amber-200/90 rounded-2xl py-4 pl-14 pr-4 text-sm sm:text-base focus:ring-4 focus:ring-amber-400/25 focus:border-amber-400 focus:bg-white outline-none transition-all duration-300 text-hub-navy font-semibold shadow-md hover:shadow-lg focus:shadow-xl"
+    ? "w-full bg-white/90 backdrop-blur-md border-2 border-amber-200/90 rounded-2xl py-3 sm:py-4 pl-11 sm:pl-14 pr-4 text-xs sm:text-base focus:ring-4 focus:ring-amber-400/25 focus:border-amber-400 focus:bg-white outline-none transition-all duration-300 text-hub-navy font-semibold shadow-md hover:shadow-lg focus:shadow-xl"
     : "w-full bg-[#F3EFE6]/90 backdrop-blur-sm border border-amber-200/80 rounded-full py-2.5 pl-10 pr-4 text-xs focus:ring-2 focus:ring-amber-400 focus:border-amber-400 focus:bg-white outline-none transition-all duration-300 text-hub-navy font-medium shadow-sm hover:shadow";
 
   const iconClasses = size === 'large'
-    ? "material-symbols-outlined absolute left-5 top-1/2 -translate-y-1/2 text-amber-500 text-2xl font-bold z-10 transition-transform duration-300 group-hover:scale-110"
+    ? "material-symbols-outlined absolute left-3.5 sm:left-5 top-1/2 -translate-y-1/2 text-amber-500 text-xl sm:text-2xl font-bold z-10 transition-transform duration-300 group-hover:scale-110"
     : "material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-lg z-10 transition-colors duration-200 group-hover:text-amber-500";
 
   return (
@@ -133,10 +132,8 @@ function HomeSearchBar({ size = 'large' }) {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => {
-            setIsFocused(true);
             if (query.trim().length > 0) setIsOpen(true);
           }}
-          onBlur={() => setIsFocused(false)}
           placeholder=""
           className={inputClasses}
         />
@@ -144,7 +141,7 @@ function HomeSearchBar({ size = 'large' }) {
         {/* Animated Sliding Placeholder Text Overlay */}
         {!query && (
           <div
-            className={`absolute pointer-events-none transition-all duration-300 ease-out flex items-center ${size === 'large' ? 'left-14 pr-6 text-sm sm:text-base' : 'left-10 pr-4 text-xs'
+            className={`absolute pointer-events-none transition-all duration-300 ease-out flex items-center ${size === 'large' ? 'left-11 sm:left-14 pr-6 text-xs sm:text-base' : 'left-10 pr-4 text-xs'
               } text-gray-400 font-medium ${fade ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
               }`}
           >

@@ -109,9 +109,37 @@ export function formatRelativeTime(isoString) {
   return `${days} days ago`;
 }
 
+// Shared in-flight promise and memory cache to prevent duplicate requests
+let cachedOpportunitiesPayload = null;
+let lastOpportunitiesFetchTime = 0;
+let inFlightOpportunitiesPromise = null;
+const CACHE_TTL_MS = 30000;
+
+async function fetchOpportunitiesPayload() {
+  const now = Date.now();
+  if (cachedOpportunitiesPayload && now - lastOpportunitiesFetchTime < CACHE_TTL_MS) {
+    return cachedOpportunitiesPayload;
+  }
+  if (inFlightOpportunitiesPromise) {
+    return inFlightOpportunitiesPromise;
+  }
+  inFlightOpportunitiesPromise = withTimeout(fetchFromApi('opportunities'))
+    .then((data) => {
+      cachedOpportunitiesPayload = data;
+      lastOpportunitiesFetchTime = Date.now();
+      inFlightOpportunitiesPromise = null;
+      return data;
+    })
+    .catch((err) => {
+      inFlightOpportunitiesPromise = null;
+      throw err;
+    });
+  return inFlightOpportunitiesPromise;
+}
+
 export async function getOpportunities() {
   try {
-    const data = await withTimeout(fetchFromApi('opportunities'));
+    const data = await fetchOpportunitiesPayload();
     return data.opportunities || FALLBACK_OPPORTUNITIES;
   } catch (err) {
     console.warn('[opportunitiesApi] getOpportunities failed, using fallback:', err.message);
@@ -121,10 +149,11 @@ export async function getOpportunities() {
 
 export async function getAnnouncements() {
   try {
-    const data = await withTimeout(fetchFromApi('opportunities'));
+    const data = await fetchOpportunitiesPayload();
     return data.announcements || FALLBACK_ANNOUNCEMENTS;
   } catch (err) {
     console.warn('[opportunitiesApi] getAnnouncements failed, using fallback:', err.message);
     return FALLBACK_ANNOUNCEMENTS;
   }
 }
+

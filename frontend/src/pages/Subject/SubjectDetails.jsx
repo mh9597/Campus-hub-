@@ -6,9 +6,10 @@ import { getSubjectByCode } from '../../services/resources/resourcesApi';
 import { ErrorState } from '../../components/ui/ErrorState';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
 
+import { API_BASE_URL } from '../../lib/api';
+
 // Backend proxy base — never expose raw Drive URLs to the browser
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
-const buildDownloadUrl = (id) => `${API_BASE}/resources/${id}/download`;
+const buildDownloadUrl = (id) => `${API_BASE_URL}/resources/${id}/download`;
 
 // Detect file type — checks mimeType first (reliable for Drive files), then URL
 function getFileIcon(resource) {
@@ -144,14 +145,14 @@ function SubjectDetails() {
         <div className="absolute bottom-[10%] left-[20%] w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-3xl opacity-50" />
       </div>
 
-      <main className="relative z-10 py-10 max-w-container-max mx-auto px-margin-mobile md:px-gutter">
+      <main className="relative z-10 py-6 sm:py-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* ─── Top Hero / Header Section ─── */}
-        <section className="mb-10">
-          <div className="bg-white/90 backdrop-blur-md border-2 border-black rounded-[28px] p-6 sm:p-8 shadow-[6px_6px_0px_rgba(0,0,0,0.9)] relative overflow-hidden">
+        <section className="mb-8 sm:mb-10">
+          <div className="bg-white/90 backdrop-blur-md border-2 border-black rounded-[28px] p-4 sm:p-6 md:p-8 shadow-[6px_6px_0px_rgba(0,0,0,0.9)] relative overflow-hidden">
             
             {/* Breadcrumb Navigation */}
-            <nav className="flex items-center gap-2 mb-6 text-xs sm:text-sm text-gray-600 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar">
+            <nav className="flex items-center gap-2 mb-4 sm:mb-6 text-xs sm:text-sm text-gray-600 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar flex-wrap">
               <Link to="/" className="hover:text-amber-600 font-bold transition-colors">Home</Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
               <Link to="/resources" className="hover:text-amber-600 font-bold transition-colors">Resources</Link>
@@ -177,11 +178,11 @@ function SubjectDetails() {
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               
               {/* Left Column: Icon + Subject Info */}
-              <div className="flex items-start gap-4 sm:gap-6">
+              <div className="flex items-start gap-3 sm:gap-6">
                 
                 {/* Subject Avatar Icon Badge */}
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-400 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center shrink-0 text-black">
-                  <span className="material-symbols-outlined text-[36px] sm:text-[44px]">
+                <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl bg-amber-400 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center shrink-0 text-black">
+                  <span className="material-symbols-outlined text-[28px] sm:text-[44px]">
                     {subject.icon || 'menu_book'}
                   </span>
                 </div>
@@ -190,45 +191,45 @@ function SubjectDetails() {
                   {/* Badges Row */}
                   <div className="flex items-center gap-2 flex-wrap mb-2">
                     {subject.code && (
-                      <span className="bg-[#0F172A] text-[#FBBF24] border-2 border-[#FBBF24] px-3 py-0.5 rounded-lg text-xs font-black tracking-wider uppercase shadow-xs">
+                      <span className="bg-[#0F172A] text-[#FBBF24] border-2 border-[#FBBF24] px-2.5 py-0.5 rounded-lg text-[11px] sm:text-xs font-black tracking-wider uppercase shadow-xs">
                         {subject.code}
                       </span>
                     )}
-                    <span className="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-lg text-xs font-extrabold flex items-center gap-1.5">
+                    <span className="bg-emerald-100 text-emerald-900 border border-emerald-300 px-2.5 py-0.5 rounded-lg text-[11px] sm:text-xs font-extrabold flex items-center gap-1.5">
                       <span className="relative flex h-2 w-2 shrink-0">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                       </span>
-                      Verified Hub Subject
+                      Verified Subject
                     </span>
-                    <span className="bg-purple-100 text-purple-900 border border-purple-300 px-2.5 py-0.5 rounded-lg text-xs font-extrabold">
+                    <span className="bg-purple-100 text-purple-900 border border-purple-300 px-2.5 py-0.5 rounded-lg text-[11px] sm:text-xs font-extrabold">
                       SEM 0{subject.semester?.semesterNumber || 7}
                     </span>
                   </div>
 
                   {/* Main Subject Title */}
-                  <h1 className="text-2xl sm:text-4xl font-black text-black tracking-tight leading-tight mb-2">
+                  <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-black tracking-tight leading-tight mb-2">
                     {subject.title}
                   </h1>
 
                   {/* Subtitle */}
-                  <p className="text-sm sm:text-base text-gray-700 font-medium max-w-2xl leading-relaxed">
+                  <p className="text-xs sm:text-sm md:text-base text-gray-700 font-medium max-w-2xl leading-relaxed">
                     Select a resource category below to explore handwritten notes, GTU papers, lab manuals, and question banks.
                   </p>
                 </div>
               </div>
 
               {/* Right Column: Quick Stats Pill */}
-              <div className="flex md:flex-col items-center md:items-end justify-between w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-gray-200 gap-3 shrink-0">
-                <div className="bg-[#FEF3D6] border-2 border-black rounded-2xl px-5 py-3 shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center w-full md:w-auto">
-                  <span className="text-xs font-black uppercase tracking-wider text-black/60 block">Total Study Materials</span>
-                  <span className="text-2xl sm:text-3xl font-black text-black">
+              <div className="flex sm:flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-gray-200 gap-3 shrink-0">
+                <div className="bg-[#FEF3D6] border-2 border-black rounded-2xl px-4 py-2.5 sm:px-5 sm:py-3 shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center w-full md:w-auto">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-black/60 block">Total Study Materials</span>
+                  <span className="text-xl sm:text-3xl font-black text-black">
                     {resourcesLoading ? '...' : totalResourcesCount}
                   </span>
                 </div>
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="btn-black-yellow px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 active-press shadow-xs cursor-pointer"
+                  className="btn-black-yellow px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 active-press shadow-xs cursor-pointer w-full sm:w-auto"
                 >
                   <span className="material-symbols-outlined text-[18px]">upload_file</span>
                   Contribute
@@ -241,19 +242,19 @@ function SubjectDetails() {
         </section>
 
         {/* ─── Resource Categories Section ─── */}
-        <section className="mb-12">
+        <section className="mb-10 sm:mb-12">
           
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl sm:text-2xl font-black text-black flex items-center gap-2 tracking-tight">
-              <span className="material-symbols-outlined text-amber-500 text-2xl">category</span>
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 className="text-lg sm:text-2xl font-black text-black flex items-center gap-2 tracking-tight">
+              <span className="material-symbols-outlined text-amber-500 text-xl sm:text-2xl">category</span>
               Resource Categories
             </h2>
-            <span className="text-xs sm:text-sm font-bold text-gray-600 bg-white border border-black/20 px-3 py-1 rounded-full shadow-xs">
+            <span className="text-[11px] sm:text-sm font-bold text-gray-600 bg-white border border-black/20 px-3 py-1 rounded-full shadow-xs hidden sm:inline-block">
               Click a card to filter materials
             </span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {categories.map((cat, idx) => {
               const isSelected = selectedCategory === cat.dbType;
               const catCount = resources.filter(r => r.resourceType === cat.dbType).length;
@@ -264,7 +265,7 @@ function SubjectDetails() {
                   onClick={() => selectCategory(cat.dbType)}
                   whileHover={{ y: -5, scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`relative p-6 rounded-[24px] text-left flex flex-col justify-between transition-all duration-300 cursor-pointer select-none group border-2 ${
+                  className={`relative p-3.5 sm:p-5 md:p-6 rounded-[20px] sm:rounded-[24px] text-left flex flex-col justify-between min-h-[140px] sm:min-h-[180px] transition-all duration-300 cursor-pointer select-none group border-2 ${
                     isSelected
                       ? 'bg-[#0F172A] text-white border-black shadow-[6px_6px_0px_#FBBF24] ring-2 ring-[#FBBF24]'
                       : 'bg-white hover:bg-[#FFFDF5] text-black border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]'
@@ -272,21 +273,21 @@ function SubjectDetails() {
                 >
                   <div>
                     {/* Top Row: Icon Badge & Counter Badge */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between mb-2.5 sm:mb-4">
                       
                       <div
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center border-2 border-black transition-transform duration-300 group-hover:scale-110 shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
+                        className={`w-9 h-9 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center border-2 border-black transition-transform duration-300 group-hover:scale-110 shadow-[2px_2px_0px_rgba(0,0,0,1)] ${
                           isSelected
                             ? 'bg-[#FBBF24] text-black'
                             : `${cat.badgeBg}`
                         }`}
                       >
-                        <span className="material-symbols-outlined text-[26px]">{cat.icon}</span>
+                        <span className="material-symbols-outlined text-[20px] sm:text-[26px]">{cat.icon}</span>
                       </div>
 
                       {/* Material Count Pill */}
                       <span
-                        className={`text-xs font-black px-3 py-1 rounded-full border-2 ${
+                        className={`text-[10px] sm:text-xs font-black px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border-2 ${
                           isSelected
                             ? 'bg-[#FBBF24] text-black border-black'
                             : 'bg-[#FEF3D6] text-black border-black'
@@ -297,19 +298,19 @@ function SubjectDetails() {
                     </div>
 
                     {/* Category Title */}
-                    <h3 className={`font-black text-xl mb-2 tracking-tight ${isSelected ? 'text-[#FBBF24]' : 'text-black'}`}>
+                    <h3 className={`font-black text-base sm:text-xl mb-1 sm:mb-2 tracking-tight line-clamp-1 ${isSelected ? 'text-[#FBBF24]' : 'text-black'}`}>
                       {cat.title}
                     </h3>
 
                     {/* Category Description */}
-                    <p className={`text-xs sm:text-sm font-medium mb-6 leading-relaxed ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`text-xs sm:text-sm font-medium mb-3 sm:mb-6 leading-relaxed line-clamp-2 break-words ${isSelected ? 'text-gray-300' : 'text-gray-600'}`}>
                       {cat.desc}
                     </p>
                   </div>
 
                   {/* Bottom Action Strip */}
                   <div
-                    className={`pt-4 border-t flex items-center justify-between text-xs sm:text-sm font-black transition-colors ${
+                    className={`pt-2.5 sm:pt-4 border-t flex items-center justify-between text-xs sm:text-sm font-black transition-colors ${
                       isSelected
                         ? 'border-white/15 text-[#FBBF24]'
                         : 'border-black/10 text-black group-hover:text-amber-600'
@@ -317,7 +318,7 @@ function SubjectDetails() {
                   >
                     <span className="tracking-wide">Explore {cat.title}</span>
                     <div className="flex items-center gap-1">
-                      <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1.5 transition-transform duration-200">
+                      <span className="material-symbols-outlined text-[16px] sm:text-[18px] group-hover:translate-x-1.5 transition-transform duration-200">
                         arrow_forward
                       </span>
                     </div>
@@ -332,35 +333,35 @@ function SubjectDetails() {
 
         {/* ─── Active Category Resources List Section ─── */}
         <section ref={resourcesPanelRef} className="scroll-mt-6">
-          <div className="bg-white/95 backdrop-blur-md rounded-[28px] p-6 sm:p-10 border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,0.12)] min-h-[360px] relative">
+          <div className="bg-white/95 backdrop-blur-md rounded-[24px] sm:rounded-[28px] p-3.5 sm:p-6 md:p-10 border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,0.12)] min-h-[300px] sm:min-h-[360px] relative">
             
             {/* Header of Resources Panel */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 pb-5 border-b-2 border-black/10">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8 pb-4 sm:pb-5 border-b-2 border-black/10">
               
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-400 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center text-black">
-                  <span className="material-symbols-outlined text-2xl">folder_open</span>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-400 border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] flex items-center justify-center text-black shrink-0">
+                  <span className="material-symbols-outlined text-xl sm:text-2xl">folder_open</span>
                 </div>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight flex items-center gap-2">
+                  <h2 className="text-lg sm:text-2xl font-black text-black tracking-tight flex items-center gap-2">
                     {selectedCategory}
                   </h2>
-                  <p className="text-xs text-gray-500 font-semibold">
+                  <p className="text-[11px] sm:text-xs text-gray-500 font-semibold line-clamp-1">
                     Showing study materials uploaded for {subject.title} ({subject.code})
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+              <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto justify-between sm:justify-end">
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="btn-black-yellow px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 active-press cursor-pointer"
+                  className="btn-black-yellow px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-extrabold flex items-center gap-1.5 active-press cursor-pointer"
                 >
                   <span className="material-symbols-outlined text-[16px]">upload_file</span>
                   Upload {selectedCategory}
                 </button>
 
-                <span className="text-xs font-black bg-black text-[#FBBF24] border-2 border-[#FBBF24] px-3 py-1.5 rounded-xl shadow-xs">
+                <span className="text-[11px] sm:text-xs font-black bg-black text-[#FBBF24] border-2 border-[#FBBF24] px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl shadow-xs shrink-0">
                   {resourcesLoading ? '...' : filteredResources.length} {filteredResources.length === 1 ? 'Resource' : 'Resources'}
                 </span>
               </div>
@@ -368,9 +369,9 @@ function SubjectDetails() {
 
             {/* Loading Skeleton State */}
             {resourcesLoading && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {Array.from({ length: 2 }).map((_, i) => (
-                  <div key={i} className="border-2 border-black/20 p-6 rounded-2xl animate-pulse space-y-4 bg-gray-50">
+                  <div key={i} className="border-2 border-black/20 p-4 sm:p-6 rounded-2xl animate-pulse space-y-4 bg-gray-50">
                     <div className="h-6 bg-gray-200 rounded w-3/4"></div>
                     <div className="h-4 bg-gray-200 rounded w-5/6"></div>
                     <div className="h-10 bg-gray-200 rounded-xl w-1/3 mt-4"></div>
@@ -386,7 +387,7 @@ function SubjectDetails() {
 
             {/* Loaded Resources Grid */}
             {!resourcesLoading && !error && filteredResources.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 {filteredResources.map((res) => {
                   const downloadUrl = buildDownloadUrl(res.id);
                   const fileMeta = getFileIcon(res);
@@ -396,38 +397,38 @@ function SubjectDetails() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       whileHover={{ y: -3 }}
-                      className="border-2 border-black rounded-2xl bg-white hover:bg-[#FFFDF5] p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all duration-200 flex flex-col justify-between group"
+                      className="border-2 border-black rounded-2xl bg-white hover:bg-[#FFFDF5] p-3.5 sm:p-5 md:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] transition-all duration-200 flex flex-col justify-between min-h-[140px] sm:min-h-[160px] group"
                     >
                       <div>
                         {/* File Format Badge + Title */}
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <h3 className="font-black text-base sm:text-lg text-black leading-snug flex items-start gap-2">
-                            <span className="material-symbols-outlined text-amber-500 text-[22px] mt-0.5 shrink-0">
+                        <div className="flex items-start justify-between gap-2.5 mb-2 sm:mb-3">
+                          <h3 className="font-black text-sm sm:text-base md:text-lg text-black leading-snug flex items-start gap-1.5 sm:gap-2 line-clamp-2 break-words">
+                            <span className="material-symbols-outlined text-amber-500 text-[20px] sm:text-[22px] mt-0.5 shrink-0">
                               {fileMeta.icon}
                             </span>
                             {res.title}
                           </h3>
-                          <span className={`text-[10px] font-black px-2 py-0.5 rounded border uppercase shrink-0 ${fileMeta.color}`}>
+                          <span className={`text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2 py-0.5 rounded border uppercase shrink-0 ${fileMeta.color}`}>
                             {fileMeta.label}
                           </span>
                         </div>
 
                         {res.description && (
-                          <p className="text-gray-600 text-xs sm:text-sm mb-4 leading-relaxed font-medium line-clamp-2">
+                          <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 leading-relaxed font-medium line-clamp-2 break-words">
                             {res.description}
                           </p>
                         )}
 
                         {/* Metadata Pills */}
-                        <div className="flex items-center flex-wrap gap-2 mb-5">
+                        <div className="flex items-center flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-5">
                           {res.source && (
-                            <span className="inline-flex items-center gap-1 text-xs text-black font-extrabold bg-[#FEF3D6] border border-black/30 px-2.5 py-1 rounded-lg">
-                              <span className="material-symbols-outlined text-[14px]">person</span>
+                            <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs text-black font-extrabold bg-[#FEF3D6] border border-black/30 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg">
+                              <span className="material-symbols-outlined text-[13px] sm:text-[14px]">person</span>
                               {res.source}
                             </span>
                           )}
                           {res.createdAt && (
-                            <span className="text-xs text-gray-500 font-bold bg-gray-100 px-2.5 py-1 rounded-lg border border-gray-200">
+                            <span className="text-[11px] sm:text-xs text-gray-500 font-bold bg-gray-100 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg border border-gray-200">
                               {new Date(res.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                             </span>
                           )}
@@ -435,22 +436,22 @@ function SubjectDetails() {
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="flex items-center gap-3 pt-3 border-t border-black/10">
+                      <div className="flex items-center gap-2.5 sm:gap-3 pt-2.5 sm:pt-3 border-t border-black/10">
                         <Link
                           to={`/resource/${res.id}`}
                           state={{ resource: res }}
-                          className="btn-black-yellow px-4 py-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 active-press flex-1"
+                          className="btn-black-yellow px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 active-press flex-1"
                         >
-                          <span className="material-symbols-outlined text-[16px]">visibility</span>
+                          <span className="material-symbols-outlined text-[15px] sm:text-[16px]">visibility</span>
                           View Material
                         </Link>
                         <a
                           href={downloadUrl}
                           download
-                          className="inline-flex items-center justify-center gap-1.5 bg-[#FEF3D6] border-2 border-black text-black hover:bg-amber-400 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-black transition-all active-press shadow-2xs"
+                          className="inline-flex items-center justify-center gap-1.5 bg-[#FEF3D6] border-2 border-black text-black hover:bg-amber-400 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs sm:text-sm font-black transition-all active-press shadow-2xs shrink-0"
                           title="Download Document"
                         >
-                          <span className="material-symbols-outlined text-[18px]">download</span>
+                          <span className="material-symbols-outlined text-[16px] sm:text-[18px]">download</span>
                         </a>
                       </div>
                     </motion.div>

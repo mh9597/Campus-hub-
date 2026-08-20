@@ -86,7 +86,7 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
       whileHover={{ scale: 1.03, y: -5, zIndex: 40 }}
       whileDrag={{ scale: 1.05, rotate: 2, zIndex: 50, cursor: 'grabbing' }}
       onClick={handleCardClick}
-      className="group relative w-full max-w-[300px] sm:max-w-[330px] cursor-grab active:cursor-grabbing select-none my-4"
+      className="group relative w-full max-w-xs sm:max-w-sm mx-auto cursor-grab active:cursor-grabbing select-none my-3 sm:my-4"
     >
       {/* ─── Top Brand Header ─── */}
       <div className="flex items-center justify-between text-[10px] font-black tracking-widest text-black/50 uppercase mb-1.5 px-1">
@@ -204,17 +204,17 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
           {/* Center Typography & Content on Front Cover */}
           <div className="absolute inset-x-0 top-[22%] bottom-0 flex flex-col items-center justify-center px-6 text-center pointer-events-none z-10">
             {/* Main Title */}
-            <h2 className="font-black italic text-2xl sm:text-3xl lg:text-[34px] text-black tracking-tight leading-none drop-shadow-[0_1px_0_rgba(255,255,255,0.4)]">
+            <h2 className="font-black italic text-xl sm:text-3xl lg:text-[34px] text-black tracking-tight leading-none drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] line-clamp-1">
               {shortTitle}
             </h2>
 
             {/* Subtitle */}
-            <p className="font-medium text-[11px] sm:text-xs text-black/80 mt-1.5 max-w-[90%] leading-tight tracking-tight">
+            <p className="font-medium text-[10px] sm:text-xs text-black/80 mt-1 sm:mt-1.5 max-w-[92%] leading-tight tracking-tight line-clamp-2 break-words text-center">
               {subject.title}
             </p>
 
             {/* Resource Count Pill */}
-            <span className="inline-block mt-2 text-[9px] sm:text-[10px] font-black tracking-wider text-black/70 bg-black/10 px-2.5 py-0.5 rounded-full border border-black/10 uppercase group-hover/folder:bg-black group-hover/folder:text-white transition-colors duration-300">
+            <span className="inline-block mt-1.5 sm:mt-2 text-[8px] sm:text-[10px] font-black tracking-wider text-black/70 bg-black/10 px-2 sm:px-2.5 py-0.5 rounded-full border border-black/10 uppercase group-hover/folder:bg-black group-hover/folder:text-white transition-colors duration-300">
               {resourceLabel}
             </span>
           </div>

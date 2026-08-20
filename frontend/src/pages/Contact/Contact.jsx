@@ -204,11 +204,10 @@ function Contact() {
                       key={idx}
                       type="button"
                       onClick={() => applyPreset(preset)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
-                        formData.resourceType === preset.type
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${formData.resourceType === preset.type
                           ? 'bg-amber-400 text-slate-950 border-amber-400 shadow-xs'
                           : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-amber-50/70 hover:border-amber-300'
-                      }`}
+                        }`}
                     >
                       {preset.label}
                     </button>

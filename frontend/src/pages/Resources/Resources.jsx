@@ -146,10 +146,10 @@ function Resources() {
         <div className="absolute top-[60%] -left-20 w-[550px] h-[550px] bg-gradient-to-tr from-purple-300/20 via-pink-300/10 to-transparent rounded-full blur-3xl opacity-50" />
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* ─── BREADCRUMB ─── */}
         <nav aria-label="Breadcrumb" className="pt-6 pb-2">
-          <ol className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500">
+          <ol className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-500 flex-wrap">
             <li>
               <Link to="/" className="hover:text-slate-900 transition-colors flex items-center gap-1">
                 <span className="material-symbols-outlined text-[16px] text-amber-500">home</span>
@@ -163,11 +163,11 @@ function Resources() {
 
         {/* ─── HERO SECTION ─── */}
         <section className="pt-6 pb-12 lg:pt-8 lg:pb-16">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
             {/* LEFT: Text & Instant Search */}
-            <div className="lg:col-span-6 space-y-6 max-w-xl">
+            <div className="lg:col-span-6 space-y-5 sm:space-y-6 max-w-xl">
               {/* Editorial Smooth Word-Reveal Headline */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-black text-slate-950 tracking-tight leading-[1.12]">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-slate-950 tracking-tight leading-[1.15]">
                 <WordReveal
                   text="Access All Your Academic"
                   className="text-slate-900"
@@ -196,7 +196,7 @@ function Resources() {
               </h1>
 
               {/* Subtitle */}
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed font-medium">
+              <p className="text-slate-600 text-xs sm:text-sm md:text-base leading-relaxed font-medium">
                 Browse semester-wise notes, previous year question papers, practical files, viva questions, question banks, and syllabus organized with zero friction.
               </p>
 
@@ -204,15 +204,15 @@ function Resources() {
               <div className="pt-2">
                 <a
                   href="#departments"
-                  className="inline-flex items-center gap-2.5 bg-slate-950 hover:bg-amber-400 text-white hover:text-slate-950 font-black px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 text-sm cursor-pointer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 bg-slate-950 hover:bg-amber-400 text-white hover:text-slate-950 font-black px-6 sm:px-8 py-3 sm:py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 text-xs sm:text-sm cursor-pointer"
                 >
                   <span>Explore Departments</span>
-                  <span className="material-symbols-outlined text-lg leading-none">arrow_forward</span>
+                  <span className="material-symbols-outlined text-base sm:text-lg leading-none">arrow_forward</span>
                 </a>
               </div>
 
               {/* Live Metric Ribbon */}
-              <div className="flex flex-wrap items-center gap-3 pt-2 text-xs font-semibold text-slate-700">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2 text-xs font-semibold text-slate-700">
                 <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 border border-slate-200/80 shadow-2xs">
                   <span className="material-symbols-outlined text-amber-500 text-[18px]">school</span>
                   <span>{semestersData.length} Full Semesters</span>
@@ -236,7 +236,7 @@ function Resources() {
                 transition={{ duration: 0.5 }}
                 className="relative w-full max-w-[500px] lg:max-w-[580px] group"
               >
-                <div className="relative rounded-3xl overflow-hidden p-4">
+                <div className="relative rounded-3xl overflow-hidden p-2 sm:p-4">
                   <img
                     alt="Academic Resources Hub"
                     src="/images/resource-hero-section.png"
@@ -249,8 +249,8 @@ function Resources() {
         </section>
 
         {/* ─── CHOOSE YOUR DEPARTMENT SECTION ─── */}
-        <section id="departments" className="py-14 sm:py-20 relative scroll-mt-24">
-          <div className="text-center mb-12 space-y-2 max-w-2xl mx-auto">
+        <section id="departments" className="py-10 sm:py-16 md:py-20 relative scroll-mt-24">
+          <div className="text-center mb-8 sm:mb-12 space-y-2 max-w-2xl mx-auto">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-[11px] font-mono font-bold uppercase tracking-wider border border-slate-200">
               <span>ENGINEERING BRANCHES</span>
             </div>
@@ -273,39 +273,38 @@ function Resources() {
           </div>
 
           {/* Department Cards Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {DEPARTMENTS.map((dept) => (
               <motion.div
                 key={dept.code}
                 whileHover={{ y: -5 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] flex flex-col justify-between relative overflow-hidden transition-all group"
+                className="bg-white rounded-[20px] sm:rounded-3xl p-3.5 sm:p-5 md:p-6 border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] flex flex-col justify-between relative overflow-hidden transition-all group min-h-[220px] sm:min-h-[260px]"
               >
                 {/* Background Gradient Subtle Accent */}
                 <div className={`absolute top-0 left-0 right-0 h-32 bg-gradient-to-b ${dept.gradient} pointer-events-none`} />
 
                 <div>
                   {/* Top Status & Icon */}
-                  <div className="flex items-start justify-between mb-5 relative z-10">
-                    <div className={`w-14 h-14 rounded-2xl ${dept.iconBg} border flex items-center justify-center shadow-xs transition-transform duration-300 group-hover:scale-110`}>
-                      <span className="material-symbols-outlined text-[28px]">{dept.icon}</span>
+                  <div className="flex items-start justify-between mb-3.5 sm:mb-5 relative z-10">
+                    <div className={`w-10 h-10 sm:w-14 sm:h-14 rounded-2xl ${dept.iconBg} border flex items-center justify-center shadow-xs transition-transform duration-300 group-hover:scale-110`}>
+                      <span className="material-symbols-outlined text-[22px] sm:text-[28px]">{dept.icon}</span>
                     </div>
 
-                    <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border shadow-2xs ${
-                      dept.isAvailable
+                    <span className={`text-[9px] sm:text-[10px] font-black uppercase px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border shadow-2xs ${dept.isAvailable
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                         : 'bg-amber-50 text-amber-800 border-amber-300'
-                    }`}>
+                      }`}>
                       {dept.badge}
                     </span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg sm:text-xl font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-600 transition-colors">
+                  <h3 className="text-base sm:text-lg md:text-xl font-black text-slate-900 mb-1 sm:mb-2 leading-snug group-hover:text-amber-600 transition-colors line-clamp-2 break-words">
                     {dept.name}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-8">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium mb-4 sm:mb-8 line-clamp-3 sm:line-clamp-none">
                     {dept.description}
                   </p>
                 </div>
@@ -315,21 +314,21 @@ function Resources() {
                   {dept.isAvailable ? (
                     <Link
                       to={dept.path}
-                      className="w-full py-3.5 px-6 rounded-2xl bg-slate-950 hover:bg-amber-400 text-white hover:text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.99]"
+                      className="w-full py-2.5 sm:py-3.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-950 hover:bg-amber-400 text-white hover:text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.99]"
                     >
                       <span>Explore Resources</span>
-                      <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">
+                      <span className="material-symbols-outlined text-[16px] sm:text-[18px] group-hover:translate-x-1 transition-transform">
                         arrow_forward
                       </span>
                     </Link>
                   ) : (
                     <button
                       type="button"
-                      disabled
-                      className="w-full py-3.5 px-6 rounded-2xl bg-slate-100 text-slate-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-200/80 cursor-not-allowed"
+                      onClick={() => handleNotifyComingSoon(dept.name)}
+                      className="w-full py-2.5 sm:py-3.5 px-4 sm:px-6 rounded-xl sm:rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-200/80 cursor-pointer transition-colors"
                     >
-                      <span>Coming Soon</span>
-                      <span className="material-symbols-outlined text-[16px] text-slate-400">lock</span>
+                      <span>Coming Soon (Notify Me)</span>
+                      <span className="material-symbols-outlined text-[16px] text-amber-500">notifications</span>
                     </button>
                   )}
                 </div>
@@ -378,20 +377,20 @@ function Resources() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {FEATURES.map((feat) => (
               <div
                 key={feat.title}
-                className="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center space-y-3"
+                className="bg-white rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 border border-slate-200/80 shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col items-center text-center space-y-2 sm:space-y-3"
               >
-                <div className="w-16 h-16 flex items-center justify-center mb-1">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mb-1">
                   <img
                     src={feat.image}
                     alt={feat.title}
-                    className="w-14 h-14 object-contain drop-shadow-sm transition-transform duration-300 hover:scale-110"
+                    className="w-10 h-10 sm:w-14 sm:h-14 object-contain drop-shadow-sm transition-transform duration-300 hover:scale-110"
                   />
                 </div>
-                <h3 className="text-base font-extrabold text-slate-900">{feat.title}</h3>
+                <h3 className="text-sm sm:text-base font-extrabold text-slate-900">{feat.title}</h3>
                 <p className="text-xs text-slate-500 leading-relaxed font-medium">{feat.desc}</p>
               </div>
             ))}
@@ -410,7 +409,7 @@ function Resources() {
             <div className="absolute -top-16 -right-16 sm:-top-28 sm:-right-20 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#1D4ED8] pointer-events-none opacity-80" />
             <div className="absolute -bottom-20 -right-10 sm:-bottom-28 sm:-right-12 w-44 h-44 sm:w-72 sm:h-72 md:w-80 md:h-80 rounded-full bg-[#F59E0B] shadow-xl pointer-events-none opacity-80" />
 
-            <div className="relative z-10 px-6 py-12 sm:px-10 sm:py-16 md:px-16 md:py-20 text-center max-w-2xl mx-auto space-y-4 sm:space-y-5">
+            <div className="relative z-10 p-4 sm:p-8 md:p-12 text-center max-w-2xl mx-auto space-y-4 sm:space-y-5">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-amber-400 text-xs font-bold uppercase tracking-wider mb-2 border border-white/15">
                 <span className="material-symbols-outlined text-[16px]">volunteer_activism</span>
                 <span>COMMUNITY-POWERED PLATFORM</span>

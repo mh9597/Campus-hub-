@@ -10,9 +10,39 @@ function withTimeout(promise, ms = TIMEOUT_MS) {
   return Promise.race([promise, timeout]);
 }
 
+// In-memory catalog cache (60s TTL) and in-flight promise deduplicator
+let cachedCatalog = null;
+let lastCatalogFetchTime = 0;
+let inFlightCatalogPromise = null;
+const CATALOG_CACHE_TTL = 60000;
+
+export async function fetchSemestersCatalog(forceRefresh = false) {
+  const now = Date.now();
+  if (!forceRefresh && cachedCatalog && now - lastCatalogFetchTime < CATALOG_CACHE_TTL) {
+    return cachedCatalog;
+  }
+  if (!forceRefresh && inFlightCatalogPromise) {
+    return inFlightCatalogPromise;
+  }
+
+  inFlightCatalogPromise = withTimeout(fetchFromApi('categories/semesters'))
+    .then((data) => {
+      cachedCatalog = data;
+      lastCatalogFetchTime = Date.now();
+      inFlightCatalogPromise = null;
+      return data;
+    })
+    .catch((err) => {
+      inFlightCatalogPromise = null;
+      throw err;
+    });
+
+  return inFlightCatalogPromise;
+}
+
 export async function getSemesters() {
   try {
-    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    const data = await fetchSemestersCatalog();
     const dept = data.find(d => d.code === 'CE') || data[0];
     if (dept && dept.semesters) {
       return dept.semesters.map(sem => {
@@ -29,7 +59,7 @@ export async function getSemesters() {
 
 export async function getSemesterById(semesterId) {
   try {
-    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    const data = await fetchSemestersCatalog();
     for (const dept of data) {
       const sem = dept.semesters?.find((s) => s.id === parseInt(semesterId));
       if (sem) {
@@ -72,7 +102,7 @@ export async function getResourceById(id) {
 
 export async function getSubjectByCode(subjectCode) {
   try {
-    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    const data = await fetchSemestersCatalog();
     // Find the subject across all departments and semesters
     for (const dept of data) {
       if (!dept.semesters) continue;
@@ -99,7 +129,7 @@ export async function searchAllSubjects(query) {
   const lowerQuery = query.toLowerCase().trim();
 
   try {
-    const data = await withTimeout(fetchFromApi('categories/semesters'));
+    const data = await fetchSemestersCatalog();
     const allSubjects = [];
 
     for (const dept of data) {

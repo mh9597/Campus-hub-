@@ -112,37 +112,37 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
   const isLoading = status === 'uploading';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-3 sm:p-4">
       {/* Matte black/yellow borders theme applied here */}
-      <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-xl border-2 border-amber-300/80 max-h-[95vh] overflow-y-auto custom-scrollbar">
+      <div className="bg-white rounded-[24px] shadow-2xl w-[95%] sm:w-full sm:max-w-xl border-2 border-amber-300/80 max-h-[95vh] overflow-y-auto custom-scrollbar mx-auto">
 
         {/* Header */}
-        <div className="flex items-center gap-3 px-8 py-6 border-b border-gray-100">
-          <div className="w-12 h-12 rounded-2xl bg-[#FEF3D6] border border-amber-300 flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-black text-[24px]">upload_file</span>
+        <div className="flex items-center gap-3 px-4 py-4 sm:px-8 sm:py-6 border-b border-gray-100">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#FEF3D6] border border-amber-300 flex items-center justify-center shrink-0">
+            <span className="material-symbols-outlined text-black text-[20px] sm:text-[24px]">upload_file</span>
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-black text-black">Contribute a Resource</h2>
-            <p className="text-sm font-medium text-gray-600 mt-1">
+            <h2 className="text-xl sm:text-2xl font-black text-black">Contribute a Resource</h2>
+            <p className="text-xs sm:text-sm font-medium text-gray-600 mt-0.5">
               Help fellow students — submit study material for review
             </p>
           </div>
           <button
             onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-gray-500 cursor-pointer"
+            className="w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition text-gray-500 cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[24px]">close</span>
+            <span className="material-symbols-outlined text-[20px] sm:text-[24px]">close</span>
           </button>
         </div>
 
         {/* Success state */}
         {status === 'success' && (
-          <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-            <div className="w-20 h-20 rounded-full bg-emerald-50 border-2 border-emerald-300 flex items-center justify-center mb-6">
-              <span className="material-symbols-outlined text-emerald-600 text-[40px]">check_circle</span>
+          <div className="flex flex-col items-center justify-center py-12 sm:py-16 px-4 sm:px-6 text-center">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-50 border-2 border-emerald-300 flex items-center justify-center mb-4 sm:mb-6">
+              <span className="material-symbols-outlined text-emerald-600 text-[32px] sm:text-[40px]">check_circle</span>
             </div>
-            <h3 className="text-2xl font-black text-black mb-3">Submitted Successfully!</h3>
-            <p className="text-base font-medium text-gray-600 max-w-sm">
+            <h3 className="text-xl sm:text-2xl font-black text-black mb-2 sm:mb-3">Submitted Successfully!</h3>
+            <p className="text-sm font-medium text-gray-600 max-w-sm">
               Your resource has been sent for admin review. It will appear once approved — thank you! 🎉
             </p>
           </div>
@@ -150,12 +150,12 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
 
         {/* Form */}
         {status !== 'success' && (
-          <form onSubmit={handleSubmit} className="px-8 py-6 space-y-6">
+          <form onSubmit={handleSubmit} className="px-4 py-4 sm:px-8 sm:py-6 space-y-4 sm:space-y-6">
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {/* Subject Code */}
               <div>
-                <label className="block font-bold text-sm mb-2 text-black">
+                <label className="block font-bold text-xs sm:text-sm mb-1.5 sm:mb-2 text-black">
                   Subject <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -164,7 +164,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                   onChange={(e) => setForm(f => ({ ...f, subjectCode: e.target.value }))}
                   disabled={isLoading || !!subjectCode}
                   placeholder="e.g. CE0516 or Machine Learning"
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all text-sm font-semibold text-black outline-none ${
+                  className={`w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border-2 transition-all text-xs sm:text-sm font-semibold text-black outline-none ${
                     !!subjectCode || isLoading 
                       ? 'border-gray-200 bg-gray-100 text-gray-600 cursor-not-allowed'
                       : 'border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px]'
@@ -174,7 +174,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
 
               {/* Resource Type */}
               <div>
-                <label className="block font-bold text-sm mb-2 text-black">
+                <label className="block font-bold text-xs sm:text-sm mb-1.5 sm:mb-2 text-black">
                   Resource Type <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
@@ -182,7 +182,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                     value={form.resourceType}
                     onChange={(e) => setForm(f => ({ ...f, resourceType: e.target.value }))}
                     disabled={isLoading}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black appearance-none cursor-pointer disabled:opacity-50"
+                    className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-xs sm:text-sm font-semibold text-black appearance-none cursor-pointer disabled:opacity-50"
                   >
                     {RESOURCE_TYPES.map(rt => (
                       <option key={rt} value={rt}>{rt}</option>
@@ -194,7 +194,7 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
 
             {/* Title */}
             <div>
-              <label className="block font-bold text-sm mb-2 text-black">
+              <label className="block font-bold text-xs sm:text-sm mb-1.5 sm:mb-2 text-black">
                 Title <span className="text-red-500">*</span>
               </label>
               <input
@@ -204,13 +204,13 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                 placeholder="e.g. Unit 3 Notes — Data Structures"
                 maxLength={255}
                 disabled={isLoading}
-                className="w-full px-4 py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black disabled:opacity-50"
+                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-xs sm:text-sm font-semibold text-black disabled:opacity-50"
               />
             </div>
 
             {/* Description */}
             <div>
-              <label className="block font-bold text-sm mb-2 text-black">
+              <label className="block font-bold text-xs sm:text-sm mb-1.5 sm:mb-2 text-black">
                 Description <span className="text-gray-400 font-normal">(optional)</span>
               </label>
               <textarea
@@ -219,13 +219,13 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 placeholder="Brief note for reviewers — topics covered, year, etc."
                 disabled={isLoading}
-                className="w-full px-4 py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-sm font-semibold text-black resize-none disabled:opacity-50"
+                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border-2 border-black bg-white shadow-[4px_4px_0px_0px_#FBBF24] focus:shadow-[2px_2px_0px_0px_#FBBF24] focus:translate-x-[2px] focus:translate-y-[2px] outline-none transition-all text-xs sm:text-sm font-semibold text-black resize-none disabled:opacity-50"
               />
             </div>
 
             {/* File Drop Zone */}
             <div>
-              <label className="block font-bold text-sm mb-2 text-black">
+              <label className="block font-bold text-xs sm:text-sm mb-1.5 sm:mb-2 text-black">
                 File <span className="text-red-500">*</span>
               </label>
 
@@ -238,18 +238,18 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                   onDragOver={e => { e.preventDefault(); setDragOver(true); }}
                   onDragLeave={() => setDragOver(false)}
                   onDrop={handleDrop}
-                  className={`flex flex-col items-center justify-center gap-3 p-8 rounded-[20px] border-2 border-dashed cursor-pointer transition-all select-none ${
+                  className={`flex flex-col items-center justify-center gap-2 sm:gap-3 p-5 sm:p-8 rounded-[20px] border-2 border-dashed cursor-pointer transition-all select-none ${
                     dragOver
                       ? 'border-black bg-amber-50 scale-[1.02]'
                       : 'border-amber-300/80 hover:border-black hover:bg-gray-50'
                   } ${isLoading ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}`}
                 >
-                  <span className="material-symbols-outlined text-[48px] text-black">cloud_upload</span>
+                  <span className="material-symbols-outlined text-[36px] sm:text-[48px] text-black">cloud_upload</span>
                   <div className="text-center">
-                    <p className="text-sm font-bold text-black">
+                    <p className="text-xs sm:text-sm font-bold text-black">
                       Drag &amp; drop or <span className="text-amber-600">browse</span>
                     </p>
-                    <p className="text-xs font-medium text-gray-500 mt-1.5">
+                    <p className="text-[11px] sm:text-xs font-medium text-gray-500 mt-1">
                       PDF, DOC, Images, ZIP — up to {MAX_SIZE_MB} MB
                     </p>
                   </div>
@@ -262,21 +262,21 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
                   />
                 </div>
               ) : (
-                <div className="flex items-center gap-4 px-5 py-4 bg-gray-50 rounded-2xl border-2 border-gray-200">
-                  <span className="material-symbols-outlined text-black text-[32px] shrink-0">
+                <div className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-2xl border-2 border-gray-200">
+                  <span className="material-symbols-outlined text-black text-[28px] shrink-0">
                     {getFileIcon(file.name)}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-black truncate">{file.name}</p>
-                    <p className="text-xs font-medium text-gray-500 mt-0.5">{formatFileSize(file.size)}</p>
+                    <p className="text-xs sm:text-sm font-bold text-black truncate">{file.name}</p>
+                    <p className="text-[11px] font-medium text-gray-500 mt-0.5">{formatFileSize(file.size)}</p>
                   </div>
                   <button
                     type="button"
                     onClick={() => { setFile(null); setProgress(0); }}
                     disabled={isLoading}
-                    className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-100 text-red-500 transition shrink-0 disabled:opacity-50"
+                    className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-100 text-red-500 transition shrink-0 disabled:opacity-50"
                   >
-                    <span className="material-symbols-outlined text-[20px]">close</span>
+                    <span className="material-symbols-outlined text-[18px]">close</span>
                   </button>
                 </div>
               )}
@@ -300,35 +300,35 @@ export default function UploadResourceModal({ subjectCode, onClose, onSuccess })
 
             {/* Error */}
             {(errorMsg || status === 'error') && (
-              <div className="flex items-start gap-3 px-5 py-4 bg-red-50 border-2 border-red-200 rounded-xl text-sm font-semibold text-red-700">
-                <span className="material-symbols-outlined text-[20px] shrink-0">error</span>
+              <div className="flex items-start gap-2.5 px-4 py-3 bg-red-50 border-2 border-red-200 rounded-xl text-xs sm:text-sm font-semibold text-red-700">
+                <span className="material-symbols-outlined text-[18px] shrink-0">error</span>
                 <p>{errorMsg || 'Something went wrong. Please try again.'}</p>
               </div>
             )}
 
             {/* Footer Actions */}
-            <div className="flex gap-4 pt-4 border-t border-gray-100">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-gray-100">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={isLoading}
-                className="flex-1 py-4 rounded-xl text-sm font-bold bg-white border-2 border-gray-200 text-black hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 transition-all cursor-pointer"
+                className="w-full sm:flex-1 py-3 sm:py-4 rounded-xl text-xs sm:text-sm font-bold bg-white border-2 border-gray-200 text-black hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50 transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isLoading || !file}
-                className="flex-[2] btn-black-yellow py-4 rounded-xl font-extrabold text-sm transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer active-press"
+                className="w-full sm:flex-[2] btn-black-yellow py-3 sm:py-4 rounded-xl font-extrabold text-xs sm:text-sm transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer active-press"
               >
                 {isLoading ? (
                   <>
-                    <span className="w-5 h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
                     Uploading...
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined text-[20px]">publish</span>
+                    <span className="material-symbols-outlined text-[18px] sm:text-[20px]">publish</span>
                     Submit Resource
                   </>
                 )}

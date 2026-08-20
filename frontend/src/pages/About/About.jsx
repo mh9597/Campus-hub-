@@ -83,7 +83,7 @@ function About() {
   return (
     <div className="pt-20 bg-[#FFF8EC] text-black font-body-md min-h-screen pb-16">
       <main className="max-w-container-max mx-auto px-margin-mobile md:px-gutter py-10">
-        
+
         {/* Breadcrumb */}
         <nav aria-label="Breadcrumb" className="mb-8 flex items-center gap-2 text-secondary font-label-lg text-label-lg">
           <Link className="hover:text-amber-600 transition-colors opacity-70 font-medium" to="/">Home</Link>
@@ -102,11 +102,11 @@ function About() {
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping" />
               <span>Built by Students for Students</span>
             </div>
-            
+
             <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg font-black text-white text-3xl sm:text-4xl lg:text-5xl leading-tight">
               About Student Resource Hub
             </h1>
-            
+
             <p className="font-body-lg text-gray-300 text-base sm:text-lg leading-relaxed font-medium">
               A centralized academic ecosystem designed to empower Computer Engineering students with elite study tools, verified notes, exam preparation, and career insights.
             </p>
@@ -205,10 +205,10 @@ function About() {
                 <div className="relative mb-5">
                   <div className="w-24 h-24 rounded-full p-1 border-2 border-amber-400 shadow-sm bg-[#FEF3D6]">
                     <div className="w-full h-full rounded-full bg-white overflow-hidden flex items-center justify-center">
-                      <img 
-                        className="w-full h-full object-cover" 
-                        src={contrib.avatar} 
-                        alt={contrib.name} 
+                      <img
+                        className="w-full h-full object-cover"
+                        src={contrib.avatar}
+                        alt={contrib.name}
                       />
                     </div>
                   </div>
@@ -218,7 +218,7 @@ function About() {
                     </span>
                   )}
                 </div>
-                
+
                 <h3 className="font-black text-black text-lg mb-1 group-hover:text-amber-600 transition-colors">
                   {contrib.name}
                 </h3>
@@ -229,7 +229,7 @@ function About() {
                   <span className="material-symbols-outlined text-[16px] text-amber-600">school</span>
                   <span>{contrib.university}</span>
                 </div>
-                
+
                 <ul className="text-xs text-gray-600 text-left w-full space-y-2 mb-6 flex-grow border-t border-amber-200 pt-4 font-medium">
                   {contrib.bulletPoints.map((point, pIdx) => (
                     <li key={pIdx} className="flex items-start gap-2">
@@ -238,7 +238,7 @@ function About() {
                     </li>
                   ))}
                 </ul>
-                
+
                 <div className="flex gap-2 w-full justify-center pt-3 border-t border-amber-100">
                   <a
                     href="https://github.com"

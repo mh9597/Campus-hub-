@@ -6,12 +6,12 @@ import { Link, useParams, useLocation, useNavigate } from 'react-router-dom';
 import { getResourceById } from '../../services/resources/resourcesApi';
 import ScrollToTop from '../../components/common/ScrollToTop';
 
-// ─── Helpers ──────────────────────────────────────────────────
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+import { API_BASE_URL } from '../../lib/api';
 
+// ─── Helpers ──────────────────────────────────────────────────
 // Backend proxy URLs — the raw Google Drive URL NEVER reaches the browser
-function buildViewUrl(id)     { return `${API_BASE}/resources/${id}/view`; }
-function buildDownloadUrl(id) { return `${API_BASE}/resources/${id}/download`; }
+function buildViewUrl(id)     { return `${API_BASE_URL}/resources/${id}/view`; }
+function buildDownloadUrl(id) { return `${API_BASE_URL}/resources/${id}/download`; }
 
 function isPdf(url) {
   // For proxy URLs we rely on the backend Content-Type header, but we can
@@ -71,7 +71,7 @@ function ResourceViewer() {
       setIframeLoading(false);
     }, 1200);
     return () => clearTimeout(timer);
-  }, [resource?.id]);
+  }, [resource]);
 
   if (loading) {
     return (
@@ -113,61 +113,65 @@ function ResourceViewer() {
       <ScrollToTop />
 
       {/* ── Top Bar ─────────────────────────────────────────── */}
-      <header className="shrink-0 bg-[#1a1d27] border-b border-white/10 px-4 py-3 flex items-center gap-3">
+      <header className="shrink-0 bg-[#1a1d27] border-b border-white/10 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-3">
         {/* Back button */}
         <Link
           to={backUrl}
-          className="flex items-center gap-1.5 text-white/50 hover:text-white transition text-sm shrink-0"
+          className="flex items-center gap-1 text-white/70 hover:text-white transition text-xs sm:text-sm shrink-0"
         >
-          <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+          <span className="material-symbols-outlined text-[18px] sm:text-[20px]">arrow_back</span>
           <span className="hidden sm:inline">Back</span>
         </Link>
 
-        <div className="w-px h-5 bg-white/10 shrink-0" />
+        <div className="w-px h-4 sm:h-5 bg-white/10 shrink-0" />
 
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-1.5 text-xs text-white/40 overflow-hidden flex-1 min-w-0">
+        <nav className="flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs text-white/40 overflow-hidden flex-1 min-w-0">
           {department && (
             <>
-              <span className="shrink-0">{department.code}</span>
-              <span className="material-symbols-outlined text-[12px] shrink-0">chevron_right</span>
+              <span className="shrink-0 hidden xs:inline">{department.code}</span>
+              <span className="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0 hidden xs:inline">chevron_right</span>
             </>
           )}
           {semester && (
             <>
-              <span className="shrink-0">Sem {semester.semesterNumber}</span>
-              <span className="material-symbols-outlined text-[12px] shrink-0">chevron_right</span>
+              <span className="shrink-0 hidden sm:inline">Sem {semester.semesterNumber}</span>
+              <span className="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0 hidden sm:inline">chevron_right</span>
             </>
           )}
           {subject && (
             <>
-              <span className="truncate text-white/60">{subject.title}</span>
-              <span className="material-symbols-outlined text-[12px] shrink-0">chevron_right</span>
+              <span className="truncate text-white/60 hidden md:inline">{subject.title}</span>
+              <span className="material-symbols-outlined text-[10px] sm:text-[12px] shrink-0 hidden md:inline">chevron_right</span>
             </>
           )}
-          <span className="truncate text-white/80 font-medium">{resource.title}</span>
+          <span className="truncate text-white/90 font-semibold">{resource.title}</span>
         </nav>
 
-        {/* Download button */}
-        <a
-          href={downloadUrl}
-          download
-          className="shrink-0 flex items-center gap-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition"
-        >
-          <span className="material-symbols-outlined text-[16px]">download</span>
-          <span className="hidden sm:inline">Download</span>
-        </a>
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Download button */}
+          <a
+            href={downloadUrl}
+            download
+            className="flex items-center gap-1 bg-amber-400 hover:bg-amber-500 text-black text-xs font-bold px-2.5 sm:px-3 py-1.5 rounded-lg transition"
+            title="Download File"
+          >
+            <span className="material-symbols-outlined text-[16px]">download</span>
+            <span className="hidden sm:inline">Download</span>
+          </a>
 
-        {/* Open in new tab — via streaming controller for correct Content-Type */}
-        <a
-          href={viewUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white/80 text-xs font-semibold px-3 py-1.5 rounded-lg transition"
-        >
-          <span className="material-symbols-outlined text-[16px]">open_in_new</span>
-          <span className="hidden sm:inline">New Tab</span>
-        </a>
+          {/* Open in new tab */}
+          <a
+            href={viewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 bg-white/10 hover:bg-white/20 text-white/90 text-xs font-semibold px-2.5 sm:px-3 py-1.5 rounded-lg transition"
+            title="Open in New Tab"
+          >
+            <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+            <span className="hidden sm:inline">New Tab</span>
+          </a>
+        </div>
       </header>
 
       {/* ── Body: Sidebar + Viewer ───────────────────────────── */}
@@ -316,38 +320,38 @@ function ResourceViewer() {
 // ─── Fallback: when PDF can't be embedded or unknown type ───
 function FallbackViewer({ viewUrl, downloadUrl, isUnknownType }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-8 bg-neutral-950">
-      <div className="w-20 h-20 rounded-2xl bg-neutral-900 flex items-center justify-center border border-neutral-800">
-        <span className="material-symbols-outlined text-yellow-400 text-[48px]">
+    <div className="flex flex-col items-center justify-center h-full gap-5 text-center px-4 sm:px-8 bg-neutral-950">
+      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-neutral-900 flex items-center justify-center border border-neutral-800">
+        <span className="material-symbols-outlined text-yellow-400 text-[36px] sm:text-[48px]">
           {isUnknownType ? 'folder_zip' : 'picture_as_pdf'}
         </span>
       </div>
       <div>
-        <h3 className="text-yellow-400 font-bold text-lg mb-2">Preview not available</h3>
-        <p className="text-neutral-400 text-sm max-w-sm">
+        <h3 className="text-yellow-400 font-bold text-base sm:text-lg mb-1.5">Preview not available</h3>
+        <p className="text-neutral-400 text-xs sm:text-sm max-w-sm">
           {isUnknownType 
             ? "This file format cannot be previewed directly in the browser. Click below to download."
             : "Your browser blocked the inline preview for this file. You can still open or download it directly."}
         </p>
       </div>
-      <div className="flex gap-3">
+      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-xs sm:max-w-none">
         {!isUnknownType && (
           <a
             href={viewUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-3 rounded-xl transition"
+            className="flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black font-bold px-6 py-3 rounded-xl transition text-xs sm:text-sm"
           >
-            <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+            <span className="material-symbols-outlined text-[18px]">open_in_new</span>
             Open in New Tab
           </a>
         )}
         <a
           href={downloadUrl}
           download
-          className="flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-yellow-400 font-bold px-6 py-3 rounded-xl transition border border-neutral-700"
+          className="flex items-center justify-center gap-2 bg-neutral-800 hover:bg-neutral-700 text-yellow-400 font-bold px-6 py-3 rounded-xl transition border border-neutral-700 text-xs sm:text-sm"
         >
-          <span className="material-symbols-outlined text-[20px]">download</span>
+          <span className="material-symbols-outlined text-[18px]">download</span>
           Download File
         </a>
       </div>

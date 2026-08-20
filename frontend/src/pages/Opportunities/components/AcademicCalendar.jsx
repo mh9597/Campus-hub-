@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import thumbTackIcon from '../../Resources/thumb tack 2 plain.svg';
 

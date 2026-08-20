@@ -37,16 +37,16 @@ export default function AdminLogin() {
         <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-tertiary/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative w-full max-w-md">
+      <div className="relative w-full max-w-md mx-auto">
         {/* Card */}
-        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-3xl p-8 shadow-xl">
+        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-3xl p-4 sm:p-6 md:p-8 shadow-xl">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <span className="material-symbols-outlined text-primary text-3xl">admin_panel_settings</span>
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <span className="material-symbols-outlined text-primary text-2xl sm:text-3xl">admin_panel_settings</span>
             </div>
-            <h1 className="text-2xl font-bold text-on-surface mb-1">Admin Portal</h1>
-            <p className="text-on-surface-variant text-sm">Student Resource Hub — Staff Access</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-on-surface mb-1">Admin Portal</h1>
+            <p className="text-on-surface-variant text-xs sm:text-sm">Student Resource Hub — Staff Access</p>
           </div>
 
           {/* Error banner */}

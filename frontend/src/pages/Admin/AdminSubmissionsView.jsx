@@ -8,9 +8,10 @@ import {
   getAdminCatalog,
 } from '../../services/admin/adminApi';
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+import { API_BASE_URL } from '../../lib/api';
+
 // Admin can view submissions via the backend proxy (no Drive URL exposed)
-const buildViewUrl = (id) => `${API_BASE}/resources/${id}/view`;
+const buildViewUrl = (id) => `${API_BASE_URL}/resources/${id}/view`;
 
 const STATUS_TABS = ['PENDING', 'APPROVED', 'REJECTED'];
 
@@ -306,22 +307,22 @@ export default function AdminSubmissionsView() {
   const items = tab === 'uploads' ? uploads : requests;
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8 w-full max-w-7xl mx-auto">
       {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-on-surface mb-1">Submissions Queue</h1>
-        <p className="text-on-surface-variant text-sm">Review and approve student resource contributions.</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-on-surface mb-1">Submissions Queue</h1>
+        <p className="text-on-surface-variant text-xs sm:text-sm">Review and approve student resource contributions.</p>
       </div>
 
       {/* Tab switcher */}
-      <div className="flex gap-1 bg-surface-container p-1 rounded-xl w-fit mb-6">
+      <div className="flex flex-wrap gap-1 bg-surface-container p-1 rounded-xl w-full sm:w-fit mb-6">
         {[
           { key: 'uploads', icon: 'upload_file', label: 'Resource Uploads' },
           { key: 'requests', icon: 'help_outline', label: 'Resource Requests' },
         ].map(({ key, icon, label }) => (
           <button key={key} onClick={() => { setTab(key); setStatusFilter('PENDING'); }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              tab === key ? 'bg-white shadow text-primary' : 'text-on-surface-variant hover:text-on-surface'
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+              tab === key ? 'bg-white shadow text-primary font-bold' : 'text-on-surface-variant hover:text-on-surface'
             }`}>
             <span className="material-symbols-outlined text-[16px]">{icon}</span>
             {label}
@@ -330,18 +331,20 @@ export default function AdminSubmissionsView() {
       </div>
 
       {/* Status filter */}
-      <div className="flex gap-2 mb-6">
-        {STATUS_TABS.map((s) => (
-          <button key={s} onClick={() => setStatusFilter(s)}
-            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-              statusFilter === s
-                ? 'bg-primary text-on-primary border-primary'
-                : 'border-outline-variant/30 text-on-surface-variant hover:border-primary/40'
-            }`}>
-            {s.charAt(0) + s.slice(1).toLowerCase()}
-          </button>
-        ))}
-        <button onClick={load} className="ml-auto flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors">
+      <div className="flex flex-wrap items-center gap-2 mb-6 justify-between">
+        <div className="flex flex-wrap gap-2">
+          {STATUS_TABS.map((s) => (
+            <button key={s} onClick={() => setStatusFilter(s)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                statusFilter === s
+                  ? 'bg-primary text-on-primary border-primary'
+                  : 'border-outline-variant/30 text-on-surface-variant hover:border-primary/40'
+              }`}>
+              {s.charAt(0) + s.slice(1).toLowerCase()}
+            </button>
+          ))}
+        </div>
+        <button onClick={load} className="flex items-center gap-1 text-xs text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
           <span className="material-symbols-outlined text-[15px]">refresh</span> Refresh
         </button>
       </div>
@@ -355,7 +358,7 @@ export default function AdminSubmissionsView() {
 
       {/* Loading */}
       {loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-40 bg-surface-container rounded-2xl animate-pulse" />
           ))}
@@ -364,14 +367,14 @@ export default function AdminSubmissionsView() {
 
       {/* Content */}
       {!loading && items.length === 0 && !error && (
-        <div className="text-center py-20 text-on-surface-variant">
-          <span className="material-symbols-outlined text-6xl text-gray-300 block mb-3">inbox</span>
-          <p className="font-semibold">No {statusFilter.toLowerCase()} {tab} found</p>
+        <div className="text-center py-16 sm:py-20 text-on-surface-variant">
+          <span className="material-symbols-outlined text-5xl sm:text-6xl text-gray-300 block mb-3">inbox</span>
+          <p className="font-semibold text-sm sm:text-base">No {statusFilter.toLowerCase()} {tab} found</p>
         </div>
       )}
 
       {!loading && items.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {tab === 'uploads'
             ? uploads.map((item) => <UploadCard key={item.id} item={item} onAction={handleUploadAction} departments={departments} semesters={semesters} subjects={subjects} />)
             : requests.map((item) => <RequestCard key={item.id} item={item} onAction={handleRequestAction} />)

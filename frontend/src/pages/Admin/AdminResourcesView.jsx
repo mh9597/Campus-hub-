@@ -7,22 +7,23 @@ import {
   updateResource, deleteResource, getAdminCatalog,
 } from '../../services/admin/adminApi';
 
+import { API_BASE_URL } from '../../lib/api';
+
 const RESOURCE_TYPES = ['Notes', 'Previous Year Papers', 'Practical Files', 'Viva Questions', 'Question Bank', 'Syllabus', 'Other'];
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
-const buildViewUrl = (id) => `${API_BASE}/resources/${id}/view`;
+const buildViewUrl = (id) => `${API_BASE_URL}/resources/${id}/view`;
 
 function Modal({ title, onClose, children }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-6 border-b border-outline-variant/10">
-          <h2 className="text-lg font-bold text-on-surface">{title}</h2>
-          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors">
-            <span className="material-symbols-outlined">close</span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-[95%] sm:w-full sm:max-w-lg md:max-w-2xl max-h-[90vh] overflow-y-auto mx-auto">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-outline-variant/10">
+          <h2 className="text-base sm:text-lg font-bold text-on-surface">{title}</h2>
+          <button onClick={onClose} className="text-on-surface-variant hover:text-on-surface transition-colors p-1">
+            <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-4 sm:p-6">{children}</div>
       </div>
     </div>
   );
@@ -350,26 +351,26 @@ export default function AdminResourcesView() {
   }
 
   return (
-    <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-6 md:p-8 w-full max-w-7xl mx-auto">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-on-surface mb-1">Resources</h1>
-          <p className="text-on-surface-variant text-sm">Manage all published study materials.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-on-surface mb-1">Resources</h1>
+          <p className="text-on-surface-variant text-xs sm:text-sm">Manage all published study materials.</p>
         </div>
         <button onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 bg-primary text-on-primary px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-primary/90 shadow-sm transition-all">
+          className="flex items-center justify-center gap-2 bg-primary text-on-primary px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold hover:bg-primary/90 shadow-sm transition-all cursor-pointer w-full sm:w-auto">
           <span className="material-symbols-outlined text-[18px]">add</span> Add Resource
         </button>
       </div>
 
       {/* Search */}
-      <div className="relative mb-6 max-w-sm">
+      <div className="relative mb-6 w-full max-w-sm">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-[18px]">search</span>
         <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by title…"
-          className="w-full pl-9 pr-4 py-2.5 border border-outline-variant/30 rounded-xl text-sm bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary/30" />
+          className="w-full pl-9 pr-4 py-2.5 border border-outline-variant/30 rounded-xl text-xs sm:text-sm bg-surface-container focus:outline-none focus:ring-2 focus:ring-primary/30" />
       </div>
 
-      {error && <div className="mb-4 p-4 bg-error/10 border border-error/20 rounded-xl text-error text-sm">{error}</div>}
+      {error && <div className="mb-4 p-4 bg-error/10 border border-error/20 rounded-xl text-error text-xs sm:text-sm">{error}</div>}
 
       {loading && (
         <div className="grid grid-cols-1 gap-3">
@@ -378,26 +379,36 @@ export default function AdminResourcesView() {
       )}
 
       {!loading && resources.length === 0 && !error && (
-        <div className="text-center py-20 text-on-surface-variant">
-          <span className="material-symbols-outlined text-6xl text-gray-300 block mb-3">folder_off</span>
-          <p className="font-semibold">No resources found</p>
+        <div className="text-center py-16 sm:py-20 text-on-surface-variant">
+          <span className="material-symbols-outlined text-5xl sm:text-6xl text-gray-300 block mb-3">folder_off</span>
+          <p className="font-semibold text-xs sm:text-sm">No resources found</p>
         </div>
       )}
 
       {!loading && resources.length > 0 && (
         <div className="space-y-3">
           {resources.map((r) => (
-            <div key={r.id} className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl px-5 py-4 flex items-center gap-4">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${r.isActive ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'}`}>
-                <span className="material-symbols-outlined text-[18px]">description</span>
+            <div key={r.id} className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-4 sm:px-5 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${r.isActive ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-400'}`}>
+                  <span className="material-symbols-outlined text-[18px]">description</span>
+                </div>
+                <div className="flex-1 min-w-0 sm:hidden">
+                  <p className="font-semibold text-on-surface truncate text-sm">{r.title}</p>
+                  <p className="text-xs text-on-surface-variant">
+                    {r.subject?.code} · {r.resourceType} · {r.isActive ? <span className="text-green-600">Active</span> : <span className="text-gray-400">Inactive</span>}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
+
+              <div className="flex-1 min-w-0 hidden sm:block">
                 <p className="font-semibold text-on-surface truncate text-sm">{r.title}</p>
                 <p className="text-xs text-on-surface-variant">
                   {r.subject?.code} · {r.resourceType} · {r.isActive ? <span className="text-green-600">Active</span> : <span className="text-gray-400">Inactive</span>}
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+
+              <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-outline-variant/10 w-full sm:w-auto justify-end">
                 {(r.fileUrl || r.driveFileId) && (
                   <a href={buildViewUrl(r.id)} target="_blank" rel="noopener noreferrer" title="View file"
                     className="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-primary transition-all">
@@ -439,49 +450,48 @@ export default function AdminResourcesView() {
 
       {/* ── Drive Delete Confirmation Modal ───────────────── */}
       {confirmDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-2xl w-[95%] sm:w-full sm:max-w-md overflow-hidden mx-auto">
             {/* Yellow header */}
-            <div className="bg-amber-400 px-6 py-5 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center shrink-0">
-                <span className="material-symbols-outlined text-black text-[22px]">warning</span>
+            <div className="bg-amber-400 px-4 sm:px-6 py-4 sm:py-5 flex items-center gap-3">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/10 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-black text-[20px] sm:text-[22px]">warning</span>
               </div>
               <div>
-                <h2 className="text-lg font-black text-black leading-tight">Permanent Delete</h2>
+                <h2 className="text-base sm:text-lg font-black text-black leading-tight">Permanent Delete</h2>
                 <p className="text-xs font-semibold text-black/60">This action cannot be undone</p>
               </div>
             </div>
 
             {/* Body */}
-            <div className="px-6 py-6 space-y-4">
-              <p className="text-sm text-gray-700 leading-relaxed">
+            <div className="p-4 sm:p-6 space-y-4">
+              <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                 You are about to permanently delete:
               </p>
               <div className="bg-amber-50 border-2 border-amber-300 rounded-xl px-4 py-3">
-                <p className="font-bold text-black text-sm truncate">{confirmDelete.title}</p>
+                <p className="font-bold text-black text-xs sm:text-sm truncate">{confirmDelete.title}</p>
               </div>
-              <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex gap-2">
+              <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4 flex gap-2">
                 <span className="material-symbols-outlined text-red-500 text-[18px] shrink-0 mt-0.5">cloud_off</span>
                 <p className="text-xs text-red-700 leading-relaxed">
                   <strong>Warning:</strong> This will permanently delete the file from both
                   the website database <em>and</em> your Google Drive storage.
-                  The file cannot be recovered after this action.
                 </p>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="px-6 pb-6 flex gap-3">
+            <div className="px-4 sm:px-6 pb-4 sm:pb-6 flex gap-3">
               <button
                 onClick={() => setConfirmDelete(null)}
-                className="flex-1 py-3 rounded-xl border-2 border-gray-200 text-sm font-bold text-gray-600 hover:border-gray-400 hover:text-black transition-all"
+                className="flex-1 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 text-xs sm:text-sm font-bold text-gray-600 hover:border-gray-400 hover:text-black transition-all"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDelete(confirmDelete.id)}
                 disabled={deletingId === confirmDelete.id}
-                className="flex-1 py-3 rounded-xl bg-black text-amber-400 text-sm font-black hover:bg-gray-900 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 sm:py-3 rounded-xl bg-black text-amber-400 text-xs sm:text-sm font-black hover:bg-gray-900 disabled:opacity-60 transition-all flex items-center justify-center gap-2"
               >
                 {deletingId === confirmDelete.id ? (
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">

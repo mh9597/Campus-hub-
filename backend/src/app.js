@@ -4,6 +4,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -17,6 +18,9 @@ const resourceRoutes = require('./routes/resource.routes');
 const { notFoundHandler, errorHandler } = require('./middlewares/error.middleware');
 
 const app = express();
+
+// ─── HTTP Response Compression (Gzip / Deflate) ──────────────
+app.use(compression());
 
 // ─── Security Headers ─────────────────────────────────────────
 app.use(
