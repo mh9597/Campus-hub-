@@ -344,6 +344,8 @@ export default function AdminResourcesView() {
     try {
       await deleteResource(id);
       await load();
+    } catch (err) {
+      alert(err.message || 'Failed to delete resource');
     } finally {
       setDeletingId(null);
       setConfirmDelete(null);

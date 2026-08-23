@@ -198,15 +198,19 @@ async function deleteResource(req, res, next) {
     const resource = await prisma.resource.findUnique({ where: { id } });
     if (!resource) return sendError(res, 'Resource not found', 404);
 
-    // 2. Delete the physical file from Google Drive (404-tolerant)
+    // 2. Delete the physical file from Google Drive (best-effort)
     if (resource.driveFileId) {
-      await driveService.deleteFromDrive(resource.driveFileId);
+      try {
+        await driveService.deleteFromDrive(resource.driveFileId);
+      } catch (driveErr) {
+        console.warn(`[deleteResource] Drive file deletion failed for ${resource.driveFileId}:`, driveErr.message);
+      }
     }
 
     // 3. Hard-delete the database record
     await prisma.resource.delete({ where: { id } });
 
-    return sendSuccess(res, { id }, 200, 'Resource permanently deleted from database and Google Drive');
+    return sendSuccess(res, { id }, 200, 'Resource permanently deleted from database');
   } catch (err) {
     return next(err);
   }
