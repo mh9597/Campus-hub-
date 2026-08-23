@@ -83,7 +83,7 @@ router.post(
     body('subjectId').notEmpty().isUUID(),
     body('title').notEmpty().isString().trim(),
     body('resourceType').notEmpty().isString().trim(),
-    body('fileUrl').optional().isURL(),
+    body('fileUrl').optional({ checkFalsy: true }).isURL(),
   ],
   handleValidationErrors,
   adminController.createResource

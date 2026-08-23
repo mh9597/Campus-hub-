@@ -2,10 +2,14 @@
 // Protected admin management endpoints — delegates to admin.service.js
 'use strict';
 
+const fs          = require('fs');
+const path        = require('path');
 const adminService  = require('../services/admin.service');
 const driveService  = require('../services/drive.service');
 const prisma        = require('../config/prisma');
 const { sendSuccess, sendError } = require('../utils/response');
+
+const UPLOAD_DIR = path.resolve(__dirname, '../../uploads');
 
 // ─── Uploads ──────────────────────────────────────────────────
 
@@ -93,42 +97,62 @@ async function createResource(req, res, next) {
     let webViewLink = null;
 
     if (req.file) {
-      // ── Resolve Department + Semester + Subject names for folder structure ──
-      // Subject ➔ Semester ➔ Department
-      let departmentName = 'General';
-      let semesterName   = 'General';
-      let subjectName    = 'General';
+      let uploadSuccess = false;
 
-      if (req.body.subjectId) {
-        const subject = await prisma.subject.findUnique({
-          where:   { id: req.body.subjectId },
-          include: { semester: { include: { department: true } } },
-        });
+      // ── Try Google Drive upload if configured ──
+      try {
+        let departmentName = 'General';
+        let semesterName   = 'General';
+        let subjectName    = 'General';
 
-        if (subject?.semester?.department?.name) {
-          departmentName = subject.semester.department.name;
+        if (req.body.subjectId) {
+          const subject = await prisma.subject.findUnique({
+            where:   { id: req.body.subjectId },
+            include: { semester: { include: { department: true } } },
+          });
+
+          if (subject?.semester?.department?.name) {
+            departmentName = subject.semester.department.name;
+          }
+          if (subject?.semester?.name) {
+            semesterName = subject.semester.name;
+          }
+          if (subject?.title) {
+            subjectName = subject.title;
+          }
         }
-        if (subject?.semester?.name) {
-          semesterName = subject.semester.name;
-        }
-        if (subject?.title) {
-          subjectName = subject.title;
-        }
+
+        const result = await driveService.uploadFileToDrive(
+          req.file,
+          departmentName,
+          semesterName,
+          subjectName,
+          req.body.resourceType || 'General',
+        );
+
+        driveFileId = result.fileId;
+        webViewLink = result.webViewLink;
+        fileKey     = result.fileId;
+        fileUrl     = result.webViewLink;
+        uploadSuccess = true;
+      } catch (driveErr) {
+        console.warn('[createResource] Google Drive upload failed or unconfigured. Falling back to local storage:', driveErr.message);
       }
 
-      // ── Upload into Root ➔ Department ➔ Semester ➔ Subject ➔ ResourceType ──
-      const result = await driveService.uploadFileToDrive(
-        req.file,
-        departmentName,
-        semesterName,
-        subjectName,
-        req.body.resourceType || 'General',
-      );
+      // ── Fallback to local storage if Drive upload was unsuccessful ──
+      if (!uploadSuccess) {
+        const safeName = req.file.originalname.replace(/[^a-zA-Z0-9._\-]/g, '_');
+        const filename = `${Date.now()}-${safeName}`;
+        const localPath = path.resolve(UPLOAD_DIR, filename);
 
-      driveFileId = result.fileId;
-      webViewLink = result.webViewLink;
-      fileKey     = result.fileId;
-      fileUrl     = result.webViewLink;
+        if (!fs.existsSync(UPLOAD_DIR)) {
+          fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+        }
+        fs.writeFileSync(localPath, req.file.buffer);
+
+        fileKey = filename;
+        fileUrl = `/uploads/${filename}`;
+      }
     }
 
     const resource = await adminService.createResource({

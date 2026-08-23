@@ -79,9 +79,13 @@ export async function createResource({ subjectId, title, resourceType, fileUrl, 
 // POST /api/admin/resources  (multipart — file upload)
 export async function createResourceWithFile(formData) {
   // Do NOT set Content-Type — browser sets multipart boundary automatically
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
+  let rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+  if (rawBase.includes('localhost') && typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    rawBase = rawBase.replace('localhost', window.location.hostname);
+  }
+  const baseUrl = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
   const token = sessionStorage.getItem('admin_access_token');
-  const res = await fetch(`${API_BASE_URL}/admin/resources`, {
+  const res = await fetch(`${baseUrl}/admin/resources`, {
     method: 'POST',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     credentials: 'include',
@@ -89,7 +93,7 @@ export async function createResourceWithFile(formData) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `Upload failed: ${res.status}`);
+    throw new Error(err.message || err.error || `Upload failed: ${res.status}`);
   }
   const json = await res.json();
   return json.data ?? json;
