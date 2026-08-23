@@ -46,6 +46,7 @@ function ResourceViewer() {
   const [loading, setLoading] = useState(!location.state?.resource);
   const [iframeLoading, setIframeLoading] = useState(true);
   const [iframeError, setIframeError] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (resource) return; // Already have data from state
@@ -62,12 +63,12 @@ function ResourceViewer() {
     load();
   }, [id, navigate, resource]);
 
-  // Safety fallback: Chromium PDF plugin inside <iframe> does not trigger standard onLoad.
-  // Automatically dismiss loading spinner after 1.2s to reveal PDF.
+  // Reset error states when resource changes
   useEffect(() => {
     if (!resource) return;
     setIframeLoading(true);
     setIframeError(false);
+    setImgError(false);
     const timer = setTimeout(() => {
       setIframeLoading(false);
     }, 1200);
@@ -272,13 +273,14 @@ function ResourceViewer() {
         <main className="flex-1 overflow-hidden relative bg-black">
           {!resource.fileUrl && !resource.driveFileId ? (
             <EmptyViewer message="No file is attached to this resource." />
-          ) : resourceIsImage && !hasDriveFile ? (
+          ) : resourceIsImage && !hasDriveFile && !imgError ? (
             // Local image files — render directly
             <div className="w-full h-full overflow-auto flex items-center justify-center p-8">
               <img
                 src={viewUrl}
                 alt={resource.title}
                 className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                onError={() => setImgError(true)}
               />
             </div>
           ) : canTryIframe ? (
@@ -293,7 +295,7 @@ function ResourceViewer() {
                 </div>
               )}
               {iframeError ? (
-                <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} />
+                <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} webViewLink={resource.webViewLink || resource.fileUrl} />
               ) : (
                 <iframe
                   key={viewUrl}
@@ -306,7 +308,7 @@ function ResourceViewer() {
               )}
             </>
           ) : (
-            <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} isUnknownType />
+            <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} webViewLink={resource.webViewLink || resource.fileUrl} isUnknownType />
           )}
         </main>
       </div>
@@ -314,8 +316,10 @@ function ResourceViewer() {
   );
 }
 
-// ─── Fallback: when PDF can't be embedded or unknown type ───
-function FallbackViewer({ viewUrl, downloadUrl, isUnknownType }) {
+// ─── Fallback: when PDF/Image can't be embedded or unknown type ───
+function FallbackViewer({ viewUrl, downloadUrl, webViewLink, isUnknownType }) {
+  const directLink = (webViewLink && (webViewLink.startsWith('http://') || webViewLink.startsWith('https://'))) ? webViewLink : null;
+
   return (
     <div className="flex flex-col items-center justify-center h-full gap-6 text-center px-8 bg-neutral-950">
       <div className="w-20 h-20 rounded-2xl bg-neutral-900 flex items-center justify-center border border-neutral-800">
@@ -327,12 +331,22 @@ function FallbackViewer({ viewUrl, downloadUrl, isUnknownType }) {
         <h3 className="text-yellow-400 font-bold text-lg mb-2">Preview not available</h3>
         <p className="text-neutral-400 text-sm max-w-sm">
           {isUnknownType 
-            ? "This file format cannot be previewed directly in the browser. Click below to download."
-            : "Your browser blocked the inline preview for this file. You can still open or download it directly."}
+            ? "The file preview is unavailable or missing on the server. You can try opening the direct link or downloading the file."
+            : "Your browser could not render the inline preview for this file. You can still open or download it directly."}
         </p>
       </div>
-      <div className="flex gap-3">
-        {!isUnknownType && (
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        {directLink ? (
+          <a
+            href={directLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-3 rounded-xl transition"
+          >
+            <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+            Open Direct Link
+          </a>
+        ) : (
           <a
             href={viewUrl}
             target="_blank"
