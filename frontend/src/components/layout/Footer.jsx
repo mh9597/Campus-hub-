@@ -110,7 +110,7 @@ function Footer() {
                 <span className="material-symbols-outlined text-lg">play_circle</span>
               </a>
               <a
-                href="https://telegram.org"
+                href="https://t.me/+UDHjAUouy5I5MTc9"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Telegram"

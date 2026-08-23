@@ -388,7 +388,7 @@ function Contact() {
 
                 <div className="space-y-3">
                   <a
-                    href="https://chat.whatsapp.com"
+                    href="https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full py-3.5 px-5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"

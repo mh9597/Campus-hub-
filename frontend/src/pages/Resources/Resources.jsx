@@ -443,7 +443,7 @@ function Resources() {
                 </Link>
 
                 <a
-                  href="https://chat.whatsapp.com"
+                  href="https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full sm:w-auto border-2 border-white/40 hover:border-white text-white font-bold px-7 py-3.5 rounded-full hover:bg-white/10 transition-all text-xs sm:text-sm inline-flex items-center justify-center gap-2 cursor-pointer"

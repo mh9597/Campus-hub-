@@ -321,7 +321,7 @@ export default function Community() {
               {/* Primary High-Energy Buttons */}
               <div className="flex flex-wrap items-center gap-4 pt-3">
                 <a
-                  href="https://chat.whatsapp.com"
+                  href="https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-6 sm:px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#0F172A]"
@@ -332,7 +332,7 @@ export default function Community() {
                 </a>
 
                 <a
-                  href="https://telegram.org"
+                  href="https://t.me/+UDHjAUouy5I5MTc9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-[#0B132B] hover:bg-[#152244] text-[#FACC15] font-black px-6 sm:px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#FACC15]"
@@ -860,7 +860,7 @@ export default function Community() {
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <a
-                href="https://chat.whatsapp.com"
+                href="https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-[#0F172A] hover:bg-slate-800 text-[#FACC15] font-black px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#0F172A] text-xs sm:text-sm"
@@ -870,7 +870,7 @@ export default function Community() {
               </a>
 
               <a
-                href="https://telegram.org"
+                href="https://t.me/+UDHjAUouy5I5MTc9"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-white hover:bg-slate-50 text-slate-950 font-black px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#0F172A] text-xs sm:text-sm"
