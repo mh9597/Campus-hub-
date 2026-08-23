@@ -8,7 +8,8 @@ import {
   getAdminCatalog,
 } from '../../services/admin/adminApi';
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+const API_BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 // Admin can view submissions via the backend proxy (no Drive URL exposed)
 const buildViewUrl = (id) => `${API_BASE}/resources/${id}/view`;
 

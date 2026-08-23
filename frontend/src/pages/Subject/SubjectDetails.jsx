@@ -7,7 +7,8 @@ import { ErrorState } from '../../components/ui/ErrorState';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
 
 // Backend proxy base — never expose raw Drive URLs to the browser
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+const API_BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 const buildDownloadUrl = (id) => `${API_BASE}/resources/${id}/download`;
 
 // Detect file type — checks mimeType first (reliable for Drive files), then URL

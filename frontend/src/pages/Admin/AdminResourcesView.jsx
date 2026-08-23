@@ -9,7 +9,8 @@ import {
 
 const RESOURCE_TYPES = ['Notes', 'Previous Year Papers', 'Practical Files', 'Viva Questions', 'Question Bank', 'Syllabus', 'Other'];
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+const API_BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 const buildViewUrl = (id) => `${API_BASE}/resources/${id}/view`;
 
 function Modal({ title, onClose, children }) {

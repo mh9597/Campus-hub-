@@ -7,7 +7,8 @@ import { getResourceById } from '../../services/resources/resourcesApi';
 import ScrollToTop from '../../components/common/ScrollToTop';
 
 // ─── Helpers ──────────────────────────────────────────────────
-const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api');
+const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api').replace(/\/$/, '');
+const API_BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
 
 // Backend proxy URLs — the raw Google Drive URL NEVER reaches the browser
 function buildViewUrl(id)     { return `${API_BASE}/resources/${id}/view`; }

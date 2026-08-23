@@ -28,23 +28,28 @@ app.use(
 );
 
 // ─── Dynamic CORS Configuration ────────────────────────────────
-const allowedOrigins = [
+const rawOrigins = [
   'http://localhost:5173', // Local Vite development
   'http://localhost:3000', // Alternative local dev port
   'http://127.0.0.1:5173',
   'https://campus-hub-eight-omega.vercel.app', // Live Vercel production deployment
-  ...(process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',').map((o) => o.trim()) : []),
-  ...(process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',').map((o) => o.trim()) : []),
-].filter(Boolean);
+  ...(process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',') : []),
+  ...(process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',') : []),
+];
+
+const allowedOrigins = rawOrigins
+  .filter(Boolean)
+  .map((o) => o.trim().replace(/\/+$/, ''));
 
 app.use(
   cors({
     origin: (origin, callback) => {
+      const cleanOrigin = origin ? origin.replace(/\/+$/, '') : null;
       // Allow requests with no origin (like mobile apps, curl, server-to-server)
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!cleanOrigin || allowedOrigins.includes(cleanOrigin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error(`Not allowed by CORS: ${origin}`));
       }
     },
     credentials: true, // required for HttpOnly cookies
