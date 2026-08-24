@@ -143,12 +143,13 @@ async function submitUpload(req, res, next) {
 // POST /api/submissions/request  (application/json)
 async function submitRequest(req, res, next) {
   try {
-    const { subjectCode, resourceType, message, email } = req.body;
+    const { subjectCode, resourceType, message, description, email } = req.body;
 
     const request = await publicService.createRequest({
       subjectCode: subjectCode || "", // Fallback if optional and empty
       resourceType,
       message,
+      description: description || message || "",
       email,
     });
 
