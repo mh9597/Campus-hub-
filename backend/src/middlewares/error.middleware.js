@@ -22,6 +22,15 @@ function errorHandler(err, req, res, _next) {
     });
   }
 
+  // Handle Google Drive / OAuth invalid_grant errors specifically
+  if (err.message?.includes('invalid_grant') || err.response?.data?.error === 'invalid_grant') {
+    console.error('🚨 [errorHandler] Google OAuth invalid_grant error: GOOGLE_REFRESH_TOKEN is expired or invalid.');
+    return res.status(500).json({
+      success: false,
+      message: 'Google Drive authorization error (invalid_grant). The storage refresh token has expired or is invalid. Please update GOOGLE_REFRESH_TOKEN in server configuration.',
+    });
+  }
+
   const statusCode = err.statusCode || err.status || 500;
   const message = err.message || 'Internal Server Error';
 

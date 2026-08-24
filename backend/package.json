@@ -12,7 +12,8 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "get-refresh-token": "node scripts/get-refresh-token.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

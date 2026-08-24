@@ -6,6 +6,9 @@ const publicService = require('../services/public.service');
 const driveService  = require('../services/drive.service');
 const prisma        = require('../config/prisma');
 const { sendSuccess, sendError } = require('../utils/response');
+const path          = require('path');
+const fs            = require('fs');
+const { UPLOAD_DIR } = require('../config/multer');
 
 
 // GET /api/categories/semesters
@@ -81,19 +84,42 @@ async function submitUpload(req, res, next) {
     let webViewLink = null;
 
     if (req.file) {
-      // ── Upload directly to the Pending Contributions folder ──
+      let uploadSuccess = false;
       const pendingFolderId = process.env.GOOGLE_DRIVE_PENDING_FOLDER_ID;
-      
-      if (!pendingFolderId) {
-        throw new Error('Server configuration error: GOOGLE_DRIVE_PENDING_FOLDER_ID is missing');
+
+      if (pendingFolderId) {
+        try {
+          const result = await driveService.uploadDirectToDrive(req.file, pendingFolderId);
+
+          driveFileId = result.fileId;
+          webViewLink = result.webViewLink;
+          fileKey     = result.fileId;      // keep fileKey for legacy compat
+          fileUrl     = result.webViewLink; // stored for admin reference
+          uploadSuccess = true;
+        } catch (driveErr) {
+          console.warn('[submitUpload] Google Drive upload failed. Falling back to local storage:', driveErr.message);
+          if (driveErr.message?.includes('invalid_grant') || driveErr?.response?.data?.error === 'invalid_grant') {
+            console.error('🚨 [submitUpload] CRITICAL: GOOGLE_REFRESH_TOKEN is invalid or expired (invalid_grant). Please renew the refresh token in environment settings.');
+          }
+        }
+      } else {
+        console.warn('[submitUpload] GOOGLE_DRIVE_PENDING_FOLDER_ID is missing. Falling back to local storage.');
       }
 
-      const result = await driveService.uploadDirectToDrive(req.file, pendingFolderId);
+      // ── Fallback to local storage if Drive upload was unsuccessful or unconfigured ──
+      if (!uploadSuccess) {
+        const safeName = req.file.originalname.replace(/[^a-zA-Z0-9._\-]/g, '_');
+        const filename = `${Date.now()}-${safeName}`;
+        const localPath = path.resolve(UPLOAD_DIR, filename);
 
-      driveFileId = result.fileId;
-      webViewLink = result.webViewLink;
-      fileKey     = result.fileId;      // keep fileKey for legacy compat
-      fileUrl     = result.webViewLink; // stored for admin reference
+        if (!fs.existsSync(UPLOAD_DIR)) {
+          fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+        }
+        fs.writeFileSync(localPath, req.file.buffer);
+
+        fileKey = filename;
+        fileUrl = `/uploads/${filename}`;
+      }
     }
 
     const submission = await publicService.createUpload({
