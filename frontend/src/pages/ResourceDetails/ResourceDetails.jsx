@@ -1,5 +1,6 @@
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { useSemesterById } from '../../hooks/useSemesterById';
+import { prefetchSemesters } from '../../lib/queryPrefetch';
 import { SubjectCardSkeleton } from '../../components/ui/LoadingSkeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
 import FolderSubjectCard from '../../components/subjects/FolderSubjectCard';
@@ -46,9 +47,9 @@ function SemesterDetails() {
             <nav className="flex items-center gap-2 mb-6 text-xs sm:text-sm text-gray-600 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar">
               <Link to="/" className="hover:text-amber-600 font-bold transition-colors">Home</Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
-              <Link to="/resources" className="hover:text-amber-600 font-bold transition-colors">Resources</Link>
+              <Link to="/resources" onMouseEnter={prefetchSemesters} onPointerEnter={prefetchSemesters} className="hover:text-amber-600 font-bold transition-colors">Resources</Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
-              <Link to="/semesters" className="hover:text-amber-600 font-bold transition-colors">Computer Engineering</Link>
+              <Link to="/semesters" onMouseEnter={prefetchSemesters} onPointerEnter={prefetchSemesters} className="hover:text-amber-600 font-bold transition-colors">Computer Engineering</Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
               <span className="text-black font-black bg-amber-100 border border-amber-300 px-2.5 py-0.5 rounded-lg">
                 {loading ? '...' : (semester?.name ?? `Semester ${semesterId}`)}

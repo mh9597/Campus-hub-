@@ -1,16 +1,25 @@
-import { useFetch } from './useFetch';
+import { useQuery } from '@tanstack/react-query';
+import { queryKeys } from '../lib/queryKeys';
 import { getSemesters } from '../services/resources/resourcesApi';
 
 /**
  * Hook: fetch all semesters (with subjects) from the backend.
- * Uses cached data for instant page loads across route switches.
+ * Uses TanStack Query cache with staleTime and persistence for instant page loads
+ * across route switches without showing skeleton loaders.
  *
- * @returns {{ semesters: Array, loading: boolean, error: string|null, refetch: Function }}
+ * @returns {{ semesters: Array, loading: boolean, isFetching: boolean, error: string|null, refetch: Function }}
  */
 export function useSemesters() {
-  const { data, loading, error, refetch } = useFetch(getSemesters, [], {
-    cacheKey: 'ch_semesters_list',
-    ttl: 60000,
+  const { data, isPending, isFetching, error, refetch } = useQuery({
+    queryKey: queryKeys.semesters,
+    queryFn: getSemesters,
   });
-  return { semesters: data ?? [], loading, error, refetch };
+
+  return {
+    semesters: data ?? [],
+    loading: isPending && !data,
+    isFetching,
+    error: error ? (error.message || 'Failed to load semesters') : null,
+    refetch,
+  };
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSemesters } from '../../hooks/useSemesters';
+import { prefetchSemester } from '../../lib/queryPrefetch';
 import { SemesterCardSkeleton } from '../../components/ui/LoadingSkeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
 import pinIcon from './thumb tack 2 plain.svg';
@@ -300,6 +301,9 @@ function Semesters() {
                 dragElastic={0.15}
                 onDrag={updatePath}
                 onDragEnd={updatePath}
+                onMouseEnter={() => prefetchSemester(sem.id)}
+                onPointerEnter={() => prefetchSemester(sem.id)}
+                onTouchStart={() => prefetchSemester(sem.id)}
                 whileHover={{ scale: 1.03, y: -8, zIndex: 30 }}
                 whileDrag={{ scale: 1.05, rotate: 2, zIndex: 50, cursor: 'grabbing' }}
                 onClick={(e) => {

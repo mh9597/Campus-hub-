@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { prefetchSemesters } from '../../../lib/queryPrefetch';
 
 function HeroSection() {
   return (
@@ -47,6 +48,8 @@ function HeroSection() {
             <div className="flex flex-wrap items-center gap-4 pt-4">
               <Link
                 to="/resources"
+                onMouseEnter={prefetchSemesters}
+                onPointerEnter={prefetchSemesters}
                 className="bg-hub-navy hover:bg-slate-800 text-white font-bold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2.5 text-sm sm:text-base border border-hub-navy"
               >
                 <span>Explore Resources</span>
@@ -54,6 +57,8 @@ function HeroSection() {
               </Link>
               <Link
                 to="/semesters"
+                onMouseEnter={prefetchSemesters}
+                onPointerEnter={prefetchSemesters}
                 className="bg-white hover:bg-amber-50 text-hub-navy font-bold px-8 py-3.5 rounded-full shadow-sm hover:shadow-md border-2 border-amber-300 transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
               >
                 Explore Semesters

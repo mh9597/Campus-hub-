@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { prefetchSemesters } from '../../lib/queryPrefetch';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
 import { WordReveal, TextGradientSheen, BlurText, BlurCategoryScroller } from '../../components/ui/TextAnimations';
@@ -315,6 +316,8 @@ function Resources() {
                   {dept.isAvailable ? (
                     <Link
                       to={dept.path}
+                      onMouseEnter={prefetchSemesters}
+                      onPointerEnter={prefetchSemesters}
                       className="w-full py-3.5 px-6 rounded-2xl bg-slate-950 hover:bg-amber-400 text-white hover:text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all duration-200 active:scale-[0.99]"
                     >
                       <span>Explore Resources</span>

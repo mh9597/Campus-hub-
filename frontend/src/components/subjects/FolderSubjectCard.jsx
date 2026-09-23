@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { prefetchSubject } from '../../lib/queryPrefetch';
 
 const FOLDER_THEMES = {
   lime: { bg: '#c6f62b', frontBg: '#c6f62b', rightTabBg: '#fef08a' },
@@ -85,6 +86,9 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
       dragElastic={0.12}
       whileHover={{ scale: 1.03, y: -5, zIndex: 40 }}
       whileDrag={{ scale: 1.05, rotate: 2, zIndex: 50, cursor: 'grabbing' }}
+      onMouseEnter={() => subject?.code && prefetchSubject(subject.code)}
+      onPointerEnter={() => subject?.code && prefetchSubject(subject.code)}
+      onTouchStart={() => subject?.code && prefetchSubject(subject.code)}
       onClick={handleCardClick}
       className="group relative w-full max-w-[300px] sm:max-w-[330px] cursor-grab active:cursor-grabbing select-none my-4"
     >
@@ -229,6 +233,7 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
           ].map((tab, tIdx) => (
             <div
               key={tIdx}
+              onMouseEnter={() => subject?.code && prefetchSubject(subject.code)}
               onClick={(e) => {
                 e.stopPropagation();
                 if (subject?.code) {

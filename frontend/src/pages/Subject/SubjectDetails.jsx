@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSubjectResources } from '../../hooks/useResources';
-import { getSubjectByCode } from '../../services/resources/resourcesApi';
+import { useSubject } from '../../hooks/useSubject';
+import { prefetchSemesters, prefetchSemester } from '../../lib/queryPrefetch';
 import { ErrorState } from '../../components/ui/ErrorState';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
 
@@ -28,8 +29,6 @@ function SubjectDetails() {
   const { code } = useParams();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('Notes');
-  const [subject, setSubject] = useState(null);
-  const [subjectLoading, setSubjectLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
   const resourcesPanelRef = useRef(null);
 
@@ -41,24 +40,15 @@ function SubjectDetails() {
     }, 80);
   }
 
-  // useSubjectResources will fetch based on the actual subject code
-  const { resources, loading: resourcesLoading, error, refetch } = useSubjectResources(subject?.code || '');
+  // Load subject metadata and resources in parallel without waterfall delay
+  const { subject, loading: subjectLoading, error: subjectError } = useSubject(code);
+  const { resources, loading: resourcesLoading, error, refetch } = useSubjectResources(subject?.code || code || '');
 
   useEffect(() => {
-    async function fetchSubject() {
-      if (!code) return;
-      setSubjectLoading(true);
-      const data = await getSubjectByCode(code);
-      if (data) {
-        setSubject(data);
-      } else {
-        // If subject not found, navigate to 404
-        navigate('/404', { replace: true });
-      }
-      setSubjectLoading(false);
+    if (!subjectLoading && !subject && !subjectError) {
+      navigate('/404', { replace: true });
     }
-    fetchSubject();
-  }, [code, navigate]);
+  }, [subjectLoading, subject, subjectError, navigate]);
 
   const categories = [
     {
@@ -123,7 +113,7 @@ function SubjectDetails() {
 
   const totalResourcesCount = resources.length;
 
-  if (subjectLoading) {
+  if (subjectLoading && !subject) {
     return (
       <div className="min-h-screen bulletin-board-bg flex flex-col items-center justify-center pt-20">
         <div className="w-14 h-14 rounded-2xl bg-amber-400 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center animate-bounce mb-4">
@@ -155,15 +145,20 @@ function SubjectDetails() {
             <nav className="flex items-center gap-2 mb-6 text-xs sm:text-sm text-gray-600 overflow-x-auto whitespace-nowrap pb-1 no-scrollbar">
               <Link to="/" className="hover:text-amber-600 font-bold transition-colors">Home</Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
-              <Link to="/resources" className="hover:text-amber-600 font-bold transition-colors">Resources</Link>
+              <Link to="/resources" onMouseEnter={prefetchSemesters} onPointerEnter={prefetchSemesters} className="hover:text-amber-600 font-bold transition-colors">Resources</Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
-              <Link to="/semesters" className="hover:text-amber-600 font-bold transition-colors">
+              <Link to="/semesters" onMouseEnter={prefetchSemesters} onPointerEnter={prefetchSemesters} className="hover:text-amber-600 font-bold transition-colors">
                 {subject.department?.code || 'CE'}
               </Link>
               <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>
               {subject.semester?.id && (
                 <>
-                  <Link to={`/semesters/${subject.semester.id}`} className="hover:text-amber-600 font-bold transition-colors">
+                  <Link
+                    to={`/semesters/${subject.semester.id}`}
+                    onMouseEnter={() => prefetchSemester(subject.semester.id)}
+                    onPointerEnter={() => prefetchSemester(subject.semester.id)}
+                    className="hover:text-amber-600 font-bold transition-colors"
+                  >
                     Semester {subject.semester?.semesterNumber || ''}
                   </Link>
                   <span className="material-symbols-outlined text-[14px] text-gray-400">chevron_right</span>

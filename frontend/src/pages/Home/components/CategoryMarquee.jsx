@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { prefetchSemesters } from '../../../lib/queryPrefetch';
 
 function CategoryMarquee() {
   const displayItems = [
@@ -41,6 +42,8 @@ function CategoryMarquee() {
         <Link
           key={`${keyPrefix}-${cat.id}-${idx}`}
           to={`/resources?category=${encodeURIComponent(cat.title.toLowerCase())}`}
+          onMouseEnter={prefetchSemesters}
+          onPointerEnter={prefetchSemesters}
           className="w-48 sm:w-56 shrink-0 bg-white p-5 sm:p-6 rounded-[24px] text-center cursor-pointer transition-all duration-300 hover:-translate-y-1.5 shadow-[0_10px_30px_rgba(0,0,0,0.04)] hover:shadow-xl flex flex-col items-center justify-between border-2 border-amber-100/80 hover:border-hub-navy group"
         >
           <div className="mb-4">

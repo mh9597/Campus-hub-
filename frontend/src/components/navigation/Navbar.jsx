@@ -2,12 +2,23 @@ import { useState, useEffect } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import HomeSearchBar from '../HomeSearchBar';
+import { prefetchSemesters, prefetchOpportunities, prefetchAnnouncements } from '../../lib/queryPrefetch';
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredPath, setHoveredPath] = useState(null);
+
+  const handleNavHover = (path) => {
+    setHoveredPath(path);
+    if (path === '/resources') {
+      prefetchSemesters();
+    } else if (path === '/opportunities') {
+      prefetchOpportunities();
+      prefetchAnnouncements();
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,7 +72,8 @@ function Navbar() {
             <NavLink
               key={link.name}
               to={link.path}
-              onMouseEnter={() => setHoveredPath(link.path)}
+              onMouseEnter={() => handleNavHover(link.path)}
+              onPointerEnter={() => handleNavHover(link.path)}
               className={({ isActive }) =>
                 `text-sm relative py-1 font-bold transition-colors duration-200 select-none ${
                   isActive ? 'text-hub-navy' : 'text-gray-600 hover:text-hub-navy'

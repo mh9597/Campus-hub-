@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchAllSubjects } from '../services/resources/resourcesApi';
+import { prefetchSubject } from '../lib/queryPrefetch';
 
 const PLACEHOLDERS = [
   "Search 'DSA'...",
@@ -175,7 +176,10 @@ function HomeSearchBar({ size = 'large' }) {
                 <div
                   key={`${subject.code}-${index}`}
                   onClick={() => handleSelect(subject)}
-                  onMouseEnter={() => setSelectedIndex(index)}
+                  onMouseEnter={() => {
+                    setSelectedIndex(index);
+                    if (subject?.code) prefetchSubject(subject.code);
+                  }}
                   className={`flex items-start gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 active-press ${selectedIndex === index ? 'bg-amber-50/90 border-amber-200/80 shadow-sm translate-x-1' : 'hover:bg-gray-50/80 border-transparent'
                     } border`}
                 >
