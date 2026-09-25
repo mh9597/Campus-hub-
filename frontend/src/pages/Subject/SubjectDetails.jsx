@@ -222,13 +222,23 @@ function SubjectDetails() {
                     {resourcesLoading ? '...' : totalResourcesCount}
                   </span>
                 </div>
-                <button
-                  onClick={() => setShowUpload(true)}
-                  className="btn-black-yellow px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 active-press shadow-xs cursor-pointer"
-                >
-                  <span className="material-symbols-outlined text-[18px]">upload_file</span>
-                  Contribute
-                </button>
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <Link
+                    to={`/subject/${(subject.code || code).toLowerCase()}/viva`}
+                    className="flex-1 md:flex-initial bg-[#FBBF24] hover:bg-amber-400 text-black border-2 border-black px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 active-press shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                    title="Open Viva Questions & Solutions platform"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">psychology</span>
+                    Viva Prep
+                  </Link>
+                  <button
+                    onClick={() => setShowUpload(true)}
+                    className="flex-1 md:flex-initial btn-black-yellow px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 active-press shadow-xs cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">upload_file</span>
+                    Contribute
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -361,6 +371,32 @@ function SubjectDetails() {
                 </span>
               </div>
             </div>
+
+            {/* Viva Platform Highlight Banner */}
+            {selectedCategory === 'Viva Questions' && (
+              <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-200 to-yellow-200 border-2 border-black shadow-[4px_4px_0px_#0F172A] flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+                <div className="space-y-1.5">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-black text-[#FBBF24] text-[11px] font-black uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-sm">auto_stories</span>
+                    Subject-Independent Learning Suite
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black text-black tracking-tight">
+                    Interactive Viva Questions & Solutions
+                  </h3>
+                  <p className="text-xs sm:text-sm text-black/80 font-medium max-w-xl">
+                    Master your practical and external exams with direct answers, detailed explanations, diagrams, examiner follow-up questions, and lab experiment solutions tailored for {subject.title}.
+                  </p>
+                </div>
+                <Link
+                  to={`/subject/${(subject.code || code).toLowerCase()}/viva`}
+                  className="btn-black-yellow px-6 py-3.5 rounded-xl text-sm font-black flex items-center gap-2 whitespace-nowrap active-press shadow-[3px_3px_0px_rgba(0,0,0,1)]"
+                >
+                  <span className="material-symbols-outlined text-xl">school</span>
+                  Launch Viva Platform
+                  <span className="material-symbols-outlined text-base">arrow_forward</span>
+                </Link>
+              </div>
+            )}
 
             {/* Loading Skeleton State */}
             {resourcesLoading && (

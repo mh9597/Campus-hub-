@@ -44,6 +44,8 @@ const AdminResourcesView = lazy(() => import('../pages/Admin/AdminResourcesView'
 const AdminOpportunitiesView = lazy(() => import('../pages/Admin/AdminOpportunitiesView'));
 const AdminCatalogView = lazy(() => import('../pages/Admin/AdminCatalogView'));
 
+const UniversalVivaPage = lazy(() => import('../pages/Viva/UniversalVivaPage'));
+
 export const router = createBrowserRouter([
   // ── Public app ─────────────────────────────────────────────
   {
@@ -55,6 +57,7 @@ export const router = createBrowserRouter([
       { path: 'semesters', element: withSuspense(Semesters) },
       { path: 'semesters/:id', element: withSuspense(SemesterDetails) },
       { path: 'subject/:code', element: withSuspense(SubjectDetails) },
+      { path: 'subject/:code/viva', element: withSuspense(UniversalVivaPage) },
       { path: 'opportunities', element: withSuspense(Opportunities) },
       { path: 'community', element: withSuspense(Community) },
       { path: 'contact', element: withSuspense(Contact) },
