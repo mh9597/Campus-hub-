@@ -23,6 +23,13 @@ export default function AdminDashboard() {
       color: 'text-tertiary bg-tertiary/10',
     },
     {
+      to: '/admin/viva',
+      icon: 'quiz',
+      label: 'Viva Questions',
+      description: 'Create, edit, publish questions and bulk import viva Q&As.',
+      color: 'text-amber-600 bg-amber-500/10',
+    },
+    {
       to: '/admin/opportunities',
       icon: 'work',
       label: 'Opportunities',

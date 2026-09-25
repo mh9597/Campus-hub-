@@ -7,7 +7,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSubjectVivaData } from '../services/viva/vivaApi';
-import { getUniversalSubjectViva } from '../data/vivaData';
 import { useSubject } from './useSubject';
 
 export function useViva(subjectCode) {
@@ -16,7 +15,7 @@ export function useViva(subjectCode) {
   // Load subject metadata from catalog
   const { subject, loading: subjectLoading } = useSubject(normalizedCode);
 
-  // TanStack Query for Viva Data
+  // TanStack Query for Viva Data (100% dynamic from DB via backend proxy)
   const {
     data: vivaData,
     isLoading: vivaLoading,
@@ -25,9 +24,8 @@ export function useViva(subjectCode) {
   } = useQuery({
     queryKey: ['viva', normalizedCode],
     queryFn: () => getSubjectVivaData(normalizedCode, subject),
-    initialData: () => getUniversalSubjectViva(normalizedCode, subject),
     enabled: !!normalizedCode,
-    staleTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 2, // 2 seconds fresh, fast revalidation with DB
   });
 
   // UI Filtering State
@@ -187,9 +185,12 @@ export function useViva(subjectCode) {
 
     // Tab filter
     if (activeTab === 'theory') {
-      result = result.filter((q) => q.category === 'theory');
+      result = result.filter((q) => (q.category || '').toLowerCase().includes('theory'));
     } else if (activeTab === 'practical') {
-      result = result.filter((q) => q.category === 'practical' || q.category === 'experiment');
+      result = result.filter((q) => {
+        const cat = (q.category || '').toLowerCase();
+        return cat.includes('practical') || cat.includes('experiment') || cat.includes('lab');
+      });
     } else if (activeTab === 'bookmarked') {
       result = result.filter((q) => bookmarkedIds.has(q.id));
     }

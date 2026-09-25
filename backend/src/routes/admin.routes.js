@@ -167,4 +167,7 @@ router.delete('/announcements/:id', requireRole('ADMIN'), adminController.delete
 // ─── Academic Catalog (Departments / Semesters / Subjects) ────
 router.use('/catalog', require('./catalog.routes'));
 
+// ─── Viva Question & Answer Management ─────────────────────────
+router.use('/viva', require('./admin.viva.routes'));
+
 module.exports = router;

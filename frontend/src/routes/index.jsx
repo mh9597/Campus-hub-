@@ -36,11 +36,11 @@ function DepartmentRouteHandler() {
   return <RouterNavigate to={`/coming-soon?dept=${normalized}`} replace />;
 }
 
-// ─── Admin pages (Separated into isolated admin chunks) ───────
 const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin'));
 const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard'));
 const AdminSubmissionsView = lazy(() => import('../pages/Admin/AdminSubmissionsView'));
 const AdminResourcesView = lazy(() => import('../pages/Admin/AdminResourcesView'));
+const AdminVivaView = lazy(() => import('../pages/Admin/AdminVivaView'));
 const AdminOpportunitiesView = lazy(() => import('../pages/Admin/AdminOpportunitiesView'));
 const AdminCatalogView = lazy(() => import('../pages/Admin/AdminCatalogView'));
 
@@ -84,6 +84,7 @@ export const router = createBrowserRouter([
       { path: 'submissions', element: withSuspense(AdminSubmissionsView) },
       { path: 'uploads', element: withSuspense(AdminSubmissionsView) },
       { path: 'resources', element: withSuspense(AdminResourcesView) },
+      { path: 'viva', element: withSuspense(AdminVivaView) },
       { path: 'opportunities', element: withSuspense(AdminOpportunitiesView) },
       { path: 'catalog', element: withSuspense(AdminCatalogView) },
       { path: '*', element: withSuspense(NotFound) },

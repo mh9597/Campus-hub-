@@ -49,20 +49,26 @@ export default function UniversalVivaPage() {
     };
   }, [sections, activeSectionId]);
 
-  // Questions for active section
+  // Questions for active section (100% dynamic from database)
   const currentQuestions = useMemo(() => {
     if (activeSectionId === 'practicals') return [];
 
+    const sId = (activeSection.id || '').toLowerCase();
+    const sName = (activeSection.name || '').toLowerCase();
+    const hasMultipleSections = sections && sections.length > 1;
+
     const unitQuestions = allQuestions.filter((q) => {
-      if (!q.section) return true;
-      const sName = (activeSection.name || '').toLowerCase();
-      const qSec = q.section.toLowerCase();
-      const sId = (activeSection.id || '').toLowerCase();
+      if (!hasMultipleSections) return true;
+      if (!q.section && !q.unitId) return true;
+
+      const qUnitId = (q.unitId || '').toLowerCase();
+      const qSec = (q.section || '').toLowerCase();
 
       return (
+        qUnitId === sId ||
+        qSec === sName ||
         qSec.includes(sId) ||
-        qSec.includes(sName.slice(0, 6)) ||
-        qSec === sName
+        (sName.length > 5 && qSec.includes(sName.slice(0, 6)))
       );
     });
 
@@ -76,7 +82,7 @@ export default function UniversalVivaPage() {
         (q.detailedAnswer || '').toLowerCase().includes(term) ||
         (q.keyPoints || []).some((kp) => kp.toLowerCase().includes(term))
     );
-  }, [allQuestions, activeSection, activeSectionId, searchQuery]);
+  }, [allQuestions, sections, activeSection, activeSectionId, searchQuery]);
 
   // Experiments for practicals section
   const currentExperiments = useMemo(() => {
@@ -247,16 +253,24 @@ export default function UniversalVivaPage() {
             {activeSectionId !== 'practicals' ? (
               <div className="space-y-6">
                 {currentQuestions.length === 0 ? (
-                  <div className="text-center py-16 bg-white border-2 border-dashed border-black/30 rounded-2xl p-6">
-                    <span className="material-symbols-outlined text-4xl text-gray-400 mb-2">search_off</span>
-                    <h3 className="font-black text-base text-black">No questions match your filter</h3>
-                    <p className="text-xs text-gray-600 mt-1">Try resetting the search query.</p>
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="mt-3 btn-black-yellow px-4 py-2 rounded-xl text-xs font-black"
-                    >
-                      Clear Search
-                    </button>
+                  <div className="text-center py-16 bg-white border-2 border-black rounded-2xl p-6 shadow-[3px_3px_0px_#000]">
+                    <span className="material-symbols-outlined text-4xl text-amber-500 mb-2">quiz</span>
+                    <h3 className="font-black text-base text-black">
+                      {searchQuery.trim() ? 'No questions match your search' : 'No questions published in this section yet'}
+                    </h3>
+                    <p className="text-xs text-gray-600 mt-1 max-w-sm mx-auto">
+                      {searchQuery.trim()
+                        ? 'Try resetting the search query to see all questions.'
+                        : 'Questions added and published in the Admin Portal will appear here automatically.'}
+                    </p>
+                    {searchQuery.trim() && (
+                      <button
+                        onClick={() => setSearchQuery('')}
+                        className="mt-3 btn-black-yellow px-4 py-2 rounded-xl text-xs font-black cursor-pointer"
+                      >
+                        Clear Search
+                      </button>
+                    )}
                   </div>
                 ) : (
                   currentQuestions.map((q, idx) => (

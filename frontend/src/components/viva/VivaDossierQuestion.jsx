@@ -11,8 +11,23 @@ export default function VivaDossierQuestion({ question, index }) {
   const qNum = question.questionNumber || `Q.${index + 1}`;
   const elementId = question.id || `q-${index + 1}`;
 
+  // Fallback for shortAnswer punchline from detailedAnswer if missing
+  const displayShortAnswer = question.shortAnswer?.trim() || (() => {
+    if (!question.detailedAnswer) return null;
+    const clean = question.detailedAnswer.replace(/\n+/g, ' ').trim();
+    const firstSentence = clean.split(/\.\s+/)[0];
+    return firstSentence && firstSentence.length > 15 && firstSentence.length < 240
+      ? (firstSentence.endsWith('.') ? firstSentence : `${firstSentence}.`)
+      : null;
+  })();
+
+  // Fallback for keyPoints from tags if missing
+  const displayKeyPoints = (question.keyPoints && question.keyPoints.length > 0)
+    ? question.keyPoints
+    : (Array.isArray(question.tags) && question.tags.length > 0 ? question.tags : null);
+
   const handleCopyAnswer = () => {
-    const textToCopy = `Question: ${question.question}\n\nDirect Answer: ${question.shortAnswer}\n\nExplanation: ${question.detailedAnswer || ''}\n\nKey Points:\n${(question.keyPoints || []).map(p => `• ${p}`).join('\n')}`;
+    const textToCopy = `Question: ${question.question}\n\nDirect Answer: ${displayShortAnswer || ''}\n\nExplanation: ${question.detailedAnswer || ''}\n\nKey Points:\n${(displayKeyPoints || []).map(p => `• ${p}`).join('\n')}`;
     navigator.clipboard.writeText(textToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -79,14 +94,14 @@ export default function VivaDossierQuestion({ question, index }) {
       <div className="space-y-5 text-sm sm:text-base leading-relaxed">
         
         {/* A. Direct Examiner Answer (The 10-Second Viva Punchline) */}
-        {question.shortAnswer && (
+        {displayShortAnswer && (
           <div className="bg-[#FEF3D6] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] relative overflow-hidden">
             <div className="flex items-center gap-2 mb-2 text-xs font-black uppercase tracking-wider text-black">
               <span className="material-symbols-outlined text-lg text-amber-600">record_voice_over</span>
               <span>Direct Examiner Answer (10-Second Recall)</span>
             </div>
             <p className="text-gray-900 font-semibold text-sm sm:text-[15px] leading-relaxed">
-              {question.shortAnswer}
+              {displayShortAnswer}
             </p>
           </div>
         )}
@@ -107,14 +122,14 @@ export default function VivaDossierQuestion({ question, index }) {
         )}
 
         {/* C. Important Points Checklist */}
-        {question.keyPoints && question.keyPoints.length > 0 && (
+        {displayKeyPoints && displayKeyPoints.length > 0 && (
           <div className="pt-1">
             <h3 className="text-xs font-black uppercase tracking-wider text-gray-500 mb-2.5 flex items-center gap-1.5">
               <span className="material-symbols-outlined text-base text-emerald-600">task_alt</span>
               Key Memory Points
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {question.keyPoints.map((point, ptIdx) => (
+              {displayKeyPoints.map((point, ptIdx) => (
                 <div
                   key={ptIdx}
                   className="bg-gray-50 hover:bg-[#FFFDF5] border border-black/15 rounded-xl p-3 text-xs sm:text-sm font-medium text-gray-800 flex items-start gap-2"
@@ -137,6 +152,24 @@ export default function VivaDossierQuestion({ question, index }) {
             <pre className="bg-[#0F172A] text-[#34D399] border-2 border-black rounded-2xl p-4 sm:p-5 font-mono text-xs sm:text-sm overflow-x-auto shadow-[3px_3px_0px_#000] leading-relaxed">
               {question.diagram}
             </pre>
+          </div>
+        )}
+
+        {/* Visual Image / Diagram */}
+        {question.imageUrl && (
+          <div className="pt-1">
+            <h3 className="text-xs font-black uppercase tracking-wider text-gray-500 mb-2 flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-base text-purple-600">image</span>
+              Visual Diagram / Illustration
+            </h3>
+            <div className="border-2 border-black rounded-2xl overflow-hidden bg-white shadow-[3px_3px_0px_#000]">
+              <img
+                src={question.imageUrl}
+                alt={question.question}
+                className="max-h-96 w-auto mx-auto object-contain p-2"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+            </div>
           </div>
         )}
 

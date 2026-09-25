@@ -12,6 +12,7 @@ import { CE0518_UNIT3_QUESTIONS } from './viva/ce0518_unit3.js';
 import { CE0518_UNIT4_QUESTIONS } from './viva/ce0518_unit4.js';
 import { CE0518_EXPERIMENTS } from './viva/ce0518_experiments.js';
 import { CE0517_VIVA } from './viva/ce0517_microprocessor.js';
+import { CE0522_VIVA } from './viva/ce0522_webtechnology.js';
 
 // Aggregate full CE0518 Question Bank
 const CE0518_ALL_QUESTIONS = [
@@ -49,6 +50,14 @@ export const VIVA_DATA = {
   // ─────────────────────────────────────────────────────────────────────────
   'CE0517': {
     ...CE0517_VIVA
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // SUBJECT 3: CE0522 — Web Technology (Sem 5)
+  // Complete 4-Unit Syllabus + Practical Laboratory Experiments
+  // ─────────────────────────────────────────────────────────────────────────
+  'CE0522': {
+    ...CE0522_VIVA
   }
 };
 

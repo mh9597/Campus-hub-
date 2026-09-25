@@ -5,12 +5,11 @@
  */
 
 import { fetchFromApi } from '../../lib/api';
-import { getUniversalSubjectViva } from '../../data/vivaData';
 
 /**
  * Fetch viva syllabus, questions, and experiments for a subject.
- * Proxies request through backend /api/viva/:subjectCode, with seamless
- * fallback to client-side educational knowledge base when backend is offline.
+ * Proxies request through backend /api/viva/:subjectCode.
+ * All questions are purely dynamic from the database.
  *
  * @param {string} subjectCode 
  * @param {Object} [subjectMetadata] Optional cached metadata from subject catalog
@@ -19,18 +18,24 @@ import { getUniversalSubjectViva } from '../../data/vivaData';
 export async function getSubjectVivaData(subjectCode, subjectMetadata = {}) {
   if (!subjectCode) return null;
   const normalizedCode = subjectCode.toUpperCase().trim();
-  const safeMeta = subjectMetadata || {};
 
   try {
     const data = await fetchFromApi(`viva/${normalizedCode}`);
-    if (data && data.questions && data.questions.length > 0) {
-      return data;
-    }
-    // If backend returns partial structure, enrich with client dataset
-    const localData = getUniversalSubjectViva(normalizedCode, safeMeta);
-    return { ...localData, ...(data || {}) };
+    return data || {
+      subjectCode: normalizedCode,
+      sections: [],
+      questions: [],
+      experiments: [],
+      isDbManaged: true,
+    };
   } catch (err) {
-    // When backend is offline or proxy is transitioning, use universal local knowledge base
-    return getUniversalSubjectViva(normalizedCode, safeMeta);
+    console.warn(`Failed to fetch viva questions for ${normalizedCode}:`, err);
+    return {
+      subjectCode: normalizedCode,
+      sections: [],
+      questions: [],
+      experiments: [],
+      isDbManaged: true,
+    };
   }
 }

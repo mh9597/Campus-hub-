@@ -33,6 +33,7 @@ export default function AdminLayout() {
     { to: '/admin/dashboard',     icon: 'dashboard',    label: 'Dashboard' },
     { to: '/admin/submissions',   icon: 'inbox',        label: 'Submissions' },
     { to: '/admin/resources',     icon: 'folder_open',  label: 'Resources' },
+    { to: '/admin/viva',          icon: 'quiz',         label: 'Viva Questions' },
     { to: '/admin/opportunities', icon: 'work',         label: 'Opportunities' },
   ];
 
