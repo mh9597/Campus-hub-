@@ -261,21 +261,13 @@ function SubjectDetails() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {categories.map((cat, idx) => {
+              const isViva = cat.dbType === 'Viva Questions';
               const isSelected = selectedCategory === cat.dbType;
               const catCount = resources.filter(r => r.resourceType === cat.dbType).length;
+              const vivaUrl = `/subject/${(subject?.code || code).toLowerCase()}/viva`;
 
-              return (
-                <motion.button
-                  key={idx}
-                  onClick={() => selectCategory(cat.dbType)}
-                  whileHover={{ y: -5, scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`relative p-6 rounded-[24px] text-left flex flex-col justify-between transition-all duration-300 cursor-pointer select-none group border-2 ${
-                    isSelected
-                      ? 'bg-[#0F172A] text-white border-black shadow-[6px_6px_0px_#FBBF24] ring-2 ring-[#FBBF24]'
-                      : 'bg-white hover:bg-[#FFFDF5] text-black border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                  }`}
-                >
+              const cardContent = (
+                <div className="flex flex-col justify-between h-full">
                   <div>
                     {/* Top Row: Icon Badge & Counter Badge */}
                     <div className="flex items-center justify-between mb-4">
@@ -290,16 +282,18 @@ function SubjectDetails() {
                         <span className="material-symbols-outlined text-[26px]">{cat.icon}</span>
                       </div>
 
-                      {/* Material Count Pill */}
-                      <span
-                        className={`text-xs font-black px-3 py-1 rounded-full border-2 ${
-                          isSelected
-                            ? 'bg-[#FBBF24] text-black border-black'
-                            : 'bg-[#FEF3D6] text-black border-black'
-                        }`}
-                      >
-                        {catCount < 10 ? `0${catCount}` : catCount} {catCount === 1 ? 'Resource' : 'Resources'}
-                      </span>
+                      {/* Material Count Pill — Removed for Viva Questions */}
+                      {!isViva && (
+                        <span
+                          className={`text-xs font-black px-3 py-1 rounded-full border-2 ${
+                            isSelected
+                              ? 'bg-[#FBBF24] text-black border-black'
+                              : 'bg-[#FEF3D6] text-black border-black'
+                          }`}
+                        >
+                          {catCount < 10 ? `0${catCount}` : catCount} {catCount === 1 ? 'Resource' : 'Resources'}
+                        </span>
+                      )}
                     </div>
 
                     {/* Category Title */}
@@ -321,14 +315,41 @@ function SubjectDetails() {
                         : 'border-black/10 text-black group-hover:text-amber-600'
                     }`}
                   >
-                    <span className="tracking-wide">Explore {cat.title}</span>
+                    <span className="tracking-wide">{isViva ? 'Launch Viva Platform' : `Explore ${cat.title}`}</span>
                     <div className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-[18px] group-hover:translate-x-1.5 transition-transform duration-200">
                         arrow_forward
                       </span>
                     </div>
                   </div>
+                </div>
+              );
 
+              if (isViva) {
+                return (
+                  <Link
+                    key={idx}
+                    to={vivaUrl}
+                    className="relative p-6 rounded-[24px] text-left flex flex-col justify-between transition-all duration-300 cursor-pointer select-none group border-2 bg-white hover:bg-[#FFFDF5] text-black border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 block"
+                  >
+                    {cardContent}
+                  </Link>
+                );
+              }
+
+              return (
+                <motion.button
+                  key={idx}
+                  onClick={() => selectCategory(cat.dbType)}
+                  whileHover={{ y: -5, scale: 1.01 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`relative p-6 rounded-[24px] text-left flex flex-col justify-between transition-all duration-300 cursor-pointer select-none group border-2 ${
+                    isSelected
+                      ? 'bg-[#0F172A] text-white border-black shadow-[6px_6px_0px_#FBBF24] ring-2 ring-[#FBBF24]'
+                      : 'bg-white hover:bg-[#FFFDF5] text-black border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                  }`}
+                >
+                  {cardContent}
                 </motion.button>
               );
             })}
@@ -371,32 +392,6 @@ function SubjectDetails() {
                 </span>
               </div>
             </div>
-
-            {/* Viva Platform Highlight Banner */}
-            {selectedCategory === 'Viva Questions' && (
-              <div className="mb-8 p-6 rounded-2xl bg-gradient-to-br from-amber-300 via-amber-200 to-yellow-200 border-2 border-black shadow-[4px_4px_0px_#0F172A] flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-                <div className="space-y-1.5">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-black text-[#FBBF24] text-[11px] font-black uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-sm">auto_stories</span>
-                    Subject-Independent Learning Suite
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-black tracking-tight">
-                    Interactive Viva Questions & Solutions
-                  </h3>
-                  <p className="text-xs sm:text-sm text-black/80 font-medium max-w-xl">
-                    Master your practical and external exams with direct answers, detailed explanations, diagrams, examiner follow-up questions, and lab experiment solutions tailored for {subject.title}.
-                  </p>
-                </div>
-                <Link
-                  to={`/subject/${(subject.code || code).toLowerCase()}/viva`}
-                  className="btn-black-yellow px-6 py-3.5 rounded-xl text-sm font-black flex items-center gap-2 whitespace-nowrap active-press shadow-[3px_3px_0px_rgba(0,0,0,1)]"
-                >
-                  <span className="material-symbols-outlined text-xl">school</span>
-                  Launch Viva Platform
-                  <span className="material-symbols-outlined text-base">arrow_forward</span>
-                </Link>
-              </div>
-            )}
 
             {/* Loading Skeleton State */}
             {resourcesLoading && (

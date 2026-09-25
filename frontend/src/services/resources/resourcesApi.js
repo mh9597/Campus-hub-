@@ -83,10 +83,10 @@ export async function getResourcesBySubject(subjectCode) {
   if (!subjectCode) return [];
   try {
     const data = await withTimeout(fetchFromApi(`resources?subjectCode=${subjectCode}`));
-    return data;
+    return Array.isArray(data) ? data : [];
   } catch (err) {
-    console.error(`[resourcesApi] getResourcesBySubject(${subjectCode}) failed:`, err.message);
-    throw err;
+    console.warn(`[resourcesApi] getResourcesBySubject(${subjectCode}) failed (backend may be offline):`, err.message);
+    return [];
   }
 }
 
