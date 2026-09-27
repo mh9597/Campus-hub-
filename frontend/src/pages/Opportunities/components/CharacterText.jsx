@@ -97,7 +97,7 @@ export function DecipherText({
   const [displayText, setDisplayText] = useState(text);
   const [isDeciphering, setIsDeciphering] = useState(false);
   const chars = '01ABCDEFGHJKMNPQRSTWXYZアイウエオカキクケコサシスセソタチツテト#@*+!=%&_';
-  const animFrame = useRef(null);
+  const intervalRef = useRef(null);
 
   const startDecipher = () => {
     if (isDeciphering) return;
@@ -105,7 +105,9 @@ export function DecipherText({
     let iteration = 0;
     const target = text;
 
-    const interval = setInterval(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+
+    intervalRef.current = setInterval(() => {
       setDisplayText(() =>
         target
           .split('')
@@ -121,7 +123,8 @@ export function DecipherText({
 
       iteration += 1;
       if (iteration >= maxIterations) {
-        clearInterval(interval);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        intervalRef.current = null;
         setDisplayText(target);
         setIsDeciphering(false);
       }
@@ -131,7 +134,7 @@ export function DecipherText({
   useEffect(() => {
     startDecipher();
     return () => {
-      if (animFrame.current) cancelAnimationFrame(animFrame.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);

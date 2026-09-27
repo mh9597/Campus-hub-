@@ -44,8 +44,9 @@ export default function VivaExperimentCard({ experiment, index }) {
 
       {/* Aim Callout */}
       <div className="bg-[#FFFDF5] border-2 border-black/15 rounded-xl p-3.5 mb-4 text-xs sm:text-sm">
-        <strong className="text-black font-black uppercase tracking-wider text-[11px] block mb-1">
-          🎯 Aim of Experiment:
+        <strong className="text-black font-black uppercase tracking-wider text-[11px] flex items-center gap-1.5 mb-1">
+          <span className="material-symbols-outlined text-[15px] text-amber-600">track_changes</span>
+          <span>Aim of Experiment:</span>
         </strong>
         <p className="text-gray-800 font-medium">{experiment.aim}</p>
       </div>
@@ -135,8 +136,9 @@ export default function VivaExperimentCard({ experiment, index }) {
                 <div className="space-y-2">
                   {experiment.commonErrors.map((err, idx) => (
                     <div key={idx} className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs sm:text-sm">
-                      <div className="font-black text-rose-900 mb-1">
-                        ⚠️ Error: {err.error}
+                      <div className="font-black text-rose-900 mb-1 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-[15px] text-rose-600">warning</span>
+                        <span>Error: {err.error}</span>
                       </div>
                       <div className="text-gray-700 mb-1">
                         <strong className="text-gray-900">Cause:</strong> {err.cause}

@@ -1,19 +1,101 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { prefetchSemesters } from '../../../lib/queryPrefetch';
+import {
+  ArrowRight,
+  Bookmark,
+  Users,
+  GraduationCap,
+  Briefcase,
+  Flame,
+  Tag,
+  Code,
+  Database,
+  BookOpen,
+  Zap,
+  Terminal,
+  Star,
+} from 'lucide-react';
+import { getPublicOverviewStats, getPublicHomepageSettings } from '../../../services/settings/settingsApi';
+import FramerButton from '../../../components/ui/FramerButton';
+
+const DEFAULT_TAGS = [
+  { label: 'OS 100-Mark Imp', query: 'Operating Systems', icon: 'zap' },
+  { label: 'DAA NP-Hard Proofs', query: 'Design and Analysis of Algorithms', icon: 'code' },
+  { label: 'DBMS B+ Trees', query: 'Database Management Systems', icon: 'database' },
+  { label: 'Python Lab Manual', query: 'Python', icon: 'terminal' },
+];
+
+function getTagIcon(iconName) {
+  const props = { className: 'w-3.5 h-3.5 text-amber-600 shrink-0' };
+  switch (iconName?.toLowerCase()) {
+    case 'code': return <Code {...props} />;
+    case 'database': return <Database {...props} />;
+    case 'book': return <BookOpen {...props} />;
+    case 'flame': return <Flame {...props} />;
+    case 'zap': return <Zap {...props} />;
+    case 'terminal': return <Terminal {...props} />;
+    case 'star': return <Star {...props} />;
+    case 'tag':
+    default:
+      return <Tag {...props} />;
+  }
+}
 
 function HeroSection() {
+  const [stats, setStats] = useState({
+    displayResources: '10K+',
+    displayStudents: '2,500+',
+    displaySubjects: '38+',
+    displayOpportunities: '100+',
+  });
+  const [heroTags, setHeroTags] = useState(DEFAULT_TAGS);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        const [statsData, homeSettings] = await Promise.allSettled([
+          getPublicOverviewStats(),
+          getPublicHomepageSettings(),
+        ]);
+
+        if (statsData.status === 'fulfilled' && statsData.value && isMounted) {
+          const d = statsData.value;
+          setStats({
+            displayResources: d.displayResources || '10K+',
+            displayStudents: d.displayStudents || '2,500+',
+            displaySubjects: d.displaySubjects || '38+',
+            displayOpportunities: d.displayOpportunities || '100+',
+          });
+        }
+
+        if (homeSettings.status === 'fulfilled' && homeSettings.value && isMounted) {
+          const trending = homeSettings.value.trending;
+          if (trending && Array.isArray(trending.heroTags) && trending.heroTags.length > 0) {
+            setHeroTags(trending.heroTags);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load hero section data:', err);
+      }
+    }
+    loadData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
-    <section className="relative pt-6 pb-16 lg:pt-10 lg:pb-24 overflow-hidden">
+    <section className="relative pt-6 pb-16 lg:pt-10 lg:pb-20 overflow-hidden font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
 
           {/* Left Content Column */}
-          <div className="lg:col-span-6 space-y-6 lg:space-y-8 z-10">
+          <div className="lg:col-span-6 space-y-6 lg:space-y-7 z-10">
 
             {/* Top Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF3D6] border border-amber-300/80 shadow-xs text-hub-navy text-xs font-extrabold uppercase tracking-wide">
-              <span className="text-amber-500 text-sm">★</span>
+              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>YOUR LEARNING HUB</span>
             </div>
 
@@ -45,58 +127,83 @@ function HeroSection() {
             </p>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-4">
-              <Link
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-1 w-full sm:w-auto">
+              <FramerButton
                 to="/resources"
-                onMouseEnter={prefetchSemesters}
-                onPointerEnter={prefetchSemesters}
-                className="bg-hub-navy hover:bg-slate-800 text-white font-bold px-8 py-3.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2.5 text-sm sm:text-base border border-hub-navy"
-              >
-                <span>Explore Resources</span>
-                <span className="material-symbols-outlined text-lg">arrow_forward</span>
-              </Link>
-              <Link
+                text="Explore Resources"
+                variant="navy"
+                size="lg"
+                icon={ArrowRight}
+                iconPosition="right"
+                className="w-full sm:w-auto shadow-[4px_4px_0_#FF5722] hover:shadow-[6px_6px_0_#FF5722]"
+              />
+              <FramerButton
                 to="/semesters"
-                onMouseEnter={prefetchSemesters}
-                onPointerEnter={prefetchSemesters}
-                className="bg-white hover:bg-amber-50 text-hub-navy font-bold px-8 py-3.5 rounded-full shadow-sm hover:shadow-md border-2 border-amber-300 transition-all duration-300 hover:-translate-y-0.5 text-sm sm:text-base"
-              >
-                Explore Semesters
-              </Link>
+                text="Explore Semesters"
+                variant="outline"
+                size="lg"
+                className="w-full sm:w-auto shadow-[3.5px_3.5px_0_#0F172A] hover:shadow-[5px_5px_0_#0F172A]"
+              />
             </div>
 
+            {/* Quick Search Tag Chips - Clean 2x2 Grid (No Outer Box) */}
+            {heroTags.length > 0 && (
+              <div className="pt-1 space-y-2">
+                <div className="flex items-center gap-1.5">
+                  <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-400 shrink-0" />
+                  <span className="text-[11px] font-black uppercase tracking-wider text-slate-500">
+                    Popular:
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 max-w-lg">
+                  {heroTags.map((tag, idx) => (
+                    <Link
+                      key={idx}
+                      to={`/resources?search=${encodeURIComponent(tag.query || tag.label)}`}
+                      title={tag.label}
+                      className="flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-black bg-white hover:bg-[#FEF08A] text-[#0F172A] border-[1.5px] border-[#0F172A] shadow-[2px_2px_0_#0F172A] hover:shadow-[3px_3px_0_#0F172A] hover:-translate-y-0.5 transition-all active:scale-95 cursor-pointer min-w-0"
+                    >
+                      {getTagIcon(tag.icon)}
+                      <span className="truncate">{tag.label}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Hero Stats Cards Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
-              <div className="flex flex-col items-center sm:items-start p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-2 shadow-xs">
-                  <span className="material-symbols-outlined text-xl">bookmark</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 pt-2">
+              <div className="flex flex-col items-center sm:items-start p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs transition-transform duration-300 hover:-translate-y-1">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-1.5 sm:mb-2 shadow-xs">
+                  <Bookmark className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                 </div>
-                <span className="text-2xl font-black text-hub-navy leading-none">10K+</span>
-                <span className="text-xs font-semibold text-gray-500 mt-1">Resources</span>
+                <span className="text-xl sm:text-2xl font-black text-hub-navy leading-none">{stats.displayResources}</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-gray-500 mt-1">Resources</span>
               </div>
 
-              <div className="flex flex-col items-center sm:items-start p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-2 shadow-xs">
-                  <span className="material-symbols-outlined text-xl">group</span>
+              <div className="flex flex-col items-center sm:items-start p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs transition-transform duration-300 hover:-translate-y-1">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-1.5 sm:mb-2 shadow-xs">
+                  <Users className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                 </div>
-                <span className="text-2xl font-black text-hub-navy leading-none">2500+</span>
-                <span className="text-xs font-semibold text-gray-500 mt-1">Students</span>
+                <span className="text-xl sm:text-2xl font-black text-hub-navy leading-none">{stats.displayStudents}</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-gray-500 mt-1">Students</span>
               </div>
 
-              <div className="flex flex-col items-center sm:items-start p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-2 shadow-xs">
-                  <span className="material-symbols-outlined text-xl">menu_book</span>
+              <div className="flex flex-col items-center sm:items-start p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs transition-transform duration-300 hover:-translate-y-1">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-1.5 sm:mb-2 shadow-xs">
+                  <GraduationCap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                 </div>
-                <span className="text-2xl font-black text-hub-navy leading-none">500+</span>
-                <span className="text-xs font-semibold text-gray-500 mt-1">Courses</span>
+                <span className="text-xl sm:text-2xl font-black text-hub-navy leading-none">{stats.displaySubjects}</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-gray-500 mt-1">Subjects</span>
               </div>
 
-              <div className="flex flex-col items-center sm:items-start p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs">
-                <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-2 shadow-xs">
-                  <span className="material-symbols-outlined text-xl">work</span>
+              <div className="flex flex-col items-center sm:items-start p-3 sm:p-4 rounded-2xl bg-white/80 backdrop-blur-xs border border-amber-200/60 shadow-xs transition-transform duration-300 hover:-translate-y-1">
+                <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center mb-1.5 sm:mb-2 shadow-xs">
+                  <Briefcase className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
                 </div>
-                <span className="text-2xl font-black text-hub-navy leading-none">100+</span>
-                <span className="text-xs font-semibold text-gray-500 mt-1">Opportunities</span>
+                <span className="text-xl sm:text-2xl font-black text-hub-navy leading-none">{stats.displayOpportunities}</span>
+                <span className="text-[11px] sm:text-xs font-semibold text-gray-500 mt-1">Opportunities</span>
               </div>
             </div>
 

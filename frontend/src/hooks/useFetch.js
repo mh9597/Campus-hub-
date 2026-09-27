@@ -31,3 +31,16 @@ export function useFetch(fetchFn, deps = [], options = {}) {
     refetch,
   };
 }
+
+/**
+ * Invalidate in-memory cached responses.
+ * @param {string|null} key - Optional specific cache key to clear. If omitted, clears entire cache.
+ */
+export function clearMemoryCache(key = null) {
+  if (key) {
+    memoryCache.delete(key);
+  } else {
+    memoryCache.clear();
+  }
+}
+

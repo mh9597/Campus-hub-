@@ -12,26 +12,58 @@ function withTimeout(promise, ms = TIMEOUT_MS) {
   return Promise.race([promise, timeout]);
 }
 
-// In-flight promise coalescing to eliminate duplicate simultaneous requests
-let inFlightCategoriesPromise = null;
+// In-memory catalog cache (60s TTL) and in-flight promise deduplicator
+let cachedCatalog = null;
+let lastCatalogFetchTime = 0;
+let inFlightCatalogPromise = null;
+const CATALOG_CACHE_TTL = 60000;
 
-async function fetchCategoriesSemestersRaw() {
-  if (inFlightCategoriesPromise) return inFlightCategoriesPromise;
-  inFlightCategoriesPromise = withTimeout(fetchFromApi('categories/semesters'))
-    .finally(() => {
-      inFlightCategoriesPromise = null;
-    });
-  return inFlightCategoriesPromise;
+/**
+ * Clear the in-memory catalog cache so subsequent reads fetch fresh data.
+ */
+export function clearCatalogCache() {
+  cachedCatalog = null;
+  lastCatalogFetchTime = 0;
+  inFlightCatalogPromise = null;
 }
 
-export async function getSemesters() {
+export async function fetchSemestersCatalog(forceRefresh = false) {
+  const now = Date.now();
+  if (!forceRefresh && cachedCatalog && now - lastCatalogFetchTime < CATALOG_CACHE_TTL) {
+    return cachedCatalog;
+  }
+  if (!forceRefresh && inFlightCatalogPromise) {
+    return inFlightCatalogPromise;
+  }
+
+  inFlightCatalogPromise = withTimeout(fetchFromApi('categories/semesters'))
+    .then((data) => {
+      cachedCatalog = data;
+      lastCatalogFetchTime = Date.now();
+      inFlightCatalogPromise = null;
+      return data;
+    })
+    .catch((err) => {
+      inFlightCatalogPromise = null;
+      throw err;
+    });
+
+  return inFlightCatalogPromise;
+}
+
+export async function getSemesters(departmentCode = 'CE') {
   try {
-    const data = await fetchCategoriesSemestersRaw();
-    const dept = data.find(d => d.code === 'CE') || data[0];
+    const data = await fetchSemestersCatalog();
+    const targetCode = (departmentCode || 'CE').toUpperCase();
+    const dept = data.find(d => (d.code || '').toUpperCase() === targetCode) || data.find(d => d.code === 'CE') || data[0];
     if (dept && dept.semesters) {
       return dept.semesters.map(sem => {
         const count = sem.subjects?.reduce((acc, subj) => acc + (subj._count?.resources || 0), 0) || 0;
-        return { ...sem, resourcesCount: `${count}+ Resources` };
+        return {
+          ...sem,
+          department: { id: dept.id, code: dept.code, name: dept.name },
+          resourcesCount: `${count}+ Resources`,
+        };
       });
     }
     return [];
@@ -60,7 +92,7 @@ export async function getSemesterById(semesterId) {
 
   // 2. Fetch if not found in cache
   try {
-    const data = await fetchCategoriesSemestersRaw();
+    const data = await fetchSemestersCatalog();
     for (const dept of data) {
       const sem = dept.semesters?.find((s) => s.id === numericId);
       if (sem) {
@@ -69,7 +101,12 @@ export async function getSemesterById(semesterId) {
           ...subj,
           resourcesCount: `${subj._count?.resources || 0}+ Resources`
         })) || [];
-        return { ...sem, subjects: mappedSubjects, resourcesCount: `${count}+ Resources` };
+        return {
+          ...sem,
+          department: { id: dept.id, code: dept.code, name: dept.name },
+          subjects: mappedSubjects,
+          resourcesCount: `${count}+ Resources`,
+        };
       }
     }
     return null;
@@ -103,37 +140,69 @@ export async function getResourceById(id) {
 
 export async function getSubjectByCode(subjectCode) {
   if (!subjectCode) return null;
-  const targetCode = subjectCode.toLowerCase().trim();
+  const target = subjectCode.toLowerCase().trim();
+  const cleanTarget = target.replace(/[-\s_]/g, '');
 
-  // 1. Instant cache lookup from cached semesters
-  const cachedSemesters = queryClient.getQueryData(queryKeys.semesters);
-  if (Array.isArray(cachedSemesters)) {
-    for (const sem of cachedSemesters) {
-      if (!sem.subjects) continue;
-      const found = sem.subjects.find((s) =>
-        s.code.toLowerCase() === targetCode ||
-        s.path === `/subject/${targetCode}`
-      );
-      if (found) {
-        return { ...found, semester: sem, department: { code: 'CE', name: 'Computer Engineering' } };
+  const matches = (s) => {
+    const sCode = s.code.toLowerCase();
+    const sPath = (s.path || '').toLowerCase();
+
+    // 1. Direct or sanitized code match
+    if (sCode === target || sCode.replace(/[-\s_]/g, '') === cleanTarget) {
+      return true;
+    }
+
+    // 2. Dynamic shortForm tokens (supports multi-alias e.g. "DBMS, DMS" or "OPER-SYS / OS")
+    if (s.shortForm) {
+      const tokens = s.shortForm
+        .split(/[,/|]/)
+        .map((t) => t.trim().toLowerCase())
+        .filter(Boolean);
+      for (const tok of tokens) {
+        if (tok === target || tok.replace(/[-\s_]/g, '') === cleanTarget) {
+          return true;
+        }
       }
     }
-  }
 
-  // 2. Fetch from backend if not yet in cache
+    // 3. Path slug match
+    if (sPath === `/subject/${target}` || sPath.endsWith(`/${target}`)) {
+      return true;
+    }
+
+    // 4. Dynamic algorithmic acronym from title (stopword filtered)
+    if (s.title) {
+      const words = s.title
+        .split(/[\s-]+/)
+        .filter((w) => !['and', 'of', '&', 'for', 'in', 'with', 'to', 'the', 'a', 'an'].includes(w.toLowerCase()));
+      const acronym = words.map((w) => w[0]).join('').toLowerCase();
+      if (acronym.length >= 2 && (acronym === target || acronym === cleanTarget)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   try {
-    const data = await fetchCategoriesSemestersRaw();
+    const data = await fetchSemestersCatalog();
     for (const dept of data) {
       if (!dept.semesters) continue;
       for (const sem of dept.semesters) {
         if (!sem.subjects) continue;
-        const subject = sem.subjects.find((s) =>
-          s.code.toLowerCase() === targetCode ||
-          s.path === `/subject/${targetCode}`
-        );
+        const subject = sem.subjects.find(matches);
         if (subject) {
           return { ...subject, semester: sem, department: dept };
         }
+      }
+    }
+
+    // Static fallback if not matched in live catalog
+    for (const sem of semestersData) {
+      if (!sem.subjects) continue;
+      const subject = sem.subjects.find(matches);
+      if (subject) {
+        return { ...subject, semester: sem, department: { code: 'CE', name: 'Computer Engineering' } };
       }
     }
     return null;
@@ -146,41 +215,43 @@ export async function getSubjectByCode(subjectCode) {
 export async function searchAllSubjects(query) {
   if (!query || query.trim() === '') return [];
   const lowerQuery = query.toLowerCase().trim();
+  const cleanQuery = lowerQuery.replace(/[-\s_]/g, '');
 
-  const filterSubjects = (subjectsList) => {
-    return subjectsList.filter(s => {
-      const codeMatch = s.code.toLowerCase().includes(lowerQuery);
-      const titleMatch = s.title.toLowerCase().includes(lowerQuery);
-      const shortFormMatch = s.shortForm ? s.shortForm.toLowerCase().includes(lowerQuery) : false;
+  const matchSubject = (s) => {
+    const codeMatch = s.code.toLowerCase().includes(lowerQuery) || s.code.toLowerCase().replace(/[-\s_]/g, '').includes(cleanQuery);
+    const titleMatch = s.title.toLowerCase().includes(lowerQuery);
 
-      // Attempt alias matching (e.g. Design and Analysis of Algorithms -> DAA)
-      const words = s.title.split(' ');
-      const acronym = words.map(w => w[0]).join('').toLowerCase();
-      const filteredWords = words.filter(w => !['and', 'of', '&'].includes(w.toLowerCase()));
-      const strictAcronym = filteredWords.map(w => w[0]).join('').toLowerCase();
+    let shortFormMatch = false;
+    if (s.shortForm) {
+      const tokens = s.shortForm
+        .split(/[,/|]/)
+        .map((t) => t.trim().toLowerCase())
+        .filter(Boolean);
+      shortFormMatch = tokens.some(
+        (tok) =>
+          tok.includes(lowerQuery) ||
+          tok.replace(/[-\s_]/g, '').includes(cleanQuery) ||
+          lowerQuery.includes(tok)
+      );
+    }
 
-      const aliasMatch = acronym.includes(lowerQuery) || strictAcronym.includes(lowerQuery);
+    // Word boundary and acronym matching
+    const words = s.title.split(/[\s-]+/);
+    const acronym = words.map((w) => w[0]).join('').toLowerCase();
+    const filteredWords = words.filter((w) => !['and', 'of', '&', 'for', 'in', 'with', 'to', 'the', 'a', 'an'].includes(w.toLowerCase()));
+    const strictAcronym = filteredWords.map((w) => w[0]).join('').toLowerCase();
+    const pathSlug = (s.path || '').replace('/subject/', '').toLowerCase();
 
-      return codeMatch || titleMatch || shortFormMatch || aliasMatch;
-    });
+    const aliasMatch =
+      acronym.includes(lowerQuery) ||
+      strictAcronym.includes(lowerQuery) ||
+      pathSlug.includes(lowerQuery);
+
+    return codeMatch || titleMatch || shortFormMatch || aliasMatch;
   };
 
-  // 1. Check if semesters are already cached in React Query to avoid network hit
-  const cachedSemesters = queryClient.getQueryData(queryKeys.semesters);
-  if (Array.isArray(cachedSemesters) && cachedSemesters.length > 0) {
-    const allSubjects = [];
-    for (const sem of cachedSemesters) {
-      if (!sem.subjects) continue;
-      for (const subject of sem.subjects) {
-        allSubjects.push({ ...subject, semester: sem, department: { code: 'CE', name: 'Computer Engineering' } });
-      }
-    }
-    return filterSubjects(allSubjects);
-  }
-
-  // 2. Otherwise fetch with coalesced promise
   try {
-    const data = await fetchCategoriesSemestersRaw();
+    const data = await fetchSemestersCatalog();
     const allSubjects = [];
 
     for (const dept of data) {
@@ -193,7 +264,7 @@ export async function searchAllSubjects(query) {
       }
     }
 
-    return filterSubjects(allSubjects);
+    return allSubjects.filter(matchSubject);
   } catch (err) {
     console.warn(`[resourcesApi] searchAllSubjects failed, using fallback:`, err.message);
     const allSubjects = [];
@@ -204,6 +275,6 @@ export async function searchAllSubjects(query) {
       }
     }
 
-    return filterSubjects(allSubjects);
+    return allSubjects.filter(matchSubject);
   }
 }

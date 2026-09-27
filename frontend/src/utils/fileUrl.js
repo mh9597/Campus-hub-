@@ -1,9 +1,6 @@
-// src/utils/fileUrl.js
-// All resource file links must go through our backend proxy.
-// The browser NEVER receives a raw Google Drive URL.
+import { API_BASE_URL } from '../lib/api';
 
-const rawBase = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api').replace(/\/$/, '');
-const API_BASE = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`;
+const API_BASE = API_BASE_URL;
 
 /**
  * Returns the URL that renders the file inline in the browser

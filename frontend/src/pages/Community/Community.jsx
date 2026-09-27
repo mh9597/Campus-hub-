@@ -3,8 +3,16 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ToastContainer, useToast } from '../../components/ui/Toast';
 import { SPOTIFY_STUDY_CATEGORIES } from '../../data/spotifyStudyPlaylists';
+import { getActivePoll, castVote } from '../../services/polls/pollsApi';
+import { getPublicHomepageSettings } from '../../services/settings/settingsApi';
+import FramerButton from '../../components/ui/FramerButton';
 
-
+const DEFAULT_GROUP_LINKS = {
+  whatsappSem1_4: 'https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB',
+  whatsappSem5_8: 'https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB',
+  telegramMain: 'https://t.me/+fP4hKU69AQIwZjI1',
+  discordServer: 'https://discord.gg',
+};
 
 // ─── SVG Platform Icons ───────────────────────────────────────────────────────
 const WhatsAppIcon = ({ className = 'w-5 h-5' }) => (
@@ -96,7 +104,7 @@ const PINNED_STICKIES = [
   {
     author: 'CampusHub Bot',
     time: '12:30 PM',
-    text: '🚨 University Circular: Summer 2026 Exam Forms deadline extended till March 10th.',
+    text: 'University Circular: Summer 2026 Exam Forms deadline extended till March 10th.',
     tag: '#ExamAlert',
     solution: 'Official Indus University PDF verified & pinned in Announcement Channel',
     color: 'bg-[#DCFCE7] border-[#86EFAC]', // Green sticky
@@ -180,20 +188,48 @@ export default function Community() {
   const { toasts, addToast, removeToast } = useToast();
   const [openFaq, setOpenFaq] = useState(null);
 
-  // Interactive Live Campus Referendum / Ballot Box
-  const [pollSelected, setPollSelected] = useState(null);
-  const [pollVotes, setPollVotes] = useState({
-    opt1: 54,
-    opt2: 28,
-    opt3: 13,
-    opt4: 5,
-  });
+  // ─── Dynamic Live Campus Referendum / Ballot Box State ─────────
+  const [activePoll, setActivePoll] = useState(null);
+  const [pollLoading, setPollLoading] = useState(true);
+  const [votedOptionId, setVotedOptionId] = useState(null);
+  const [isSubmittingVote, setIsSubmittingVote] = useState(false);
+  const [groupLinks, setGroupLinks] = useState(DEFAULT_GROUP_LINKS);
+
+  // Load active poll & community group links from backend
+  useEffect(() => {
+    let mounted = true;
+    async function fetchPollAndLinks() {
+      try {
+        const [poll, settings] = await Promise.all([
+          getActivePoll().catch(() => null),
+          getPublicHomepageSettings().catch(() => null),
+        ]);
+        if (mounted) {
+          if (poll) {
+            setActivePoll(poll);
+            const savedVote = localStorage.getItem(`ch_voted_poll_${poll.id}`);
+            if (savedVote) {
+              setVotedOptionId(savedVote);
+            }
+          }
+          if (settings && settings.communityGroups) {
+            setGroupLinks({ ...DEFAULT_GROUP_LINKS, ...settings.communityGroups });
+          }
+        }
+      } catch (err) {
+        console.error('[Community] Failed to load initial data:', err);
+      } finally {
+        if (mounted) setPollLoading(false);
+      }
+    }
+    fetchPollAndLinks();
+    return () => { mounted = false; };
+  }, []);
 
   // ─── Local Spotify Study Lounge State ─────────────────────────────────────
   const [activeCategoryId, setActiveCategoryId] = useState('lofi');
   const [isPlayerLoaded, setIsPlayerLoaded] = useState(false);
   const activeCategory = SPOTIFY_STUDY_CATEGORIES.find((c) => c.id === activeCategoryId) || SPOTIFY_STUDY_CATEGORIES[0];
-
 
   // Floating Stamp / Hype Reactions
   const [stampCount, setStampCount] = useState({
@@ -214,14 +250,46 @@ export default function Community() {
     }, 1200);
   };
 
-  const handleVote = (optionKey) => {
-    if (pollSelected) return;
-    setPollSelected(optionKey);
-    setPollVotes((prev) => ({ ...prev, [optionKey]: prev[optionKey] + 1 }));
-    addToast({ message: 'Stamped your vote in the Campus Ballot Box!', type: 'success' });
+  const handleVote = async (optionId) => {
+    if (!activePoll || votedOptionId || isSubmittingVote) return;
+
+    setIsSubmittingVote(true);
+    setVotedOptionId(optionId);
+
+    // Optimistic calculation
+    const currentTotal = (activePoll.totalVotes || 0) + 1;
+    const updatedOptions = (activePoll.options || []).map((o) => {
+      const newVotes = o.id === optionId ? (o.votes || 0) + 1 : (o.votes || 0);
+      return {
+        ...o,
+        votes: newVotes,
+        percentage: Math.round((newVotes / currentTotal) * 100),
+      };
+    });
+
+    setActivePoll((prev) => ({
+      ...prev,
+      totalVotes: currentTotal,
+      options: updatedOptions,
+    }));
+
+    try {
+      const serverUpdated = await castVote(activePoll.id, optionId);
+      if (serverUpdated) {
+        setActivePoll(serverUpdated);
+      }
+      localStorage.setItem(`ch_voted_poll_${activePoll.id}`, optionId);
+      addToast({ message: 'Stamped your vote in the Campus Ballot Box!', type: 'success' });
+    } catch (err) {
+      console.error('[Community] Vote error:', err);
+      addToast({ message: 'Vote recorded locally! Thanks for participating.', type: 'info' });
+      localStorage.setItem(`ch_voted_poll_${activePoll.id}`, optionId);
+    } finally {
+      setIsSubmittingVote(false);
+    }
   };
 
-  const totalVotes = pollVotes.opt1 + pollVotes.opt2 + pollVotes.opt3 + pollVotes.opt4;
+  const totalVotesCount = activePoll?.totalVotes || 0;
 
   return (
     <div className="pt-24 sm:pt-28 min-h-screen text-[#0F172A] font-body-md pb-24 relative overflow-hidden bg-[#FFF8EC]">
@@ -229,7 +297,7 @@ export default function Community() {
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
 
       {/* ── Cork & Tactile Pinboard Pattern Background ── */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none opacity-30 -z-10"
         style={{
           backgroundImage: 'radial-gradient(#b45309 1px, transparent 1px)',
@@ -252,13 +320,12 @@ export default function Community() {
         ))}
       </div>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-16 sm:space-y-20 relative z-10">
-
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-8 sm:space-y-12 relative z-10">
         {/* ══════════════════════════════════════════════════════════════════════════
             HERO CONCEPT: THE CAMPUS QUAD NOTICEBOARD & OFFICIAL STUDENT PASS
         ══════════════════════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          
+
           {/* Left: The Official Student Guild Card / Lanyard Pass */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -272,7 +339,7 @@ export default function Community() {
             </div>
 
             <div className="space-y-6">
-              
+
               {/* College Marquee Pill */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF3D6] border-2 border-[#0F172A] text-[#0F172A] text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#0F172A]">
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse border border-slate-900" />
@@ -295,23 +362,24 @@ export default function Community() {
 
               {/* Stamp Reaction Bar */}
               <div className="pt-1">
-                <p className="text-[11px] font-black uppercase tracking-wider text-slate-500 mb-2">
-                  📌 Stamp the quad bulletin board:
+                <p className="text-[11px] font-black uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[15px] text-amber-600">push_pin</span>
+                  <span>Stamp the quad bulletin board:</span>
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
                   {[
-                    { key: 'cheer', emoji: '🔥', count: stampCount.cheer, label: 'Hype' },
-                    { key: 'brain', emoji: '💡', count: stampCount.brain, label: 'Solved' },
-                    { key: 'rocket', emoji: '🚀', count: stampCount.rocket, label: 'Boost' },
-                    { key: 'hundred', emoji: '💯', count: stampCount.hundred, label: 'Verified' },
+                    { key: 'cheer', icon: 'local_fire_department', count: stampCount.cheer, label: 'Hype' },
+                    { key: 'brain', icon: 'lightbulb', count: stampCount.brain, label: 'Solved' },
+                    { key: 'rocket', icon: 'rocket_launch', count: stampCount.rocket, label: 'Boost' },
+                    { key: 'hundred', icon: 'verified', count: stampCount.hundred, label: 'Verified' },
                   ].map((s) => (
                     <motion.button
                       key={s.key}
                       whileTap={{ scale: 0.88 }}
-                      onClick={() => handleStamp(s.key, s.emoji)}
+                      onClick={() => handleStamp(s.key, s.label)}
                       className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-[#FEF3D6] border-2 border-[#0F172A] text-xs font-black text-[#0F172A] shadow-[2px_2px_0px_#0F172A] transition-all flex items-center gap-1.5 cursor-pointer active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
                     >
-                      <span>{s.emoji}</span>
+                      <span className="material-symbols-outlined text-[15px] text-amber-600">{s.icon}</span>
                       <span>{s.count}</span>
                     </motion.button>
                   ))}
@@ -320,27 +388,31 @@ export default function Community() {
 
               {/* Primary High-Energy Buttons */}
               <div className="flex flex-wrap items-center gap-4 pt-3">
-                <a
-                  href="https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB"
+                <FramerButton
+                  href={groupLinks.whatsappSem1_4 || groupLinks.whatsappSem5_8 || DEFAULT_GROUP_LINKS.whatsappSem1_4}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black px-6 sm:px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#0F172A]"
+                  variant="primary"
+                  size="lg"
+                  icon="arrow_forward"
+                  shadow="md"
+                  className="bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black border-2 border-[#0F172A]"
                 >
-                  <WhatsAppIcon className="w-5 h-5 text-slate-950" />
-                  <span>Join WhatsApp Community</span>
-                  <span className="material-symbols-outlined text-lg">arrow_forward</span>
-                </a>
+                  Join WhatsApp Community
+                </FramerButton>
 
-                <a
-                  href="https://t.me/+UDHjAUouy5I5MTc9"
+                <FramerButton
+                  href={groupLinks.telegramMain || DEFAULT_GROUP_LINKS.telegramMain}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-[#0B132B] hover:bg-[#152244] text-[#FACC15] font-black px-6 sm:px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#FACC15]"
+                  variant="navy"
+                  size="lg"
+                  icon="arrow_forward"
+                  shadow="md"
+                  className="bg-[#0B132B] hover:bg-[#152244] text-[#FACC15] font-black border-2 border-[#FACC15]"
                 >
-                  <TelegramIcon className="w-5 h-5 text-[#FACC15]" />
-                  <span>Join Telegram Channel</span>
-                  <span className="material-symbols-outlined text-lg">arrow_forward</span>
-                </a>
+                  Join Telegram Channel
+                </FramerButton>
               </div>
             </div>
 
@@ -364,12 +436,12 @@ export default function Community() {
             className="lg:col-span-5 flex flex-col"
           >
             <div className="bg-[#FAF6ED] rounded-[36px] p-6 sm:p-7 border-3 border-[#0F172A] shadow-[8px_8px_0px_#0F172A] flex-grow flex flex-col justify-between relative overflow-hidden">
-              
+
               <div>
                 {/* Header */}
                 <div className="flex items-center justify-between pb-3.5 border-b-2 border-slate-200">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">📌</span>
+                    <span className="material-symbols-outlined text-xl text-amber-600">push_pin</span>
                     <div>
                       <h2 className="font-black text-sm text-slate-900 uppercase tracking-tight">Quad Noticeboard</h2>
                       <p className="text-[11px] text-slate-500 font-bold">Live pinned peer discussions</p>
@@ -420,8 +492,9 @@ export default function Community() {
 
               {/* Noticeboard Footer */}
               <div className="pt-3 mt-3 border-t-2 border-slate-200 text-center">
-                <span className="text-[11px] font-black text-slate-600 flex items-center justify-center gap-1">
-                  ⚡ Over 120+ peer discussions solved daily on our Quad board
+                <span className="text-[11px] font-black text-slate-600 flex items-center justify-center gap-1.5">
+                  <span className="material-symbols-outlined text-amber-500 text-[15px]">bolt</span>
+                  <span>Over 120+ peer discussions solved daily on our Quad board</span>
                 </span>
               </div>
 
@@ -465,11 +538,13 @@ export default function Community() {
           ))}
         </div>
 
+
+
         {/* ══════════════════════════════════════════════════════════════════════════
             SECTION 3: THE QUAD ACOUSTIC STAGE & STUDENT BALLOT BOX
         ══════════════════════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          
+
           {/* Left: The Spotify Study & Chill Lounge */}
           <div className="lg:col-span-6 bg-[#FEF3D6] rounded-[32px] p-6 sm:p-8 border-3 border-[#0F172A] shadow-[6px_6px_0px_#0F172A] flex flex-col justify-between relative overflow-hidden">
             <div className="space-y-4">
@@ -481,7 +556,8 @@ export default function Community() {
                 </span>
                 <span className="text-xs text-slate-700 font-extrabold flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-[#1DB954] animate-ping" />
-                  🎧 340+ Students Vibing
+                  <span className="material-symbols-outlined text-[15px] text-[#1DB954]">headphones</span>
+                  <span>340+ Students Vibing</span>
                 </span>
               </div>
 
@@ -509,11 +585,10 @@ export default function Community() {
                           setIsPlayerLoaded(false);
                         }
                       }}
-                      className={`py-2.5 px-3 text-center rounded-xl text-xs font-black transition-all cursor-pointer border-2 border-[#0F172A] truncate flex items-center justify-center ${
-                        isSelected
+                      className={`py-2.5 px-3 text-center rounded-xl text-xs font-black transition-all cursor-pointer border-2 border-[#0F172A] truncate flex items-center justify-center ${isSelected
                           ? 'bg-[#1DB954] text-slate-950 shadow-[3px_3px_0px_#0F172A] scale-[1.02]'
                           : 'bg-white text-slate-800 hover:bg-[#FFFDF9] shadow-[1px_1px_0px_#0F172A]'
-                      }`}
+                        }`}
                     >
                       <span>{cat.label}</span>
                     </button>
@@ -549,12 +624,12 @@ export default function Community() {
             </div>
 
             {/* Action Trigger */}
-            <div className="pt-4 mt-4 border-t-2 border-slate-900/10 flex flex-wrap items-center justify-between gap-3">
+            <div className="pt-4 mt-4 border-t-2 border-slate-900/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <a
                 href={`https://open.spotify.com/playlist/${activeCategory.playlistId || '37i9dQZF1DX0XUfTFmNBRM'}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-2.5 rounded-2xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-2xl bg-[#1DB954] hover:bg-[#1aa34a] text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
               >
                 <SpotifyIcon className="w-5 h-5 text-slate-950" />
                 <span>Open &quot;{activeCategory.label}&quot; in Spotify</span>
@@ -563,7 +638,7 @@ export default function Community() {
                 </span>
               </a>
 
-              <span className="text-xs sm:text-sm text-slate-800 font-extrabold">
+              <span className="text-xs sm:text-sm text-slate-800 font-extrabold text-center sm:text-left">
                 Curated for Indus University Peers
               </span>
             </div>
@@ -571,85 +646,102 @@ export default function Community() {
 
           {/* Right: The Student Ballot Box */}
           <div className="lg:col-span-6 bg-white rounded-[32px] p-6 sm:p-8 border-3 border-[#0F172A] shadow-[6px_6px_0px_#0F172A] flex flex-col justify-between relative overflow-hidden gap-5">
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3D6] text-slate-900 border-2 border-[#0F172A] text-xs font-black shadow-[2px_2px_0px_#0F172A]">
-                  <span className="material-symbols-outlined text-sm">how_to_vote</span>
-                  Campus Referendum Box
-                </span>
-                <span className="text-xs text-slate-500 font-black flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  {totalVotes} Ballots Cast
-                </span>
+            {pollLoading ? (
+              <div className="py-16 text-center space-y-3">
+                <div className="w-10 h-10 border-3 border-amber-400 border-t-slate-900 rounded-full animate-spin mx-auto" />
+                <p className="text-xs font-black text-slate-700 uppercase tracking-wider">Syncing Campus Referendum...</p>
               </div>
+            ) : activePoll ? (
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FEF3D6] text-slate-900 border-2 border-[#0F172A] text-xs font-black shadow-[2px_2px_0px_#0F172A]">
+                    <span className="material-symbols-outlined text-sm">how_to_vote</span>
+                    {activePoll.badgeLabel || 'Campus Referendum Box'}
+                  </span>
+                  <span className="text-xs text-slate-500 font-black flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    {totalVotesCount} Ballots Cast
+                  </span>
+                </div>
 
-              <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-snug">
-                What is your biggest blocker for upcoming university exams?
-              </h2>
-              <p className="text-xs text-slate-600 font-bold mt-1">
-                Vote to prioritize which solved papers and study notes the guild uploads next.
-              </p>
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-snug">
+                  {activePoll.title}
+                </h2>
+                {activePoll.description && (
+                  <p className="text-xs text-slate-600 font-bold mt-1">
+                    {activePoll.description}
+                  </p>
+                )}
 
-              {/* Poll Options with Icons */}
-              <div className="space-y-2.5 mt-4">
-                {[
-                  { key: 'opt1', icon: 'description', label: 'Missing step-by-step solved PYQ papers', votes: pollVotes.opt1 },
-                  { key: 'opt2', icon: 'calculate', label: 'Complex numerical derivations & formulas', votes: pollVotes.opt2 },
-                  { key: 'opt3', icon: 'science', label: 'Viva questions & practical experiment files', votes: pollVotes.opt3 },
-                  { key: 'opt4', icon: 'schedule', label: 'Time management & sudden date changes', votes: pollVotes.opt4 },
-                ].map((opt) => {
-                  const pct = Math.round((opt.votes / totalVotes) * 100);
-                  const isChosen = pollSelected === opt.key;
-                  return (
-                    <button
-                      key={opt.key}
-                      onClick={() => handleVote(opt.key)}
-                      disabled={!!pollSelected}
-                      className={`w-full p-3 sm:p-3.5 rounded-2xl border-2 text-left text-xs sm:text-sm font-black transition-all relative overflow-hidden cursor-pointer flex items-center justify-between ${
-                        isChosen
-                          ? 'border-[#0F172A] bg-amber-100 text-slate-900 shadow-[3px_3px_0px_#0F172A] scale-[1.01]'
-                          : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-[#0F172A] hover:bg-white hover:shadow-[2px_2px_0px_#0F172A]'
-                      }`}
-                    >
-                      {pollSelected && (
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${pct}%` }}
-                          transition={{ duration: 0.5 }}
-                          className={`absolute top-0 left-0 bottom-0 ${isChosen ? 'bg-amber-300/50' : 'bg-slate-200/60'} pointer-events-none`}
-                        />
-                      )}
-                      <div className="relative z-10 flex items-center gap-2.5 min-w-0 pr-2">
-                        <span className={`material-symbols-outlined text-base shrink-0 ${isChosen ? 'text-[#0F172A]' : 'text-slate-500'}`}>
-                          {opt.icon}
-                        </span>
-                        <span className="truncate">{opt.label}</span>
-                      </div>
-                      <div className="relative z-10 shrink-0">
-                        {pollSelected ? (
-                          <span className="font-black text-xs font-mono text-slate-900 px-2 py-0.5 rounded-lg bg-white/80 border border-slate-300">
-                            {pct}%
-                          </span>
-                        ) : (
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                            Vote
-                          </span>
+                {/* Poll Options with Icons */}
+                <div className="space-y-2.5 mt-4">
+                  {(activePoll.options || []).map((opt) => {
+                    const isChosen = votedOptionId === opt.id;
+                    const pct = opt.percentage || 0;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => handleVote(opt.id)}
+                        disabled={!!votedOptionId || isSubmittingVote}
+                        className={`w-full p-3 sm:p-3.5 rounded-2xl border-2 text-left text-xs sm:text-sm font-black transition-all relative overflow-hidden cursor-pointer flex items-center justify-between ${
+                          isChosen
+                            ? 'border-[#0F172A] bg-amber-100 text-slate-900 shadow-[3px_3px_0px_#0F172A] scale-[1.01]'
+                            : votedOptionId
+                            ? 'border-slate-300 bg-slate-50 text-slate-700 opacity-90'
+                            : 'border-slate-300 bg-slate-50 text-slate-700 hover:border-[#0F172A] hover:bg-white hover:shadow-[2px_2px_0px_#0F172A]'
+                        }`}
+                      >
+                        {votedOptionId && (
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${pct}%` }}
+                            transition={{ duration: 0.6, ease: 'easeOut' }}
+                            className={`absolute top-0 left-0 bottom-0 ${
+                              isChosen ? 'bg-amber-300/50' : 'bg-slate-200/60'
+                            } pointer-events-none`}
+                          />
                         )}
-                      </div>
-                    </button>
-                  );
-                })}
+                        <div className="relative z-10 flex items-center gap-2.5 min-w-0 pr-2">
+                          <span
+                            className={`material-symbols-outlined text-base shrink-0 ${
+                              isChosen ? 'text-[#0F172A]' : 'text-slate-500'
+                            }`}
+                          >
+                            {opt.icon || 'description'}
+                          </span>
+                          <span className="truncate">{opt.text}</span>
+                        </div>
+                        <div className="relative z-10 shrink-0">
+                          {votedOptionId ? (
+                            <span className="font-black text-xs font-mono text-slate-900 px-2 py-0.5 rounded-lg bg-white/90 border border-slate-300">
+                              {pct}%
+                            </span>
+                          ) : (
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-slate-900">
+                              Vote
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="py-12 text-center text-slate-500 font-bold text-xs">
+                No active referendum today. Check back soon for the next campus vault poll!
+              </div>
+            )}
 
             {/* Live Referendum Impact & Drop Schedule Grid */}
-            <div className="grid grid-cols-3 gap-2.5 pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5 pt-1">
               <div className="bg-[#FEF3D6] p-3 rounded-2xl border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] text-center">
                 <span className="text-[10px] uppercase font-black tracking-wider text-amber-800 block">
                   Top Demand
                 </span>
                 <span className="text-xs font-black text-slate-900 truncate block mt-0.5">
-                  Solved PYQs (48%)
+                  {activePoll?.statusTopDemand || activePoll?.computedTopDemand || 'Solved PYQs (48%)'}
                 </span>
               </div>
               <div className="bg-[#E0F2FE] p-3 rounded-2xl border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] text-center">
@@ -657,7 +749,7 @@ export default function Community() {
                   Vault Drop
                 </span>
                 <span className="text-xs font-black text-slate-900 block mt-0.5">
-                  Friday @ 6 PM
+                  {activePoll?.statusVaultDrop || 'Friday @ 6 PM'}
                 </span>
               </div>
               <div className="bg-[#DCFCE7] p-3 rounded-2xl border-2 border-[#0F172A] shadow-[2px_2px_0px_#0F172A] text-center">
@@ -665,7 +757,7 @@ export default function Community() {
                   Resolved Total
                 </span>
                 <span className="text-xs font-black text-slate-900 block mt-0.5">
-                  480+ Papers
+                  {activePoll?.statusResolved || '480+ Papers'}
                 </span>
               </div>
             </div>
@@ -674,7 +766,7 @@ export default function Community() {
             <div className="pt-4 border-t-2 border-slate-900/10 flex flex-wrap items-center justify-between gap-3">
               <Link
                 to="/resources"
-                className="px-5 py-2.5 rounded-2xl bg-[#0F172A] hover:bg-slate-800 text-white font-black text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+                className="w-full sm:w-auto px-5 py-2.5 rounded-2xl bg-[#0F172A] hover:bg-slate-800 text-white font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer border-2 border-[#0F172A] shadow-[3px_3px_0px_#0F172A] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
               >
                 <span className="material-symbols-outlined text-base text-[#FACC15]">folder_special</span>
                 <span>Open Study Resource Vault</span>
@@ -743,7 +835,7 @@ export default function Community() {
             SECTION 5: CODE OF CONDUCT & HELPDESK ACCORDION
         ══════════════════════════════════════════════════════════════════════════ */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
+
           {/* FAQ Column */}
           <div className="lg:col-span-7 space-y-4">
             <div className="mb-4">
@@ -771,9 +863,8 @@ export default function Community() {
                     >
                       <span>{faq.question}</span>
                       <span
-                        className={`material-symbols-outlined text-lg text-slate-600 transition-transform duration-300 ${
-                          isOpen ? 'rotate-180 text-amber-700' : ''
-                        }`}
+                        className={`material-symbols-outlined text-lg text-slate-600 transition-transform duration-300 ${isOpen ? 'rotate-180 text-amber-700' : ''
+                          }`}
                       >
                         expand_more
                       </span>
@@ -819,7 +910,7 @@ export default function Community() {
                 ].map((rule, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-xs text-slate-800 font-black">
                     <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                      ✓
+                      <span className="material-symbols-outlined text-[12px] leading-none">check</span>
                     </span>
                     <span>{rule}</span>
                   </li>
@@ -859,30 +950,36 @@ export default function Community() {
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-              <a
+              <FramerButton
                 href="https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-[#0F172A] hover:bg-slate-800 text-[#FACC15] font-black px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#0F172A] text-xs sm:text-sm"
+                variant="navy"
+                size="lg"
+                icon="arrow_forward"
+                shadow="md"
+                className="bg-[#0F172A] hover:bg-slate-800 text-[#FACC15] border-2 border-[#0F172A]"
               >
-                <WhatsAppIcon className="w-5 h-5 text-[#25D366]" />
-                <span>Join Official WhatsApp</span>
-              </a>
+                Join Official WhatsApp
+              </FramerButton>
 
-              <a
-                href="https://t.me/+UDHjAUouy5I5MTc9"
+              <FramerButton
+                href="https://t.me/+fP4hKU69AQIwZjI1"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white hover:bg-slate-50 text-slate-950 font-black px-7 py-3.5 rounded-2xl inline-flex items-center gap-2.5 shadow-[4px_4px_0px_#0F172A] transition-all duration-200 hover:-translate-y-0.5 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none cursor-pointer border-2 border-[#0F172A] text-xs sm:text-sm"
+                variant="outline"
+                size="lg"
+                icon="arrow_forward"
+                shadow="md"
+                className="bg-white hover:bg-slate-50 text-slate-950 border-2 border-[#0F172A]"
               >
-                <TelegramIcon className="w-5 h-5 text-[#229ED9]" />
-                <span>Join Official Telegram</span>
-              </a>
+                Join Official Telegram
+              </FramerButton>
             </div>
           </div>
         </div>
 
-      </main>
+      </div>
     </div>
   );
 }

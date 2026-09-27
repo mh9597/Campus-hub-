@@ -5,7 +5,6 @@
  */
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { getSubjectVivaData } from '../services/viva/vivaApi';
 import { useSubject } from './useSubject';
 
@@ -15,18 +14,32 @@ export function useViva(subjectCode) {
   // Load subject metadata from catalog
   const { subject, loading: subjectLoading } = useSubject(normalizedCode);
 
-  // TanStack Query for Viva Data (100% dynamic from DB via backend proxy)
-  const {
-    data: vivaData,
-    isLoading: vivaLoading,
-    error,
-    refetch
-  } = useQuery({
-    queryKey: ['viva', normalizedCode],
-    queryFn: () => getSubjectVivaData(normalizedCode, subject),
-    enabled: !!normalizedCode,
-    staleTime: 1000 * 2, // 2 seconds fresh, fast revalidation with DB
-  });
+  // Dynamic Viva Data from DB via backend proxy
+  const [vivaData, setVivaData] = useState(null);
+  const [vivaLoading, setVivaLoading] = useState(Boolean(normalizedCode));
+  const [error, setError] = useState(null);
+
+  const refetch = useCallback(async () => {
+    if (!normalizedCode) {
+      setVivaData(null);
+      setVivaLoading(false);
+      return;
+    }
+    setVivaLoading(true);
+    setError(null);
+    try {
+      const data = await getSubjectVivaData(normalizedCode, subject);
+      setVivaData(data);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setVivaLoading(false);
+    }
+  }, [normalizedCode, subject]);
+
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
 
   // UI Filtering State
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'theory' | 'practical' | 'experiments' | 'quick-revision' | 'bookmarked'

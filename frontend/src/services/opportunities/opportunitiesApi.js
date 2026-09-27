@@ -14,7 +14,7 @@ const FALLBACK_OPPORTUNITIES = [
     id: '1',
     title: 'Upcoming Hackathons',
     description: 'Collaborate with peers to build innovative solutions for real-world problems. Great for portfolio building.',
-    emoji: '🚀',
+    icon: 'rocket_launch',
     tag: 'Active',
     tagType: 'primary',
     rotate: '-1deg',
@@ -25,7 +25,7 @@ const FALLBACK_OPPORTUNITIES = [
     id: '2',
     title: 'Internships',
     description: 'Gain professional experience with top companies in tech, finance, and creative industries worldwide.',
-    emoji: '💼',
+    icon: 'work',
     tag: 'High Demand',
     tagType: 'tertiary',
     rotate: '1.2deg',
@@ -36,7 +36,7 @@ const FALLBACK_OPPORTUNITIES = [
     id: '3',
     title: 'Scholarships',
     description: 'Financial aid opportunities for undergraduate and postgraduate studies across various disciplines.',
-    emoji: '🎓',
+    icon: 'school',
     tag: 'Funded',
     tagType: 'error',
     rotate: '0.5deg',
@@ -47,7 +47,7 @@ const FALLBACK_OPPORTUNITIES = [
     id: '4',
     title: 'Workshops',
     description: 'Hands-on learning sessions led by industry experts to master specific tools and technologies.',
-    emoji: '🛠',
+    icon: 'build',
     tag: 'Certified',
     tagType: 'primary',
     rotate: '-1.5deg',
@@ -58,7 +58,7 @@ const FALLBACK_OPPORTUNITIES = [
     id: '5',
     title: 'Webinars',
     description: 'Live online seminars featuring thought leaders discussing current trends and career advice.',
-    emoji: '🎥',
+    icon: 'videocam',
     tag: 'Online',
     tagType: 'tertiary',
     rotate: '0.9deg',
@@ -69,23 +69,23 @@ const FALLBACK_OPPORTUNITIES = [
     id: '6',
     title: 'Certifications',
     description: 'Validate your skills with industry-recognized certificates from leading providers and universities.',
-    emoji: '📜',
+    icon: 'workspace_premium',
     tag: 'Self-paced',
     tagType: 'primary',
     rotate: '-0.4deg',
     pinBg: 'radial-gradient(circle at 30% 30%, #6366f1, #312e81)',
-    category: 'Remote',
+    category: 'Certification',
   },
   {
     id: '7',
     title: 'College Events',
     description: 'Stay updated with cultural fests, technical events, and campus activities happening near you.',
-    emoji: '📅',
+    icon: 'account_balance',
     tag: 'Cultural',
     tagType: 'primary',
     rotate: '0.7deg',
     pinBg: 'radial-gradient(circle at 30% 30%, #f59e0b, #b45309)',
-    category: 'Coding',
+    category: 'College Events',
   },
 ];
 
@@ -109,9 +109,37 @@ export function formatRelativeTime(isoString) {
   return `${days} days ago`;
 }
 
+// Shared in-flight promise and memory cache to prevent duplicate requests
+let cachedOpportunitiesPayload = null;
+let lastOpportunitiesFetchTime = 0;
+let inFlightOpportunitiesPromise = null;
+const CACHE_TTL_MS = 30000;
+
+async function fetchOpportunitiesPayload() {
+  const now = Date.now();
+  if (cachedOpportunitiesPayload && now - lastOpportunitiesFetchTime < CACHE_TTL_MS) {
+    return cachedOpportunitiesPayload;
+  }
+  if (inFlightOpportunitiesPromise) {
+    return inFlightOpportunitiesPromise;
+  }
+  inFlightOpportunitiesPromise = withTimeout(fetchFromApi('opportunities'))
+    .then((data) => {
+      cachedOpportunitiesPayload = data;
+      lastOpportunitiesFetchTime = Date.now();
+      inFlightOpportunitiesPromise = null;
+      return data;
+    })
+    .catch((err) => {
+      inFlightOpportunitiesPromise = null;
+      throw err;
+    });
+  return inFlightOpportunitiesPromise;
+}
+
 export async function getOpportunities() {
   try {
-    const data = await withTimeout(fetchFromApi('opportunities'));
+    const data = await fetchOpportunitiesPayload();
     return data.opportunities || FALLBACK_OPPORTUNITIES;
   } catch (err) {
     console.warn('[opportunitiesApi] getOpportunities failed, using fallback:', err.message);
@@ -121,10 +149,11 @@ export async function getOpportunities() {
 
 export async function getAnnouncements() {
   try {
-    const data = await withTimeout(fetchFromApi('opportunities'));
+    const data = await fetchOpportunitiesPayload();
     return data.announcements || FALLBACK_ANNOUNCEMENTS;
   } catch (err) {
     console.warn('[opportunitiesApi] getAnnouncements failed, using fallback:', err.message);
     return FALLBACK_ANNOUNCEMENTS;
   }
 }
+

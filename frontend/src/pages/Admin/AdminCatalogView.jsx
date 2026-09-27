@@ -93,7 +93,11 @@ function SemesterCascadeModal({ sem, resources, onBulkDelete, onCascadeDelete, o
   const toggleOne = (id) =>
     setChecked(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
 
@@ -627,12 +631,12 @@ function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
             </Field>
           </div>
           <div>
-            <Field label="Short Form / Alias">
+            <Field label="Short Forms / Aliases">
               <Input
                 value={form.shortForm}
                 onChange={e => setForm(f => ({ ...f, shortForm: e.target.value.toUpperCase() }))}
-                placeholder="e.g. DMS, OOCWU"
-                maxLength={30}
+                placeholder="e.g. DBMS, DMS or OS, OPSYS"
+                maxLength={100}
               />
             </Field>
           </div>
@@ -655,19 +659,19 @@ function SubjectModal({ mode, initial, semesterName, onClose, onSave }) {
 // ─── Shared Modal Shell ───────────────────────────────────────
 function ModalShell({ title, icon, onClose, children }) {
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg border border-outline-variant/20 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-3 sm:p-4 font-sans">
+      <div className="bg-white border-3 border-slate-900 rounded-3xl shadow-[6px_6px_0px_#0F172A] w-[95%] sm:w-full sm:max-w-lg max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center gap-3 px-6 py-5 border-b border-outline-variant/15">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-            <span className="material-symbols-outlined text-primary text-[20px]">{icon}</span>
+        <div className="flex items-center gap-3 px-5 py-4 border-b-2 border-slate-900 bg-[#FFFBEB]">
+          <div className="w-10 h-10 rounded-xl bg-amber-400 border-2 border-slate-900 flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#0F172A]">
+            <span className="material-symbols-outlined text-slate-950 text-[22px]">{icon}</span>
           </div>
-          <h2 className="text-lg font-bold text-on-surface flex-1">{title}</h2>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-container transition text-on-surface-variant">
-            <span className="material-symbols-outlined text-[20px]">close</span>
+          <h2 className="text-base sm:text-lg font-black text-slate-950 flex-1">{title}</h2>
+          <button onClick={onClose} className="w-8 h-8 rounded-xl border-2 border-slate-900 bg-white hover:bg-slate-100 flex items-center justify-center text-slate-700 transition cursor-pointer">
+            <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
-        <div className="px-6 py-5">{children}</div>
+        <div className="p-5 sm:p-6">{children}</div>
       </div>
     </div>
   );
@@ -675,20 +679,20 @@ function ModalShell({ title, icon, onClose, children }) {
 
 function ModalFooter({ saving, onCancel, saveLabel }) {
   return (
-    <div className="flex gap-3 justify-end pt-2">
+    <div className="flex gap-2 sm:gap-3 justify-end pt-3 border-t border-slate-200 mt-4">
       <button
         type="button"
         onClick={onCancel}
-        className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-surface-container border border-outline-variant/30 text-on-surface hover:bg-surface-container-high transition"
+        className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold border-2 border-slate-300 text-slate-700 hover:border-slate-900 hover:bg-slate-50 transition cursor-pointer"
       >
         Cancel
       </button>
       <button
         type="submit"
         disabled={saving}
-        className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-on-primary hover:bg-primary/90 disabled:opacity-60 transition flex items-center gap-2"
+        className="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-amber-400 text-slate-950 border-2 border-slate-900 hover:bg-amber-500 shadow-[2px_2px_0px_#0F172A] disabled:opacity-60 transition flex items-center gap-2 cursor-pointer"
       >
-        {saving && <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+        {saving && <span className="w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" />}
         {saving ? 'Saving…' : saveLabel}
       </button>
     </div>
@@ -875,42 +879,48 @@ export default function AdminCatalogView() {
 
   // ── Render ─────────────────────────────────────────────────
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-6 md:p-8 w-full max-w-7xl mx-auto font-sans">
       {/* Page Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-on-surface mb-1">Academic Catalog</h1>
-          <p className="text-on-surface-variant text-sm">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-black uppercase tracking-wider mb-2">
+            <span className="material-symbols-outlined text-[16px]">domain</span>
+            <span>Academic Structure</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-950 tracking-tight leading-tight">
+            Academic Catalog
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
             Manage branches, semesters, and subjects in real-time.
           </p>
         </div>
         <button
           onClick={() => setModal({ type: 'dept', mode: 'create', target: null })}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary text-on-primary font-semibold text-sm hover:bg-primary/90 transition shadow-sm"
+          className="w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-amber-400 text-slate-950 border-2 border-slate-900 font-black text-xs sm:text-sm hover:bg-amber-500 shadow-[3px_3px_0px_#0F172A] hover:translate-x-0.5 hover:-translate-y-0.5 transition-all cursor-pointer"
         >
           <span className="material-symbols-outlined text-[20px]">add</span>
-          Add Branch
+          <span>Add New Branch</span>
         </button>
       </div>
 
       {/* Loading */}
       {loading && (
-        <div className="flex items-center justify-center py-24">
-          <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        <div className="flex items-center justify-center py-20 sm:py-24">
+          <div className="w-10 h-10 border-4 border-slate-200 border-t-amber-400 rounded-full animate-spin" />
         </div>
       )}
 
       {/* Empty state */}
       {!loading && departments.length === 0 && (
-        <div className="text-center py-24">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <span className="material-symbols-outlined text-primary text-[36px]">account_tree</span>
+        <div className="text-center py-20 bg-white border-2 border-slate-900 rounded-3xl p-8 shadow-[4px_4px_0px_#0F172A]">
+          <div className="w-16 h-16 rounded-2xl bg-amber-100 border-2 border-slate-900 flex items-center justify-center mx-auto mb-4 shadow-[2px_2px_0px_#0F172A]">
+            <span className="material-symbols-outlined text-slate-950 text-[36px]">account_tree</span>
           </div>
-          <h3 className="text-lg font-bold text-on-surface mb-2">No branches yet</h3>
-          <p className="text-on-surface-variant text-sm mb-6">Start by creating your first department branch.</p>
+          <h3 className="text-lg font-black text-slate-950 mb-1">No branches yet</h3>
+          <p className="text-slate-500 text-xs sm:text-sm mb-6 font-medium">Start by creating your first department branch.</p>
           <button
             onClick={() => setModal({ type: 'dept', mode: 'create', target: null })}
-            className="px-5 py-2.5 rounded-2xl bg-primary text-on-primary font-semibold text-sm hover:bg-primary/90 transition"
+            className="px-6 py-2.5 rounded-xl bg-amber-400 text-slate-950 border-2 border-slate-900 font-black text-xs sm:text-sm hover:bg-amber-500 shadow-[2px_2px_0px_#0F172A] transition"
           >
             Add First Branch
           </button>
@@ -923,12 +933,12 @@ export default function AdminCatalogView() {
           {departments.map(dept => {
             const deptExpanded = expanded[`d-${dept.id}`] ?? true;
             return (
-              <div key={dept.id} className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl overflow-hidden shadow-sm">
+              <div key={dept.id} className="bg-white border-2 border-slate-900 rounded-2xl overflow-hidden shadow-[3px_3px_0px_#0F172A]">
                 {/* Department Row */}
-                <div className="flex items-center gap-3 px-5 py-4 bg-surface-container/50">
+                <div className="flex items-center gap-2 sm:gap-3 px-3 py-3 sm:px-5 sm:py-4 bg-[#FFFBEB] border-b-2 border-slate-900">
                   <button
                     onClick={() => toggleExpand(`d-${dept.id}`)}
-                    className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-surface-container transition shrink-0"
+                    className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-surface-container transition shrink-0 cursor-pointer"
                   >
                     <span className="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform duration-200"
                       style={{ transform: deptExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
@@ -936,16 +946,16 @@ export default function AdminCatalogView() {
                       chevron_right
                     </span>
                   </button>
-                  <span className="material-symbols-outlined text-primary text-[22px]">account_tree</span>
+                  <span className="material-symbols-outlined text-primary text-[20px] sm:text-[22px] shrink-0">account_tree</span>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold text-on-surface">{dept.name}</span>
-                      <span className="text-xs font-mono font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">{dept.code}</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                      <span className="font-bold text-xs sm:text-base text-on-surface line-clamp-1">{dept.name}</span>
+                      <span className="text-[10px] sm:text-xs font-mono font-semibold px-1.5 py-0.5 rounded-full bg-primary/10 text-primary shrink-0">{dept.code}</span>
                       <Badge count={dept._count?.semesters ?? dept.semesters?.length ?? 0} label="sems" />
                     </div>
                   </div>
                   {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                     <ActionBtn icon="add" label="Add Semester" color="text-blue-600" onClick={() => setModal({ type: 'sem', mode: 'create', target: dept })} />
                     <ActionBtn icon="edit" label="Edit Branch" color="text-on-surface-variant" onClick={() => setModal({ type: 'dept', mode: 'edit', target: dept })} />
                     <ActionBtn icon="delete" label="Delete Branch" color="text-red-400" onClick={() => handleDeleteDept(dept)} />
@@ -960,10 +970,10 @@ export default function AdminCatalogView() {
                       return (
                         <div key={sem.id}>
                           {/* Semester Row */}
-                          <div className="flex items-center gap-3 px-5 py-3 pl-10 bg-surface-container/30 hover:bg-surface-container/50 transition">
+                          <div className="flex items-center gap-2 sm:gap-3 px-3 py-2.5 sm:px-5 sm:py-3 pl-6 sm:pl-10 bg-surface-container/30 hover:bg-surface-container/50 transition">
                             <button
                               onClick={() => toggleExpand(`s-${sem.id}`)}
-                              className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-surface-container transition shrink-0"
+                              className="w-6 h-6 rounded-md flex items-center justify-center hover:bg-surface-container transition shrink-0 cursor-pointer"
                             >
                               <span className="material-symbols-outlined text-[16px] text-on-surface-variant transition-transform duration-200"
                                 style={{ transform: semExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
@@ -971,29 +981,29 @@ export default function AdminCatalogView() {
                                 chevron_right
                               </span>
                             </button>
-                            <span className="material-symbols-outlined text-tertiary text-[18px]">calendar_month</span>
+                            <span className="material-symbols-outlined text-tertiary text-[16px] sm:text-[18px] shrink-0">calendar_month</span>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 flex-wrap">
-                                <span className="font-semibold text-on-surface text-sm">{sem.name}</span>
-                                <span className="text-xs px-2 py-0.5 rounded-full bg-tertiary/10 text-tertiary font-semibold">Sem {sem.semesterNumber}</span>
+                              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                                <span className="font-semibold text-on-surface text-xs sm:text-sm line-clamp-1">{sem.name}</span>
+                                <span className="text-[10px] sm:text-xs px-1.5 py-0.5 rounded-full bg-tertiary/10 text-tertiary font-semibold shrink-0">Sem {sem.semesterNumber}</span>
                                 <Badge count={sem._count?.subjects ?? sem.subjects?.length ?? 0} label="subjects" />
                                 {/* Resource count badge — only shown when there are resources */}
                                 {(() => {
                                   const rc = sem._count?.resources ??
                                     (sem.subjects?.reduce((a, s) => a + (s._count?.resources ?? 0), 0) ?? 0);
                                   return rc > 0 ? (
-                                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200">
+                                    <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 border border-red-200 shrink-0">
                                       <span className="material-symbols-outlined text-[12px]">folder</span>
-                                      {rc} resource{rc !== 1 ? 's' : ''}
+                                      {rc} res
                                     </span>
                                   ) : null;
                                 })()}
                               </div>
                               {sem.description && (
-                                <p className="text-xs text-on-surface-variant mt-0.5 truncate">{sem.description}</p>
+                                <p className="text-[11px] sm:text-xs text-on-surface-variant mt-0.5 truncate">{sem.description}</p>
                               )}
                             </div>
-                            <div className="flex items-center gap-1 shrink-0">
+                            <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                               <ActionBtn icon="add" label="Add Subject" color="text-blue-600" onClick={() => setModal({ type: 'subject', mode: 'create', target: { sem, dept } })} />
                               <ActionBtn icon="edit" label="Edit Semester" color="text-on-surface-variant" onClick={() => setModal({ type: 'sem', mode: 'edit', target: { sem, dept } })} />
                               <ActionBtn icon="delete" label="Delete Semester" color="text-red-400" onClick={() => handleDeleteSem(sem, dept.name)} />
@@ -1004,26 +1014,26 @@ export default function AdminCatalogView() {
                           {semExpanded && sem.subjects?.length > 0 && (
                             <div className="divide-y divide-outline-variant/5">
                               {sem.subjects.map(subject => (
-                                <div key={subject.id} className="flex items-center gap-3 px-5 py-2.5 pl-16 hover:bg-surface-container/30 transition">
-                                  <span className="material-symbols-outlined text-[18px] text-on-surface-variant">
+                                <div key={subject.id} className="flex items-center gap-2 sm:gap-3 px-3 py-2 sm:px-5 sm:py-2.5 pl-8 sm:pl-16 hover:bg-surface-container/30 transition">
+                                  <span className="material-symbols-outlined text-[16px] sm:text-[18px] text-on-surface-variant shrink-0">
                                     {subject.icon || 'menu_book'}
                                   </span>
                                   <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2 flex-wrap">
-                                      <span className="font-medium text-on-surface text-sm">{subject.title}</span>
-                                      <span className="text-xs font-mono px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">{subject.code}</span>
+                                    <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                                      <span className="font-medium text-on-surface text-xs sm:text-sm line-clamp-1">{subject.title}</span>
+                                      <span className="text-[10px] sm:text-xs font-mono px-1 py-0.5 rounded bg-surface-container text-on-surface-variant shrink-0">{subject.code}</span>
                                       {subject.shortForm && (
-                                        <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">{subject.shortForm}</span>
+                                        <span className="text-[10px] sm:text-xs font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200 shrink-0">{subject.shortForm}</span>
                                       )}
                                       {subject._count?.resources > 0 && (
                                         <Badge count={subject._count.resources} label="resources" />
                                       )}
                                     </div>
                                     {subject.description && (
-                                      <p className="text-xs text-on-surface-variant mt-0.5 truncate">{subject.description}</p>
+                                      <p className="text-[11px] sm:text-xs text-on-surface-variant mt-0.5 truncate">{subject.description}</p>
                                     )}
                                   </div>
-                                  <div className="flex items-center gap-1 shrink-0">
+                                  <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
                                     <ActionBtn icon="edit" label="Edit Subject" color="text-on-surface-variant" onClick={() => setModal({ type: 'subject', mode: 'edit', target: { subject, sem, dept } })} />
                                     <ActionBtn icon="delete" label="Delete Subject" color="text-red-400" onClick={() => handleDeleteSubject(subject)} />
                                   </div>

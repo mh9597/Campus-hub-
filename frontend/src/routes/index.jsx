@@ -33,16 +33,24 @@ function DepartmentRouteHandler() {
   if (normalized === 'CE') {
     return <RouterNavigate to="/semesters" replace />;
   }
+  if (normalized === 'CSE' || normalized === 'IT') {
+    return <RouterNavigate to={`/semesters?dept=${normalized}`} replace />;
+  }
   return <RouterNavigate to={`/coming-soon?dept=${normalized}`} replace />;
 }
 
 const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin'));
 const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard'));
+const AdminHomepageSettingsView = lazy(() => import('../pages/Admin/AdminHomepageSettingsView'));
 const AdminSubmissionsView = lazy(() => import('../pages/Admin/AdminSubmissionsView'));
 const AdminResourcesView = lazy(() => import('../pages/Admin/AdminResourcesView'));
 const AdminVivaView = lazy(() => import('../pages/Admin/AdminVivaView'));
 const AdminOpportunitiesView = lazy(() => import('../pages/Admin/AdminOpportunitiesView'));
 const AdminCatalogView = lazy(() => import('../pages/Admin/AdminCatalogView'));
+const AdminSubscribersView = lazy(() => import('../pages/Admin/AdminSubscribersView'));
+const AdminPollsView = lazy(() => import('../pages/Admin/AdminPollsView'));
+
+const UniversalVivaPage = lazy(() => import('../pages/Viva/UniversalVivaPage'));
 
 const UniversalVivaPage = lazy(() => import('../pages/Viva/UniversalVivaPage'));
 
@@ -81,12 +89,17 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <Navigate to="/admin/dashboard" replace /> },
       { path: 'dashboard', element: withSuspense(AdminDashboard) },
+      { path: 'homepage-settings', element: withSuspense(AdminHomepageSettingsView) },
+      { path: 'settings/homepage', element: withSuspense(AdminHomepageSettingsView) },
       { path: 'submissions', element: withSuspense(AdminSubmissionsView) },
       { path: 'uploads', element: withSuspense(AdminSubmissionsView) },
       { path: 'resources', element: withSuspense(AdminResourcesView) },
       { path: 'viva', element: withSuspense(AdminVivaView) },
       { path: 'opportunities', element: withSuspense(AdminOpportunitiesView) },
+      { path: 'polls', element: withSuspense(AdminPollsView) },
+      { path: 'referendums', element: withSuspense(AdminPollsView) },
       { path: 'catalog', element: withSuspense(AdminCatalogView) },
+      { path: 'subscribers', element: withSuspense(AdminSubscribersView) },
       { path: '*', element: withSuspense(NotFound) },
     ],
   },

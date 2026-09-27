@@ -4,6 +4,7 @@
 require('dotenv').config();
 
 const express = require('express');
+const compression = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -16,7 +17,17 @@ const adminRoutes    = require('./routes/admin.routes');
 const resourceRoutes = require('./routes/resource.routes');
 const { notFoundHandler, errorHandler } = require('./middlewares/error.middleware');
 
+const rateLimit = require('express-rate-limit');
+
 const app = express();
+
+// ─── Trust Proxy for Cloud Hosting (Render / Vercel) ──────────
+// Informs Express that it is running behind a reverse proxy (Cloudflare/Render load balancer).
+// Ensures req.ip correctly identifies the actual student's IP address rather than the proxy.
+app.set('trust proxy', 1);
+
+// ─── HTTP Response Compression (Gzip / Deflate) ──────────────
+app.use(compression());
 
 // ─── Security Headers ─────────────────────────────────────────
 app.use(
@@ -46,7 +57,12 @@ app.use(
     origin: (origin, callback) => {
       const cleanOrigin = origin ? origin.replace(/\/+$/, '') : null;
       // Allow requests with no origin (like mobile apps, curl, server-to-server)
-      if (!cleanOrigin || allowedOrigins.includes(cleanOrigin)) {
+      // In development / local testing, allow any local network origin (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
+      const isLocalNetwork =
+        process.env.NODE_ENV !== 'production' &&
+        /^http:\/\/(192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+|localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
+      if (!origin || allowedOrigins.includes(origin) || isLocalNetwork) {
         callback(null, true);
       } else {
         callback(new Error(`Not allowed by CORS: ${origin}`));
@@ -95,6 +111,21 @@ app.get('/health', (_req, res) => {
 });
 
 // ─── API Routes ───────────────────────────────────────────────
+
+// Global API rate limiter: 180 requests per minute per IP.
+// Protects Render 512MB RAM and single-CPU from being saturated by bots or loops.
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 180,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this device. Please wait a moment and try again.',
+  },
+});
+
+app.use('/api', apiLimiter);
 
 // Public student routes  (no auth)
 app.use('/api', publicRoutes);

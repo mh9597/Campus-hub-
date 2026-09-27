@@ -130,8 +130,9 @@ export default function VivaQuickRevision({
 
           {/* Direct Answer Box */}
           <div className="bg-[#FFFDF5] border-2 border-amber-300 rounded-2xl p-5 mb-5 shadow-2xs">
-            <span className="text-xs font-black uppercase tracking-wider text-amber-800 block mb-2">
-              ⚡ Concise Viva Answer:
+            <span className="text-xs font-black uppercase tracking-wider text-amber-800 flex items-center gap-1.5 mb-2">
+              <span className="material-symbols-outlined text-[16px] text-amber-600">bolt</span>
+              <span>Concise Viva Answer:</span>
             </span>
             <p className="text-sm sm:text-base font-semibold text-gray-900 leading-relaxed">
               {currentQ.shortAnswer}
@@ -160,7 +161,10 @@ export default function VivaQuickRevision({
                     : 'bg-white hover:bg-emerald-50 text-emerald-900 border-emerald-400'
                 }`}
               >
-                {isCurrentLearned ? 'Learned ✓' : 'Mark as Learned'}
+                <span className="inline-flex items-center gap-1">
+                  {isCurrentLearned && <span className="material-symbols-outlined text-[14px]">check</span>}
+                  <span>{isCurrentLearned ? 'Learned' : 'Mark as Learned'}</span>
+                </span>
               </button>
 
               <button

@@ -12,13 +12,13 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
-    "db:studio": "prisma studio",
-    "get-refresh-token": "node scripts/get-refresh-token.js",
-    "viva:convert": "node scripts/convert_pdf_to_viva_json.js"
+    "db:cleanup": "node prisma/cleanup_duplicates.js",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

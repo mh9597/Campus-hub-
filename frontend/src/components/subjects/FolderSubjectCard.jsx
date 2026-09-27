@@ -52,6 +52,10 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
   };
 
   const shortTitle = getShortTitle(subject.title, subject.code, subject.shortForm);
+  const isLongTitle = shortTitle.length >= 7;
+  const titleSizeClass = isLongTitle
+    ? 'text-lg sm:text-2xl lg:text-[28px]'
+    : 'text-xl sm:text-3xl lg:text-[34px]';
   const theme = getFolderTheme(subject.pinColor, subject.bgColor, index);
 
   // Dynamic resource count computation
@@ -90,7 +94,7 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
       onPointerEnter={() => subject?.code && prefetchSubject(subject.code)}
       onTouchStart={() => subject?.code && prefetchSubject(subject.code)}
       onClick={handleCardClick}
-      className="group relative w-full max-w-[300px] sm:max-w-[330px] cursor-grab active:cursor-grabbing select-none my-4"
+      className="group relative w-full max-w-[310px] sm:max-w-[330px] md:max-w-[340px] mx-auto cursor-grab active:cursor-grabbing select-none my-2 sm:my-3"
     >
       {/* ─── Top Brand Header ─── */}
       <div className="flex items-center justify-between text-[10px] font-black tracking-widest text-black/50 uppercase mb-1.5 px-1">
@@ -207,18 +211,23 @@ export default function FolderSubjectCard({ subject, index, semesterNumber = 5 }
 
           {/* Center Typography & Content on Front Cover */}
           <div className="absolute inset-x-0 top-[22%] bottom-0 flex flex-col items-center justify-center px-6 text-center pointer-events-none z-10">
-            {/* Main Title */}
-            <h2 className="font-black italic text-2xl sm:text-3xl lg:text-[34px] text-black tracking-tight leading-none drop-shadow-[0_1px_0_rgba(255,255,255,0.4)]">
-              {shortTitle}
+            {/* Main Title with Italic Glyph Cutoff Protection */}
+            <h2
+              className={`font-black italic ${titleSizeClass} text-black tracking-tight leading-tight drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] max-w-full px-2 py-0.5 truncate`}
+              title={shortTitle}
+            >
+              <span className="inline-block pl-0.5 pr-3 sm:pr-4">
+                {shortTitle}
+              </span>
             </h2>
 
             {/* Subtitle */}
-            <p className="font-medium text-[11px] sm:text-xs text-black/80 mt-1.5 max-w-[90%] leading-tight tracking-tight">
+            <p className="font-medium text-[10px] sm:text-xs text-black/80 mt-1 sm:mt-1.5 max-w-[92%] leading-tight tracking-tight line-clamp-2 break-words text-center">
               {subject.title}
             </p>
 
             {/* Resource Count Pill */}
-            <span className="inline-block mt-2 text-[9px] sm:text-[10px] font-black tracking-wider text-black/70 bg-black/10 px-2.5 py-0.5 rounded-full border border-black/10 uppercase group-hover/folder:bg-black group-hover/folder:text-white transition-colors duration-300">
+            <span className="inline-block mt-1.5 sm:mt-2 text-[8px] sm:text-[10px] font-black tracking-wider text-black/70 bg-black/10 px-2 sm:px-2.5 py-0.5 rounded-full border border-black/10 uppercase group-hover/folder:bg-black group-hover/folder:text-white transition-colors duration-300">
               {resourceLabel}
             </span>
           </div>
