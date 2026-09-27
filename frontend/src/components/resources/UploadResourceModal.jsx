@@ -105,11 +105,7 @@ export default function UploadResourceModal({ isOpen = true, subjectCode, onClos
       clearInterval(interval);
       setProgress(0);
       setStatus('error');
-      let msg = err.message || 'Upload failed. Please try again.';
-      if (msg.includes('invalid_grant')) {
-        msg = 'Storage authorization error (invalid_grant): Google Drive token expired. Please notify the site administrator.';
-      }
-      setErrorMsg(msg);
+      setErrorMsg(err.message || 'Upload failed. Please try again.');
     }
   };
 

@@ -2,8 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSubjectResources } from '../../hooks/useResources';
-import { useSubject } from '../../hooks/useSubject';
-import { prefetchSemesters, prefetchSemester } from '../../lib/queryPrefetch';
+import { getSubjectByCode } from '../../services/resources/resourcesApi';
 import { ErrorState } from '../../components/ui/ErrorState';
 import UploadResourceModal from '../../components/resources/UploadResourceModal';
 import FramerButton from '../../components/ui/FramerButton';
@@ -29,6 +28,8 @@ function SubjectDetails() {
   const { code } = useParams();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('Notes');
+  const [subject, setSubject] = useState(null);
+  const [subjectLoading, setSubjectLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
   const resourcesPanelRef = useRef(null);
 
@@ -40,15 +41,24 @@ function SubjectDetails() {
     }, 80);
   }
 
-  // Load subject metadata and resources in parallel without waterfall delay
-  const { subject, loading: subjectLoading, error: subjectError } = useSubject(code);
-  const { resources, loading: resourcesLoading, error, refetch } = useSubjectResources(subject?.code || code || '');
+  // useSubjectResources will fetch based on the actual subject code
+  const { resources, loading: resourcesLoading, error, refetch } = useSubjectResources(subject?.code || '');
 
   useEffect(() => {
-    if (!subjectLoading && !subject && !subjectError) {
-      navigate('/404', { replace: true });
+    async function fetchSubject() {
+      if (!code) return;
+      setSubjectLoading(true);
+      const data = await getSubjectByCode(code);
+      if (data) {
+        setSubject(data);
+      } else {
+        // If subject not found, navigate to 404
+        navigate('/404', { replace: true });
+      }
+      setSubjectLoading(false);
     }
-  }, [subjectLoading, subject, subjectError, navigate]);
+    fetchSubject();
+  }, [code, navigate]);
 
   const categories = [
     {
@@ -113,7 +123,7 @@ function SubjectDetails() {
 
   const totalResourcesCount = resources.length;
 
-  if (subjectLoading && !subject) {
+  if (subjectLoading) {
     return (
       <div className="min-h-screen bulletin-board-bg flex flex-col items-center justify-center pt-20">
         <div className="w-14 h-14 rounded-2xl bg-amber-400 border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center justify-center animate-bounce mb-4">
@@ -237,7 +247,6 @@ function SubjectDetails() {
               const vivaUrl = `/subject/${(subject?.code || code).toLowerCase()}/viva`;
               const isSelected = selectedCategory === cat.dbType;
               const catCount = resources.filter(r => r.resourceType === cat.dbType).length;
-              const vivaUrl = `/subject/${(subject?.code || code).toLowerCase()}/viva`;
 
               if (isViva) {
                 return (
@@ -325,41 +334,14 @@ function SubjectDetails() {
                         : 'border-black/10 text-black group-hover:text-amber-600'
                       }`}
                   >
-                    <span className="tracking-wide">{isViva ? 'Launch Viva Platform' : `Explore ${cat.title}`}</span>
+                    <span className="tracking-wide">Explore {cat.title}</span>
                     <div className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-[16px] sm:text-[18px] group-hover:translate-x-1.5 transition-transform duration-200">
                         arrow_forward
                       </span>
                     </div>
                   </div>
-                </div>
-              );
 
-              if (isViva) {
-                return (
-                  <Link
-                    key={idx}
-                    to={vivaUrl}
-                    className="relative p-6 rounded-[24px] text-left flex flex-col justify-between transition-all duration-300 cursor-pointer select-none group border-2 bg-white hover:bg-[#FFFDF5] text-black border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] hover:-translate-y-1 block"
-                  >
-                    {cardContent}
-                  </Link>
-                );
-              }
-
-              return (
-                <motion.button
-                  key={idx}
-                  onClick={() => selectCategory(cat.dbType)}
-                  whileHover={{ y: -5, scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`relative p-6 rounded-[24px] text-left flex flex-col justify-between transition-all duration-300 cursor-pointer select-none group border-2 ${
-                    isSelected
-                      ? 'bg-[#0F172A] text-white border-black shadow-[6px_6px_0px_#FBBF24] ring-2 ring-[#FBBF24]'
-                      : 'bg-white hover:bg-[#FFFDF5] text-black border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                  }`}
-                >
-                  {cardContent}
                 </motion.button>
               );
             })}

@@ -45,7 +45,6 @@ function ResourceViewer() {
   const [loading, setLoading] = useState(!location.state?.resource);
   const [iframeLoading, setIframeLoading] = useState(true);
   const [iframeError, setIframeError] = useState(false);
-  const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
     if (resource) return; // Already have data from state
@@ -62,12 +61,12 @@ function ResourceViewer() {
     load();
   }, [id, navigate, resource]);
 
-  // Reset error states when resource changes
+  // Safety fallback: Chromium PDF plugin inside <iframe> does not trigger standard onLoad.
+  // Automatically dismiss loading spinner after 1.2s to reveal PDF.
   useEffect(() => {
     if (!resource) return;
     setIframeLoading(true);
     setIframeError(false);
-    setImgError(false);
     const timer = setTimeout(() => {
       setIframeLoading(false);
     }, 1200);
@@ -276,14 +275,13 @@ function ResourceViewer() {
         <div className="flex-1 overflow-hidden relative bg-black">
           {!resource.fileUrl && !resource.driveFileId ? (
             <EmptyViewer message="No file is attached to this resource." />
-          ) : resourceIsImage && !hasDriveFile && !imgError ? (
+          ) : resourceIsImage && !hasDriveFile ? (
             // Local image files — render directly
             <div className="w-full h-full overflow-auto flex items-center justify-center p-8">
               <img
                 src={viewUrl}
                 alt={resource.title}
                 className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
-                onError={() => setImgError(true)}
               />
             </div>
           ) : canTryIframe ? (
@@ -298,7 +296,7 @@ function ResourceViewer() {
                 </div>
               )}
               {iframeError ? (
-                <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} webViewLink={resource.webViewLink || resource.fileUrl} />
+                <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} />
               ) : (
                 <iframe
                   key={viewUrl}
@@ -311,7 +309,7 @@ function ResourceViewer() {
               )}
             </>
           ) : (
-            <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} webViewLink={resource.webViewLink || resource.fileUrl} isUnknownType />
+            <FallbackViewer viewUrl={viewUrl} downloadUrl={downloadUrl} isUnknownType />
           )}
         </div>
       </div>
@@ -319,10 +317,8 @@ function ResourceViewer() {
   );
 }
 
-// ─── Fallback: when PDF/Image can't be embedded or unknown type ───
-function FallbackViewer({ viewUrl, downloadUrl, webViewLink, isUnknownType }) {
-  const directLink = (webViewLink && (webViewLink.startsWith('http://') || webViewLink.startsWith('https://'))) ? webViewLink : null;
-
+// ─── Fallback: when PDF can't be embedded or unknown type ───
+function FallbackViewer({ viewUrl, downloadUrl, isUnknownType }) {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-5 text-center px-4 sm:px-8 bg-neutral-950">
       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-neutral-900 flex items-center justify-center border border-neutral-800">
@@ -334,8 +330,8 @@ function FallbackViewer({ viewUrl, downloadUrl, webViewLink, isUnknownType }) {
         <h3 className="text-yellow-400 font-bold text-base sm:text-lg mb-1.5">Preview not available</h3>
         <p className="text-neutral-400 text-xs sm:text-sm max-w-sm">
           {isUnknownType 
-            ? "The file preview is unavailable or missing on the server. You can try opening the direct link or downloading the file."
-            : "Your browser could not render the inline preview for this file. You can still open or download it directly."}
+            ? "This file format cannot be previewed directly in the browser. Click below to download."
+            : "Your browser blocked the inline preview for this file. You can still open or download it directly."}
         </p>
       </div>
       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto max-w-xs sm:max-w-none">

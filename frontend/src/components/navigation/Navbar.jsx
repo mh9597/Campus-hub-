@@ -8,16 +8,6 @@ function Navbar({ onOpenCommandPalette }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [hoveredPath, setHoveredPath] = useState(null);
 
-  const handleNavHover = (path) => {
-    setHoveredPath(path);
-    if (path === '/resources') {
-      prefetchSemesters();
-    } else if (path === '/opportunities') {
-      prefetchOpportunities();
-      prefetchAnnouncements();
-    }
-  };
-
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -70,8 +60,7 @@ function Navbar({ onOpenCommandPalette }) {
             <NavLink
               key={link.name}
               to={link.path}
-              onMouseEnter={() => handleNavHover(link.path)}
-              onPointerEnter={() => handleNavHover(link.path)}
+              onMouseEnter={() => setHoveredPath(link.path)}
               className={({ isActive }) =>
                 `text-sm relative py-1 font-black transition-colors duration-200 select-none ${
                   isActive ? 'text-hub-navy' : 'text-gray-600 hover:text-hub-navy'

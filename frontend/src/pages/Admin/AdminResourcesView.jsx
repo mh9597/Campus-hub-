@@ -119,8 +119,8 @@ function ResourceForm({ departments = [], semesters = [], subjects = [], onSubmi
         fd.append('subjectId', form.subjectId);
         fd.append('title', form.title);
         fd.append('resourceType', form.resourceType);
-        if (form.description) fd.append('description', form.description);
-        if (form.source) fd.append('source', form.source);
+        fd.append('description', form.description);
+        fd.append('source', form.source);
         await createResourceWithFile(fd);
       } else {
         await onSubmit({ ...form });

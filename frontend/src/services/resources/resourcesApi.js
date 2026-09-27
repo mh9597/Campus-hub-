@@ -1,7 +1,5 @@
 import { fetchFromApi } from '../../lib/api';
 import { semestersData } from '../../data/semestersData';
-import { queryClient } from '../../lib/queryClient';
-import { queryKeys } from '../../lib/queryKeys';
 
 const TIMEOUT_MS = 8000;
 
@@ -74,27 +72,10 @@ export async function getSemesters(departmentCode = 'CE') {
 }
 
 export async function getSemesterById(semesterId) {
-  const numericId = parseInt(semesterId, 10);
-
-  // 1. Instant cache lookup from already loaded semesters to bypass server request
-  const cachedSemesters = queryClient.getQueryData(queryKeys.semesters);
-  if (Array.isArray(cachedSemesters)) {
-    const found = cachedSemesters.find((s) => s.id === numericId);
-    if (found && Array.isArray(found.subjects)) {
-      const count = found.subjects.reduce((acc, subj) => acc + (subj._count?.resources || 0), 0);
-      const mappedSubjects = found.subjects.map(subj => ({
-        ...subj,
-        resourcesCount: `${subj._count?.resources || 0}+ Resources`
-      }));
-      return { ...found, subjects: mappedSubjects, resourcesCount: `${count}+ Resources` };
-    }
-  }
-
-  // 2. Fetch if not found in cache
   try {
     const data = await fetchSemestersCatalog();
     for (const dept of data) {
-      const sem = dept.semesters?.find((s) => s.id === numericId);
+      const sem = dept.semesters?.find((s) => s.id === parseInt(semesterId));
       if (sem) {
         const count = sem.subjects?.reduce((acc, subj) => acc + (subj._count?.resources || 0), 0) || 0;
         const mappedSubjects = sem.subjects?.map(subj => ({
@@ -112,7 +93,7 @@ export async function getSemesterById(semesterId) {
     return null;
   } catch (err) {
     console.warn(`[resourcesApi] getSemesterById(${semesterId}) failed, using static fallback:`, err.message);
-    return semestersData.find((s) => s.id === numericId) ?? null;
+    return semestersData.find((s) => s.id === parseInt(semesterId)) ?? null;
   }
 }
 
@@ -120,10 +101,10 @@ export async function getResourcesBySubject(subjectCode) {
   if (!subjectCode) return [];
   try {
     const data = await withTimeout(fetchFromApi(`resources?subjectCode=${subjectCode}`));
-    return Array.isArray(data) ? data : [];
+    return data;
   } catch (err) {
-    console.warn(`[resourcesApi] getResourcesBySubject(${subjectCode}) failed (backend may be offline):`, err.message);
-    return [];
+    console.error(`[resourcesApi] getResourcesBySubject(${subjectCode}) failed:`, err.message);
+    throw err;
   }
 }
 

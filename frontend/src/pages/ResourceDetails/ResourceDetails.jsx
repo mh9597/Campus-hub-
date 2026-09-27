@@ -1,6 +1,5 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { useSemesterById } from '../../hooks/useSemesterById';
-import { prefetchSemesters } from '../../lib/queryPrefetch';
 import { SubjectCardSkeleton } from '../../components/ui/LoadingSkeleton';
 import { ErrorState } from '../../components/ui/ErrorState';
 import FolderSubjectCard from '../../components/subjects/FolderSubjectCard';

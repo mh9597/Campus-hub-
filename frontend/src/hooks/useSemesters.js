@@ -16,12 +16,5 @@ export function useSemesters(departmentCode = 'CE') {
     cacheKey: `ch_semesters_list_${normalized}`,
     ttl: 60000,
   });
-
-  return {
-    semesters: data ?? [],
-    loading: isPending && !data,
-    isFetching,
-    error: error ? (error.message || 'Failed to load semesters') : null,
-    refetch,
-  };
+  return { semesters: data ?? [], loading, error, refetch };
 }

@@ -39,23 +39,18 @@ app.use(
 );
 
 // ─── Dynamic CORS Configuration ────────────────────────────────
-const rawOrigins = [
+const allowedOrigins = [
   'http://localhost:5173', // Local Vite development
   'http://localhost:3000', // Alternative local dev port
   'http://127.0.0.1:5173',
   'https://campus-hub-eight-omega.vercel.app', // Live Vercel production deployment
-  ...(process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',') : []),
-  ...(process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',') : []),
-];
-
-const allowedOrigins = rawOrigins
-  .filter(Boolean)
-  .map((o) => o.trim().replace(/\/+$/, ''));
+  ...(process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',').map((o) => o.trim()) : []),
+  ...(process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',').map((o) => o.trim()) : []),
+].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      const cleanOrigin = origin ? origin.replace(/\/+$/, '') : null;
       // Allow requests with no origin (like mobile apps, curl, server-to-server)
       // In development / local testing, allow any local network origin (192.168.x.x, 10.x.x.x, 172.16-31.x.x)
       const isLocalNetwork =
@@ -65,7 +60,7 @@ app.use(
       if (!origin || allowedOrigins.includes(origin) || isLocalNetwork) {
         callback(null, true);
       } else {
-        callback(new Error(`Not allowed by CORS: ${origin}`));
+        callback(new Error('Not allowed by CORS'));
       }
     },
     credentials: true, // required for HttpOnly cookies

@@ -1,40 +1,19 @@
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from '../lib/queryKeys';
+import { useMemo } from 'react';
+import { useFetch } from './useFetch';
 import { getSemesterById } from '../services/resources/resourcesApi';
 
 /**
  * Hook: fetch a single semester by numeric ID (with subjects).
- * Uses caching and initialData derivation from cached semesters list for instant detail views.
+ * Uses caching for instant detail views.
  *
- * @param {number|string} semesterId
- * @returns {{ semester: Object|null, loading: boolean, isFetching: boolean, error: string|null, refetch: Function }}
+ * @param {number} semesterId
+ * @returns {{ semester: Object|null, loading: boolean, error: string|null, refetch: Function }}
  */
 export function useSemesterById(semesterId) {
-  const queryClient = useQueryClient();
-  const numericId = semesterId ? parseInt(semesterId, 10) : null;
-
-  const { data, isPending, isFetching, error, refetch } = useQuery({
-    queryKey: queryKeys.semester(numericId),
-    queryFn: () => getSemesterById(numericId),
-    enabled: !!numericId,
-    initialData: () => {
-      if (!numericId) return undefined;
-      const cachedSemesters = queryClient.getQueryData(queryKeys.semesters);
-      if (Array.isArray(cachedSemesters)) {
-        const found = cachedSemesters.find((s) => s.id === numericId);
-        if (found && Array.isArray(found.subjects)) {
-          return found;
-        }
-      }
-      return undefined;
-    },
+  const fetchFn = useMemo(() => () => getSemesterById(semesterId), [semesterId]);
+  const { data, loading, error, refetch } = useFetch(fetchFn, [semesterId], {
+    cacheKey: semesterId ? `ch_sem_${semesterId}` : null,
+    ttl: 60000,
   });
-
-  return {
-    semester: data ?? null,
-    loading: isPending && !data,
-    isFetching,
-    error: error ? (error.message || 'Failed to load semester') : null,
-    refetch,
-  };
+  return { semester: data, loading, error, refetch };
 }

@@ -39,6 +39,7 @@ function DepartmentRouteHandler() {
   return <RouterNavigate to={`/coming-soon?dept=${normalized}`} replace />;
 }
 
+// ─── Admin pages (Separated into isolated admin chunks) ───────
 const AdminLogin = lazy(() => import('../pages/Admin/AdminLogin'));
 const AdminDashboard = lazy(() => import('../pages/Admin/AdminDashboard'));
 const AdminHomepageSettingsView = lazy(() => import('../pages/Admin/AdminHomepageSettingsView'));
@@ -49,8 +50,6 @@ const AdminOpportunitiesView = lazy(() => import('../pages/Admin/AdminOpportunit
 const AdminCatalogView = lazy(() => import('../pages/Admin/AdminCatalogView'));
 const AdminSubscribersView = lazy(() => import('../pages/Admin/AdminSubscribersView'));
 const AdminPollsView = lazy(() => import('../pages/Admin/AdminPollsView'));
-
-const UniversalVivaPage = lazy(() => import('../pages/Viva/UniversalVivaPage'));
 
 const UniversalVivaPage = lazy(() => import('../pages/Viva/UniversalVivaPage'));
 

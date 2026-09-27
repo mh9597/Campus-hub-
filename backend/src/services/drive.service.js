@@ -21,34 +21,24 @@ const REQUIRED = [
   'GOOGLE_DRIVE_FOLDER_ID',
 ];
 
-const missingKeys = REQUIRED.filter((key) => !process.env[key]);
-if (missingKeys.length > 0) {
-  console.warn(`⚠️  [drive.service] Missing Drive env vars: ${missingKeys.join(', ')}. Google Drive endpoints will return an error until set.`);
-}
-
-// ── Lazy OAuth2 client & Drive instance getter ──────────────────
-
-let driveClientInstance = null;
-
-function getDriveClient() {
-  if (driveClientInstance) return driveClientInstance;
-
-  const missing = REQUIRED.filter((key) => !process.env[key]);
-  if (missing.length > 0) {
-    throw new Error(`Google Drive storage is not configured on this server. Missing env vars: ${missing.join(', ')}`);
+for (const key of REQUIRED) {
+  if (!process.env[key]) {
+    throw new Error(`[drive.service] Missing required env var: ${key}`);
   }
-
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.GOOGLE_CLIENT_ID,
-    process.env.GOOGLE_CLIENT_SECRET
-  );
-  oauth2Client.setCredentials({
-    refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
-  });
-
-  driveClientInstance = google.drive({ version: 'v3', auth: oauth2Client });
-  return driveClientInstance;
 }
+
+// ── OAuth2 client ─────────────────────────────────────────────
+
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+);
+
+oauth2Client.setCredentials({
+  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+});
+
+const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
 // ── In-process folder ID cache ────────────────────────────────
 // Key: "<parentId>/<folderName>"  →  Value: Drive folder ID string
@@ -79,7 +69,7 @@ async function getOrCreateSubfolder(folderName, parentFolderId) {
   const safeName = folderName.replace(/'/g, "\\'");
 
   // Search for an existing non-trashed folder with this name under the parent
-  const listRes = await getDriveClient().files.list({
+  const listRes = await drive.files.list({
     q: `mimeType = 'application/vnd.google-apps.folder' and name = '${safeName}' and '${parentFolderId}' in parents and trashed = false`,
     fields: 'files(id, name)',
     spaces:  'drive',
@@ -93,7 +83,7 @@ async function getOrCreateSubfolder(folderName, parentFolderId) {
   }
 
   // Not found — create it
-  const createRes = await getDriveClient().files.create({
+  const createRes = await drive.files.create({
     requestBody: {
       name:     folderName,
       mimeType: 'application/vnd.google-apps.folder',
@@ -164,7 +154,7 @@ async function uploadFileToDrive(file, departmentName, semesterName, subjectName
   // Convert in-memory buffer → readable stream (no disk I/O)
   const bodyStream = Readable.from(file.buffer);
 
-  const uploadRes = await getDriveClient().files.create({
+  const uploadRes = await drive.files.create({
     requestBody: {
       name:    file.originalname,
       parents: [targetFolderId],
@@ -179,7 +169,7 @@ async function uploadFileToDrive(file, departmentName, semesterName, subjectName
   const fileId = uploadRes.data.id;
 
   // Grant "anyone with the link" read access so the proxy stream can fetch it
-  await getDriveClient().permissions.create({
+  await drive.permissions.create({
     fileId,
     requestBody: { role: 'reader', type: 'anyone' },
   });
@@ -201,7 +191,7 @@ async function uploadFileToDrive(file, departmentName, semesterName, subjectName
 async function uploadDirectToDrive(file, parentFolderId) {
   const bodyStream = Readable.from(file.buffer);
 
-  const uploadRes = await getDriveClient().files.create({
+  const uploadRes = await drive.files.create({
     requestBody: {
       name:    file.originalname,
       parents: [parentFolderId],
@@ -216,7 +206,7 @@ async function uploadDirectToDrive(file, parentFolderId) {
   const fileId = uploadRes.data.id;
 
   // Grant read access
-  await getDriveClient().permissions.create({
+  await drive.permissions.create({
     fileId,
     requestBody: { role: 'reader', type: 'anyone' },
   });
@@ -238,7 +228,7 @@ async function uploadDirectToDrive(file, parentFolderId) {
  * @returns {Promise<import('stream').Readable>}
  */
 async function getDriveFileStream(fileId) {
-  const response = await getDriveClient().files.get(
+  const response = await drive.files.get(
     { fileId, alt: 'media' },
     { responseType: 'stream' },
   );
@@ -254,7 +244,7 @@ async function getDriveFileStream(fileId) {
  * @returns {Promise<{ id: string, name: string, mimeType: string, size: string }>}
  */
 async function getDriveFileMetadata(fileId) {
-  const response = await getDriveClient().files.get({
+  const response = await drive.files.get({
     fileId,
     fields: 'id, name, mimeType, size',
   });
@@ -273,7 +263,7 @@ async function getDriveFileMetadata(fileId) {
  */
 async function deleteFromDrive(fileId) {
   try {
-    await getDriveClient().files.delete({ fileId });
+    await drive.files.delete({ fileId });
   } catch (err) {
     const status = err?.response?.status ?? err?.code;
     if (status === 404) {
@@ -298,7 +288,7 @@ const deleteFileFromDrive = deleteFromDrive;
  * @returns {Promise<{ id: string }>}
  */
 async function moveFileInDrive(fileId, targetFolderId, currentParentFolderId) {
-  const response = await getDriveClient().files.update({
+  const response = await drive.files.update({
     fileId,
     addParents: targetFolderId,
     removeParents: currentParentFolderId,
@@ -343,7 +333,7 @@ async function renameInDrive(fileId, newTitle, mimeType) {
     safeName = `${safeName}${MIME_EXT[mimeType]}`;
   }
 
-  const response = await getDriveClient().files.update({
+  const response = await drive.files.update({
     fileId,
     requestBody: { name: safeName },
     fields: 'id, name',
