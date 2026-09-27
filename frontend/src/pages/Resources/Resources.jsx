@@ -1046,12 +1046,6 @@ export default function Resources() {
       <section className="relative pt-6 pb-16 lg:pt-8 lg:pb-20 z-10">
         <div className="max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-12">
 
-          {/* Breadcrumb Navigation */}
-          <nav aria-label="Breadcrumb" className="flex items-center text-xs font-semibold text-gray-500 mb-6">
-            <Link to="/" className="hover:text-amber-500 transition-colors">Home</Link>
-            <span className="mx-2 text-gray-400">/</span>
-            <span className="text-hub-navy font-bold">Resources</span>
-          </nav>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8 items-center">
             {/* Left Content Column */}

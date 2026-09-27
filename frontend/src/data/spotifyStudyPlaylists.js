@@ -5,7 +5,7 @@ export const SPOTIFY_STUDY_CATEGORIES = [
     "label": "Lo-Fi Study",
     "name": "Lofi Girl - beats to relax/study to",
     "playlistId": "0vvXsWCC9xrXsKd4FyS8kM",
-    "description": "A daily selection of chill beats - perfect to help you relax & study 📚 (Official Lofi Girl Playlist)",
+    "description": "A daily selection of chill beats - perfect to help you relax & study (Official Lofi Girl Playlist)",
     "artwork": "https://image-cdn-ak.spotifycdn.com/image/ab67706c0000d72c8bc80c95b9d248cf462c0bd1",
     "tracks": [
       {

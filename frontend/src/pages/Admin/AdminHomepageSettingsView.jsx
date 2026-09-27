@@ -54,7 +54,7 @@ const DEFAULT_STUDY_PACKS = [
     tag: 'SEM 3 & 4',
     category: 'dsa',
     tagBg: 'bg-[#FEF08A] text-[#0F172A]',
-    rating: '★ 4.9 (1.2k)',
+    rating: '4.9 (1.2k)',
     title: 'DSA Master Cheat Sheet & 80 Solved PYQs',
     desc: 'Trees, Graphs, and DP templates with Indus 100-mark proofs and diagrams.',
     fileSize: '4.2 MB',
@@ -74,7 +74,7 @@ const DEFAULT_STUDY_PACKS = [
     tag: 'SEM 5',
     category: 'systems',
     tagBg: 'bg-[#BAE6FD] text-[#0F172A]',
-    rating: '★ 4.8 (890)',
+    rating: '4.8 (890)',
     title: 'Operating Systems End-Sem Rapid Revision',
     desc: 'Deadlocks, Semaphore code, and Page Replacement algorithms step-by-step.',
     fileSize: '6.8 MB',
@@ -94,7 +94,7 @@ const DEFAULT_STUDY_PACKS = [
     tag: 'SEM 4',
     category: 'dbms',
     tagBg: 'bg-[#BBF7D0] text-[#0F172A]',
-    rating: '★ 5.0 (2.1k)',
+    rating: '5.0 (2.1k)',
     title: 'DBMS Complete SQL & Normalization Kit',
     desc: '1NF to BCNF decomposition examples with solutions to past 5 winter papers.',
     fileSize: '3.1 MB',
@@ -114,7 +114,7 @@ const DEFAULT_STUDY_PACKS = [
     tag: 'ALL BRANCHES',
     category: 'python',
     tagBg: 'bg-[#FBCFE8] text-[#0F172A]',
-    rating: '★ 4.9 (3.4k)',
+    rating: '4.9 (3.4k)',
     title: 'Python & Full Stack Practical Code Files',
     desc: '12 mandatory lab experiments with input/output screenshots ready for print.',
     fileSize: '12.4 MB',
@@ -525,7 +525,7 @@ export default function AdminHomepageSettingsView() {
       tag: 'SEM 3 & 4',
       category: 'dsa',
       tagBg: 'bg-[#FEF08A] text-[#0F172A]',
-      rating: '★ 4.9 (New)',
+      rating: '4.9 (New)',
       title: 'New Study Pack Title',
       desc: 'High-yield revision notes, solved question proofs, and cheat sheets.',
       fileSize: '4.5 MB',
@@ -1067,7 +1067,7 @@ export default function AdminHomepageSettingsView() {
                         type="text"
                         value={pack.rating || ''}
                         onChange={(e) => handlePackChange(pIdx, 'rating', e.target.value)}
-                        placeholder="e.g. ★ 4.9 (1.2k)"
+                        placeholder="e.g. 4.9 (1.2k)"
                         className="w-full px-3 py-2 bg-white border border-[#0F172A] rounded-xl font-bold text-xs text-[#0F172A] focus:ring-1 focus:ring-amber-500 focus:outline-none"
                       />
                     </div>
@@ -1300,8 +1300,9 @@ export default function AdminHomepageSettingsView() {
                           <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full border border-[#0F172A] uppercase tracking-wider ${pack.tagBg || 'bg-[#FEF08A] text-[#0F172A]'}`}>
                             {pack.tag || 'SEM 4'}
                           </span>
-                          <span className="text-xs font-black text-[#0F172A]">
-                            {pack.rating || '★ 4.9'}
+                          <span className="text-xs font-black text-[#0F172A] flex items-center gap-1">
+                            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500 shrink-0" />
+                            <span>{(pack.rating || '4.9').replace(/^[★\s]+/, '')}</span>
                           </span>
                         </div>
                         <h4 className="text-sm font-black text-[#0F172A] uppercase tracking-tight line-clamp-2 mb-1.5 leading-snug">

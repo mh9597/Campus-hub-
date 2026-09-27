@@ -221,7 +221,7 @@ export default function StudyBuddyWidget({ onOpenRequestModal }) {
                     <span className="material-symbols-outlined text-2xl text-slate-400">bookmark_border</span>
                     <p className="mt-1">No saved subjects yet.</p>
                     <p className="text-[10px] text-slate-400 mt-0.5">
-                      Click the &quot;⭐ Bookmark&quot; button on any subject page to stash it here for quick access!
+                      Click the Bookmark button on any subject page to stash it here for quick access!
                     </p>
                   </div>
                 ) : (

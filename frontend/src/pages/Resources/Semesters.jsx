@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useSemesters } from '../../hooks/useSemesters';
 import { SemesterCardSkeleton } from '../../components/ui/LoadingSkeleton';
@@ -13,9 +13,48 @@ import exceptionIcon from './exception-icon.png';
 import dataScienceIcon from './data-science-icon.png';
 import dnaIcon from './dna-icon.png';
 
+const DEPARTMENT_CONFIG = {
+  CE: {
+    code: 'CE',
+    name: 'Computer Engineering',
+    fullName: 'Computer Engineering (CE)',
+    desc: 'Explore study resources for Computer Engineering across all semesters. Access hand-picked notes, papers, and lab manuals.',
+    icon: 'memory',
+    accentColor: '#FF5722',
+  },
+  CSE: {
+    code: 'CSE',
+    name: 'Computer Science & Engineering',
+    fullName: 'Computer Science & Engineering (CSE)',
+    desc: 'Curated specializations for Data Science, Cloud Architectures, Theory of Computation, and Compiler Design coursework.',
+    icon: 'laptop_mac',
+    accentColor: '#38BDF8',
+  },
+  IT: {
+    code: 'IT',
+    name: 'Information Technology',
+    fullName: 'Information Technology (IT)',
+    desc: 'Specialized materials for Web Systems, Cybersecurity fundamentals, Information Security, and Enterprise Java frameworks.',
+    icon: 'dns',
+    accentColor: '#F472B6',
+  },
+};
+
 function Semesters() {
   const navigate = useNavigate();
-  const { semesters, loading, error, refetch } = useSemesters();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const rawDept = searchParams.get('dept') || 'CE';
+  const currentDeptCode = rawDept.toUpperCase();
+  const currentDept = DEPARTMENT_CONFIG[currentDeptCode] || {
+    code: currentDeptCode,
+    name: `${currentDeptCode} Department`,
+    fullName: `${currentDeptCode} Department`,
+    desc: `Explore study resources for ${currentDeptCode} across all semesters. Access hand-picked notes, papers, and lab manuals.`,
+    icon: 'school',
+    accentColor: '#FF5722',
+  };
+
+  const { semesters, loading, error, refetch } = useSemesters(currentDeptCode);
   const gridRef = useRef(null);
   const [pathData, setPathData] = useState({ path: '', points: [], width: 0, height: 0 });
 
@@ -135,14 +174,40 @@ function Semesters() {
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
           <Link to="/resources" className="hover:text-amber-600 opacity-70 transition-colors font-medium">Resources</Link>
           <span className="material-symbols-outlined text-[14px]">chevron_right</span>
-          <span className="text-black font-extrabold">Computer Engineering</span>
+          <span className="text-black font-extrabold">{currentDept.name}</span>
         </nav>
-        <h1 className="font-display-lg text-display-lg md:text-display-lg-mobile text-on-surface mb-4 font-bold text-4xl">
-          Computer Engineering Semesters
-        </h1>
-        <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
-          Explore study resources for Computer Engineering across all semesters. Access hand-picked notes, papers, and lab manuals.
-        </p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+          <div>
+            <h1 className="font-display-lg text-display-lg md:text-display-lg-mobile text-on-surface mb-2 font-bold text-3xl sm:text-4xl">
+              {currentDept.name} Semesters
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+              {currentDept.desc}
+            </p>
+          </div>
+
+          {/* Quick Department Switcher Tabs */}
+          <div className="flex items-center gap-2 shrink-0 self-start md:self-center bg-white p-1.5 rounded-2xl border-2 border-[#0F172A] shadow-[2.5px_2.5px_0_#0F172A]" role="group" aria-label="Switch Engineering Department">
+            {Object.values(DEPARTMENT_CONFIG).map((d) => {
+              const active = d.code === currentDeptCode;
+              return (
+                <button
+                  key={d.code}
+                  onClick={() => setSearchParams(d.code === 'CE' ? {} : { dept: d.code })}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+                    active
+                      ? 'bg-[#0F172A] text-white shadow-[2px_2px_0_#FF5722]'
+                      : 'hover:bg-amber-100 text-[#0F172A]'
+                  }`}
+                  aria-pressed={active}
+                >
+                  <span className="material-symbols-outlined text-[15px]">{d.icon}</span>
+                  <span>{d.code}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       {/* The "Bulletin Board" Grid */}

@@ -268,7 +268,7 @@ export default function VivaAnswerPanel({
             <span className="material-symbols-outlined text-[16px]">
               {isLearned ? 'check_circle' : 'radio_button_unchecked'}
             </span>
-            <span>{isLearned ? 'Learned ✓' : 'Mark as Learned'}</span>
+            <span>{isLearned ? 'Learned' : 'Mark as Learned'}</span>
           </button>
 
           <button

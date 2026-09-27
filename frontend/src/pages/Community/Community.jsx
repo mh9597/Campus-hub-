@@ -910,7 +910,7 @@ export default function Community() {
                 ].map((rule, idx) => (
                   <li key={idx} className="flex items-start gap-2 text-xs text-slate-800 font-black">
                     <span className="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                      ✓
+                      <span className="material-symbols-outlined text-[12px] leading-none">check</span>
                     </span>
                     <span>{rule}</span>
                   </li>

@@ -49,14 +49,19 @@ export async function fetchSemestersCatalog(forceRefresh = false) {
   return inFlightCatalogPromise;
 }
 
-export async function getSemesters() {
+export async function getSemesters(departmentCode = 'CE') {
   try {
     const data = await fetchSemestersCatalog();
-    const dept = data.find(d => d.code === 'CE') || data[0];
+    const targetCode = (departmentCode || 'CE').toUpperCase();
+    const dept = data.find(d => (d.code || '').toUpperCase() === targetCode) || data.find(d => d.code === 'CE') || data[0];
     if (dept && dept.semesters) {
       return dept.semesters.map(sem => {
         const count = sem.subjects?.reduce((acc, subj) => acc + (subj._count?.resources || 0), 0) || 0;
-        return { ...sem, resourcesCount: `${count}+ Resources` };
+        return {
+          ...sem,
+          department: { id: dept.id, code: dept.code, name: dept.name },
+          resourcesCount: `${count}+ Resources`,
+        };
       });
     }
     return [];
@@ -77,7 +82,12 @@ export async function getSemesterById(semesterId) {
           ...subj,
           resourcesCount: `${subj._count?.resources || 0}+ Resources`
         })) || [];
-        return { ...sem, subjects: mappedSubjects, resourcesCount: `${count}+ Resources` };
+        return {
+          ...sem,
+          department: { id: dept.id, code: dept.code, name: dept.name },
+          subjects: mappedSubjects,
+          resourcesCount: `${count}+ Resources`,
+        };
       }
     }
     return null;

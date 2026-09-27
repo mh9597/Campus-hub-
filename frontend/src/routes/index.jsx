@@ -33,6 +33,9 @@ function DepartmentRouteHandler() {
   if (normalized === 'CE') {
     return <RouterNavigate to="/semesters" replace />;
   }
+  if (normalized === 'CSE' || normalized === 'IT') {
+    return <RouterNavigate to={`/semesters?dept=${normalized}`} replace />;
+  }
   return <RouterNavigate to={`/coming-soon?dept=${normalized}`} replace />;
 }
 

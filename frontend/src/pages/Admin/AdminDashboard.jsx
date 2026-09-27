@@ -1028,9 +1028,10 @@ export default function AdminDashboard() {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-black text-[#1A1A1A]/60 hover:text-[#1A1A1A] cursor-pointer"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-black text-[#1A1A1A]/60 hover:text-[#1A1A1A] cursor-pointer flex items-center justify-center"
+                    aria-label="Clear Search"
                   >
-                    ✕
+                    <span className="material-symbols-outlined text-[14px]">close</span>
                   </button>
                 )}
               </div>
@@ -1191,8 +1192,9 @@ export default function AdminDashboard() {
               <button
                 onClick={() => setSelectedEvent(null)}
                 className="w-8 h-8 rounded-full bg-[#F7F2E7] hover:bg-[#FBCFE8] border-2 border-[#1A1A1A] font-black text-xs flex items-center justify-center cursor-pointer shadow-[2px_2px_0px_#1A1A1A]"
+                aria-label="Close Event Modal"
               >
-                ✕
+                <span className="material-symbols-outlined text-[16px]">close</span>
               </button>
             </div>
 

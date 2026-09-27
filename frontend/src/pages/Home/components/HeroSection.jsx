@@ -95,7 +95,7 @@ function HeroSection() {
 
             {/* Top Pill Badge */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FEF3D6] border border-amber-300/80 shadow-xs text-hub-navy text-xs font-extrabold uppercase tracking-wide">
-              <span className="text-amber-500 text-sm">★</span>
+              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
               <span>YOUR LEARNING HUB</span>
             </div>
 

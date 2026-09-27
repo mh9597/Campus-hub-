@@ -7,7 +7,7 @@ const DEFAULT_PACKS = [
     tag: 'SEM 3 & 4',
     category: 'dsa',
     tagBg: 'bg-[#FEF08A] text-[#0F172A]',
-    rating: '★ 4.9 (1.2k)',
+    rating: '4.9 (1.2k)',
     title: 'DSA Master Cheat Sheet & 80 Solved PYQs',
     desc: 'Trees, Graphs, and DP templates with Indus 100-mark proofs and diagrams.',
     fileSize: '4.2 MB',
@@ -27,7 +27,7 @@ const DEFAULT_PACKS = [
     tag: 'SEM 5',
     category: 'systems',
     tagBg: 'bg-[#BAE6FD] text-[#0F172A]',
-    rating: '★ 4.8 (890)',
+    rating: '4.8 (890)',
     title: 'Operating Systems End-Sem Rapid Revision',
     desc: 'Deadlocks, Semaphore code, and Page Replacement algorithms step-by-step.',
     fileSize: '6.8 MB',
@@ -47,7 +47,7 @@ const DEFAULT_PACKS = [
     tag: 'SEM 4',
     category: 'dbms',
     tagBg: 'bg-[#BBF7D0] text-[#0F172A]',
-    rating: '★ 5.0 (2.1k)',
+    rating: '5.0 (2.1k)',
     title: 'DBMS Complete SQL & Normalization Kit',
     desc: '1NF to BCNF decomposition examples with solutions to past 5 winter papers.',
     fileSize: '3.1 MB',
@@ -67,7 +67,7 @@ const DEFAULT_PACKS = [
     tag: 'ALL BRANCHES',
     category: 'python',
     tagBg: 'bg-[#FBCFE8] text-[#0F172A]',
-    rating: '★ 4.9 (3.4k)',
+    rating: '4.9 (3.4k)',
     title: 'Python & Full Stack Practical Code Files',
     desc: '12 mandatory lab experiments with input/output screenshots ready for print.',
     fileSize: '12.4 MB',
@@ -295,7 +295,7 @@ STUDY INSTRUCTIONS:
                       <span className="material-symbols-outlined text-[15px]">
                         {state === 'done' ? 'check_circle' : 'download'}
                       </span>
-                      <span>{state === 'loading' ? 'Fetching...' : state === 'done' ? 'Saved ✓' : 'Get Pack'}</span>
+                      <span>{state === 'loading' ? 'Fetching...' : state === 'done' ? 'Saved' : 'Get Pack'}</span>
                     </button>
                   </div>
                 </div>
@@ -319,8 +319,9 @@ STUDY INSTRUCTIONS:
                   type="button"
                   onClick={() => setActivePreviewPack(null)}
                   className="w-7 h-7 rounded-lg bg-white text-[#0F172A] border border-[#0F172A] flex items-center justify-center text-xs font-black cursor-pointer shadow-[1px_1px_0_#0F172A]"
+                  aria-label="Close Preview"
                 >
-                  ✕
+                  <span className="material-symbols-outlined text-[16px]">close</span>
                 </button>
               </div>
 

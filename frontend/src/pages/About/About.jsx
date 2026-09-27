@@ -25,7 +25,6 @@ import {
   Code2,
   Plus,
   Minus,
-  ArrowUp,
   HelpCircle,
   Flame,
   Layers,
@@ -35,13 +34,13 @@ import {
   Search,
 } from 'lucide-react';
 import { ScallopedCap, StickerTag, PillButton } from './components/ScallopedFrame';
+import ContributorTicker from './components/ContributorTicker';
 import { NeoBadge } from '../../components/common/BrandIcons';
 import { CardStack, CardStackItem } from '../../components/common/CardStack';
 import FramerButton from '../../components/ui/FramerButton';
 
 export default function About() {
   const [activeFaq, setActiveFaq] = useState(null);
-  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const containerRef = useRef(null);
   const { scrollYProgress, scrollY } = useScroll({ target: containerRef });
@@ -55,16 +54,6 @@ export default function About() {
   // Floating background parallax
   const floatBg1 = useTransform(smoothProgress, [0, 1], [0, -200]);
   const floatBg2 = useTransform(smoothProgress, [0, 1], [0, 220]);
-
-  // Scroll listener for back-to-top button
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowBackToTop(window.scrollY > 400);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // 4 Live Metric Badges
   const stats = [
@@ -173,8 +162,9 @@ export default function About() {
       tag: 'LEAD',
       tagColor: '#2563EB',
       tagText: '#FFFFFF',
-      avatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuD1_X_o4f0hXOLkW8GFyS_99Wd-27mxjyc4Mkqby9idLKqmK1_lmpRdWzy0oMZtO2kdV_3hQWsDO1lSHgZfM6y_0hO-EQJg8_Zgrczv4PkA8nJ_mFucfDNLZA19T-LSFdQJUHiTa0R8MSXuTSup7os3xdEGi3xqa3JO_FyDLBp9vckatx7iWaX02Rypurh_nynVhFTeyxY9DewWS_AtZEZwruBWEPMD6juzu5DOYkE4wavx3DYkuQmTnogBcILFWkp9HvOSgxU4xiM',
+      avatar: '/images/contributors/manan-gohil.jpg',
+      imagePosition: 'center 16%',
+      imageScale: 1.02,
       university: 'Indus University · CE',
       skills: ['System Design', 'Cloud Infra', 'Community Ops'],
     },
@@ -185,8 +175,9 @@ export default function About() {
       tag: 'FRONTEND',
       tagColor: '#FACC15',
       tagText: '#111111',
-      avatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuD1oB7febShFcsKAnTYIXP_T0HYgEoD69brUFelyDnZjsAdajt4siCu1jqwgLsw9GTm5oVFWAWBXo4fF95FNhqwi7KPEsgCJVBzkx5utFdtCLDiqPltlJqXj9usXg2kDugbXNq75b4kMzD7oFJ2m2fzt2InwOfhvR7Nj_FDuyHV4yn1rUM7EjkxOgkor9RENdnAndgr3RH4o5zoBjjORBEJVy9iv58p41NlDfre-xmMyF_yUUgv3sAEGRCBFmfOxMuw3ndVT8hnol4',
+      avatar: '/images/contributors/krish-patel.jpg',
+      imagePosition: 'center 16%',
+      imageScale: 1.02,
       university: 'Indus University · CE',
       skills: ['React / Vite', 'Lenis Physics', 'Design Systems'],
     },
@@ -197,8 +188,9 @@ export default function About() {
       tag: 'BACKEND',
       tagColor: '#FF5722',
       tagText: '#FFFFFF',
-      avatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBUJdoXoH2mO-SWtcIlNOq823u1YxeVXZMm73gR2eOImOqtEXniRhHocHVFFxrYKwywX47IBxLwgXDu-hbFVFUNYOPwM0K1L1rRkFcHzGbU7u1ffzRvdFiILM1vLQc0PIks5BAkKyXvdIXswr1L9j1vNbC4EaRIA70MEsF8h1VmssFhYCwhVZVTqgPG2Wjoe5EiwKFmlvnv88ZWa3KyFoN_zhh_sG8ilafIApaaWccTv-3WU5NOzAyIE7O-ms6i_-w8FKWdLY1H2HY',
+      avatar: '/images/contributors/akshat-khatri.jpg',
+      imagePosition: 'center 16%',
+      imageScale: 1.02,
       university: 'Indus University · CE',
       skills: ['Express & Prisma', 'PostgreSQL', 'Auth Security'],
     },
@@ -209,8 +201,9 @@ export default function About() {
       tag: 'UI & QA',
       tagColor: '#C084FC',
       tagText: '#111111',
-      avatar:
-        'https://lh3.googleusercontent.com/aida-public/AB6AXuBZFdmp7jD-2xVxlNZuWTtGVRObUG4El_gOLLjYcxAgE3wRs7AX9Ckm9brOPRuravtS9xL-_6O58LiqyHBmzf-ZIHVNih59hKRTOSjd8afrerRZXH_Y-UDc6KCQ_kggJ00u5jbmlxzVc6x3DrjDNXkVfxQJf5fK8z0cHHCJkKy9WozpuZoVfjD8x5g_X0_IQVUZ_ppUcB45LQCgdYmKowJzm6c4jVgqnvoLmlzgmwzKDV-xCc4CUX7npVcqGvxyGk_CUUX2HBD7AgA',
+      avatar: '/images/contributors/manthan-prajapati.jpg',
+      imagePosition: 'center 16%',
+      imageScale: 1.02,
       university: 'Indus University · CE',
       skills: ['Quality Assurance', 'Beta Testing', 'Visual Audit'],
     },
@@ -605,97 +598,22 @@ export default function About() {
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════════════
-            4. THE CONTRIBUTOR SQUAD (4 Creators)
+            4. THE CONTRIBUTOR SQUAD (Project Developers & Contributors)
         ══════════════════════════════════════════════════════════════════════════ */}
-        <section id="squad" className="space-y-5 scroll-mt-28">
-          <div className="flex items-center justify-between flex-wrap gap-2 pb-2 border-b-3 border-[#111111]">
-            <div>
-              <NeoBadge
-                icon={Users}
-                label="MEET THE SQUAD"
-                bgColor="bg-[#111111]"
-                textColor="text-[#FACC15]"
-                rotate="rotate-[-2deg]"
-                shadow="shadow-[2px_2px_0px_#111111]"
-              />
-              <h2 className="font-display-pop text-2xl sm:text-4xl font-black text-[#111111] pt-1">
-                BUILT BY INDUS CE ENGINEERS
-              </h2>
-            </div>
-            <StickerTag bgColor="#C084FC" textColor="#111111" rotate="2deg" iconComponent={Crown}>
-              CORE CONTRIBUTORS
-            </StickerTag>
+        <section id="squad" className="space-y-6 scroll-mt-28 pt-4">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
+            <span className="inline-block text-[11px] font-black tracking-widest uppercase text-[#2563EB] bg-[#EFF6FF] px-3.5 py-1 rounded-full border border-[#BFDBFE]">
+              CONTRIBUTORS
+            </span>
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-[#02091D] uppercase font-sans">
+              THE CREATORS
+            </h2>
+            <p className="text-sm sm:text-base font-medium text-gray-600 leading-relaxed max-w-2xl mx-auto px-4">
+              Designing and developing the future of university resource sharing.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            {squad.map((m, mIdx) => {
-              const RoleIcon = m.roleIcon;
-              return (
-                <motion.div
-                  key={mIdx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: mIdx * 0.08, duration: 0.35, type: 'spring', stiffness: 350, damping: 18 }}
-                  className="bg-white p-4 sm:p-5 rounded-[24px] border-2 border-[#111111] shadow-[4px_4px_0px_#111111] hover:shadow-[6px_6px_0px_#111111] flex flex-col justify-between select-none transition-shadow cursor-default"
-                >
-                  <div>
-                    {/* Avatar with sticker pill */}
-                    <div className="relative mb-3 group">
-                      <div className="w-full aspect-square rounded-2xl border-2 border-[#111111] overflow-hidden bg-[#F6F6F8] shadow-[2px_2px_0px_#111111]">
-                        <img
-                          src={m.avatar}
-                          alt={m.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          loading="lazy"
-                        />
-                      </div>
-                      <motion.span
-                        whileHover={{ scale: 1.15, rotate: 3 }}
-                        transition={{ type: 'spring', stiffness: 450, damping: 15 }}
-                        style={{ backgroundColor: m.tagColor, color: m.tagText }}
-                        className="absolute -bottom-2 right-2 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border border-[#111111] shadow-2xs cursor-default"
-                      >
-                        {m.tag}
-                      </motion.span>
-                    </div>
-
-                    <h3 className="text-base font-black text-[#111111] leading-tight">{m.name}</h3>
-                    <p className="text-xs font-black text-[#2563EB] flex items-center gap-1 mt-0.5">
-                      <RoleIcon className="w-3.5 h-3.5 stroke-[2.5]" />
-                      <span>{m.role}</span>
-                    </p>
-                    <p className="text-[11px] font-bold text-gray-500 mt-0.5">{m.university}</p>
-
-                    <div className="flex items-center gap-1 flex-wrap pt-2.5">
-                      {m.skills.map((sk, skIdx) => (
-                        <span
-                          key={skIdx}
-                          className="px-1.5 py-0.5 rounded bg-gray-100 border border-gray-300 text-[9px] font-bold text-gray-700"
-                        >
-                          {sk}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <motion.a
-                    href="https://chat.whatsapp.com/GwqyqTTNYQK18JsJSfnmFB"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.04, y: -2 }}
-                    whileTap={{ scale: 0.95, y: 1 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    className="mt-4 w-full py-2 rounded-full bg-[#FACC15] hover:bg-amber-300 text-[#111111] font-black text-xs border-2 border-[#111111] shadow-[2px_2px_0px_#111111] hover:shadow-[3.5px_3.5px_0px_#111111] active:shadow-none flex items-center justify-center gap-1.5 transition-shadow cursor-pointer"
-                  >
-                    <Hand className="w-3.5 h-3.5 stroke-[2.5]" />
-                    <span>Say Hi</span>
-                  </motion.a>
-                </motion.div>
-              );
-            })}
-          </div>
+          <ContributorTicker squad={squad} />
         </section>
 
         {/* ══════════════════════════════════════════════════════════════════════════
@@ -804,36 +722,6 @@ export default function About() {
         </section>
 
       </div>
-
-      {/* ── Circular Lenis Progress Back-To-Top Dial with Spring Physics ── */}
-      <AnimatePresence>
-        {showBackToTop && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            whileHover={{ scale: 1.1, rotate: 6 }}
-            whileTap={{ scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-            onClick={() => {
-              if (window.__lenis) {
-                window.__lenis.scrollTo(0, {
-                  duration: 1.2,
-                  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-                });
-              } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-            className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-2xl bg-[#FACC15] text-[#111111] border-2 border-[#111111] shadow-[4px_4px_0px_#111111] hover:bg-amber-300 active:shadow-none flex items-center justify-center cursor-pointer group"
-            title="Smooth Glide to Top"
-            aria-label="Back to Top"
-          >
-            <ArrowUp className="w-5 h-5 stroke-[2.5] group-hover:-translate-y-0.5 transition-transform" />
-          </motion.button>
-        )}
-      </AnimatePresence>
-
     </div>
   );
 }

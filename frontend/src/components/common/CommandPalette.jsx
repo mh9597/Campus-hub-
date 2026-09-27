@@ -54,7 +54,9 @@ export function extractDynamicSubjectAliases(sub) {
 const MAIN_PAGES = [
   { id: 'page-home', title: 'Home', subtitle: 'Main landing page & search portal', path: '/', icon: 'home', category: 'Pages' },
   { id: 'page-resources', title: 'Academic Resources Vault', subtitle: 'Browse departments and semesters', path: '/resources', icon: 'folder_open', category: 'Pages' },
-  { id: 'page-semesters', title: 'Computer Engineering (CE)', subtitle: 'All 8 Semesters hierarchy', path: '/semesters', icon: 'school', category: 'Pages' },
+  { id: 'page-semesters', title: 'Computer Engineering (CE)', subtitle: 'All 8 Semesters hierarchy', path: '/semesters', icon: 'memory', category: 'Pages' },
+  { id: 'page-semesters-cse', title: 'Computer Science & Engineering (CSE)', subtitle: 'All 8 Semesters hierarchy', path: '/semesters?dept=CSE', icon: 'laptop_mac', category: 'Pages' },
+  { id: 'page-semesters-it', title: 'Information Technology (IT)', subtitle: 'All 8 Semesters hierarchy', path: '/semesters?dept=IT', icon: 'dns', category: 'Pages' },
   { id: 'page-opps', title: 'Opportunities & Alerts', subtitle: 'Internships, Hackathons, Scholarships', path: '/opportunities', icon: 'work', category: 'Pages' },
   { id: 'page-community', title: 'Community & Referendum', subtitle: 'Quad noticeboard, live voting, Spotify beats', path: '/community', icon: 'forum', category: 'Pages' },
   { id: 'page-about', title: 'About CampusHub', subtitle: 'Mission, rankers & verified contributors', path: '/about', icon: 'info', category: 'Pages' },

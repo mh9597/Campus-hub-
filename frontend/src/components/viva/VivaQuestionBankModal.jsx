@@ -179,8 +179,9 @@ export default function VivaQuestionBankModal({
             </div>
 
             {submitted ? (
-              <div className="bg-emerald-100 border-2 border-emerald-500 text-emerald-950 p-3 rounded-xl font-black text-xs text-center">
-                ✓ Thank you! Question submitted for verification and indexing.
+              <div className="bg-emerald-100 border-2 border-emerald-500 text-emerald-950 p-3 rounded-xl font-black text-xs text-center flex items-center justify-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-emerald-700">check_circle</span>
+                <span>Thank you! Question submitted for verification and indexing.</span>
               </div>
             ) : (
               <div className="flex items-center justify-between pt-2">

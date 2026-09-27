@@ -10,7 +10,7 @@ import {
 
 const OPPORTUNITY_CATEGORIES = [
   'Internship', 'Hackathon', 'Scholarship', 'Workshop', 'Placement',
-  'Open Source', 'Certification', 'Webinar', 'General',
+  'Open Source', 'College Events', 'Certification', 'Webinar', 'General',
 ];
 
 const BADGE_COLORS = [
@@ -43,7 +43,7 @@ function Modal({ title, icon = 'campaign', onClose, children }) {
   );
 }
 
-const PRESET_TAGS = ['Paid', 'Remote', 'Govt Funded', 'Urgent', 'Top Stipend', 'Closing Soon', 'Open Source'];
+const PRESET_TAGS = ['Paid', 'College Event', 'Govt Funded', 'Urgent', 'Top Stipend', 'Closing Soon', 'Open Source', 'Remote'];
 
 function OpportunityForm({ initial = null, onClose }) {
   const [form, setForm] = useState({

@@ -27,7 +27,7 @@ const CATEGORY_TABS = [
   { id: 'Open Source', label: 'Open Source & Grants', icon: 'terminal' },
   { id: 'Workshop', label: 'Workshops & Webinars', icon: 'psychology' },
   { id: 'Placement', label: 'Placements', icon: 'business_center' },
-  { id: 'Remote', label: 'Remote & Online', icon: 'public' },
+  { id: 'College Events', label: 'College Events', icon: 'account_balance' },
 ];
 
 const SUBMIT_CATEGORIES = [
@@ -37,6 +37,7 @@ const SUBMIT_CATEGORIES = [
   { id: 'Open Source', label: 'Open Source / Grant' },
   { id: 'Workshop', label: 'Workshop / Webinar' },
   { id: 'Placement', label: 'Campus Placement / Job' },
+  { id: 'College Events', label: 'College Event / Fest' },
   { id: 'Certification', label: 'Certification' },
   { id: 'General', label: 'General / Other' },
 ];
@@ -84,6 +85,32 @@ function matchesCategory(opp, filterId) {
   }
   if (f === 'placement' || f === 'placements' || f === 'job') {
     return cat.includes('placement') || cat.includes('job') || tag.includes('placement') || tag.includes('campus');
+  }
+  if (
+    f === 'college events' ||
+    f === 'college event' ||
+    f === 'collage events' ||
+    f === 'collage event' ||
+    f === 'events' ||
+    f === 'event'
+  ) {
+    return (
+      cat.includes('event') ||
+      cat.includes('fest') ||
+      cat.includes('cultural') ||
+      cat.includes('college') ||
+      cat.includes('campus') ||
+      tag.includes('event') ||
+      tag.includes('fest') ||
+      tag.includes('cultural') ||
+      tag.includes('college') ||
+      title.includes('event') ||
+      title.includes('fest') ||
+      title.includes('cultural') ||
+      desc.includes('event') ||
+      desc.includes('fest') ||
+      desc.includes('cultural')
+    );
   }
   if (f === 'remote' || f === 'online') {
     return (
@@ -313,7 +340,7 @@ function Opportunities() {
       text.includes('tool')
     ) {
       return {
-        cardName: 'Workshops & Events',
+        cardName: 'Workshops & Webinars',
         badgeBg: 'bg-[#FED7AA] text-[#7C2D12] border-[#0F172A]',
         accentColor: '#ea580c',
         accentBg: 'bg-[#FED7AA]',
@@ -323,6 +350,28 @@ function Opportunities() {
         svgIcon: screwSvg,
         tagText: 'Live Workshop',
         ctaText: 'Reserve Seat',
+      };
+    }
+
+    // 5. College Events / Cultural / Fests -> Vibrant Violet
+    if (
+      text.includes('event') ||
+      text.includes('fest') ||
+      text.includes('cultural') ||
+      text.includes('sports') ||
+      text.includes('club')
+    ) {
+      return {
+        cardName: 'College Events & Fests',
+        badgeBg: 'bg-[#DDD6FE] text-[#5B21B6] border-[#0F172A]',
+        accentColor: '#7C3AED',
+        accentBg: 'bg-[#DDD6FE]',
+        pillColor: 'bg-[#A78BFA]',
+        backgroundGradient: 'from-purple-400/25 via-indigo-300/15 to-transparent',
+        icon: 'account_balance',
+        svgIcon: campusSvg,
+        tagText: 'Campus Fest & Event',
+        ctaText: 'Explore Event',
       };
     }
 
