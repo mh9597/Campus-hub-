@@ -1,18 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
   <!-- Neo-brutalist Yellow Accent Shadow -->
   <rect x="7" y="7" width="52" height="52" rx="14" fill="#FACC15" />
-  <!-- Main Dark Brand Badge -->
+  <!-- Main Dark Badge -->
   <rect x="3" y="3" width="52" height="52" rx="14" fill="#111111" stroke="#111111" stroke-width="2" />
-  <!-- CH Monogram -->
-  <text 
-    x="29" 
-    y="30.5" 
-    text-anchor="middle" 
-    dominant-baseline="central" 
-    fill="#FACC15" 
-    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Plus Jakarta Sans', sans-serif" 
-    font-weight="900" 
-    font-size="26" 
-    letter-spacing="-0.5"
-  >CH</text>
+  <!-- Letter C (Vector Path) -->
+  <path d="M 27 21.5 L 21 21.5 C 18 21.5 16.5 23 16.5 26 L 16.5 32 C 16.5 35 18 36.5 21 36.5 L 27 36.5 L 27 42 L 20 42 C 14 42 11 39 11 33 L 11 25 C 11 19 14 16 20 16 L 27 16 Z" fill="#FACC15" />
+  <!-- Letter H (Vector Path) -->
+  <path d="M 31 16 L 36.5 16 L 36.5 26.5 L 40.5 26.5 L 40.5 16 L 46 16 L 46 42 L 40.5 42 L 40.5 31.5 L 36.5 31.5 L 36.5 42 L 31 42 Z" fill="#FACC15" />
 </svg>
