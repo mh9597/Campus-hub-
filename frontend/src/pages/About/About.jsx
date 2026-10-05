@@ -153,59 +153,75 @@ export default function About() {
     },
   ];
 
-  // Contributor Squad Data
+  // Contributor Squad Data (Styled to match the modern pastel capsule aesthetic)
   const squad = [
     {
       name: 'Manan Gohil',
       role: 'Project Lead & Architect',
+      roleTitle: 'Project Lead',
+      capsuleColor: '#F4A7BB', // Soft candy rose pink (Anna Dean style)
       roleIcon: Crown,
       tag: 'LEAD',
       tagColor: '#2563EB',
       tagText: '#FFFFFF',
-      avatar: '/images/contributors/manan-gohil.jpg',
-      imagePosition: 'center 16%',
-      imageScale: 1.02,
+      avatar: '/images/contributors/manan-gohil.png',
+      imagePosition: 'center bottom',
+      imageScale: 1.0,
       university: 'Indus University · CE',
+      linkedin: 'https://www.linkedin.com/in/manan-gohil-8bb7a5315/',
+      github: 'https://github.com/mh9597',
       skills: ['System Design', 'Cloud Infra', 'Community Ops'],
     },
     {
       name: 'Krish Patel',
-      role: 'Frontend Architect & UX',
-      roleIcon: Palette,
-      tag: 'FRONTEND',
-      tagColor: '#FACC15',
-      tagText: '#111111',
-      avatar: '/images/contributors/krish-patel.jpg',
-      imagePosition: 'center 16%',
-      imageScale: 1.02,
-      university: 'Indus University · CE',
-      skills: ['React / Vite', 'Lenis Physics', 'Design Systems'],
-    },
-    {
-      name: 'Akshat Khatri',
-      role: 'Backend & Cloud Proxy',
+      role: 'Backend Developer',
+      roleTitle: 'Backend Developer',
+      capsuleColor: '#BDD5D0', // Soft dusty sage / celadon (Chris Mezy style)
       roleIcon: Zap,
       tag: 'BACKEND',
       tagColor: '#FF5722',
       tagText: '#FFFFFF',
-      avatar: '/images/contributors/akshat-khatri.jpg',
-      imagePosition: 'center 16%',
-      imageScale: 1.02,
+      avatar: '/images/contributors/krish-patel.png',
+      imagePosition: 'center bottom',
+      imageScale: 1.0,
       university: 'Indus University · CE',
+      linkedin: 'https://www.linkedin.com/in/krish-patel-3b76b9342/',
+      github: 'https://github.com/Krish-Rupareliya',
       skills: ['Express & Prisma', 'PostgreSQL', 'Auth Security'],
     },
     {
-      name: 'Manthan Prajapati',
-      role: 'UI QA & Beta Tester',
+      name: 'Akshat Khatri',
+      role: 'UI & QA Specialist',
+      roleTitle: 'UI & QA Specialist',
+      capsuleColor: '#E7DED3', // Warm oatmeal / ivory sand (Leslie Schnider style)
       roleIcon: Search,
       tag: 'UI & QA',
       tagColor: '#C084FC',
       tagText: '#111111',
-      avatar: '/images/contributors/manthan-prajapati.jpg',
-      imagePosition: 'center 16%',
-      imageScale: 1.02,
+      avatar: '/images/contributors/akshat-khatri.png',
+      imagePosition: 'center bottom',
+      imageScale: 1.0,
       university: 'Indus University · CE',
+      linkedin: 'https://www.linkedin.com/in/akshat-khatri-8039a0277/',
+      github: 'https://github.com/Akshat011014',
       skills: ['Quality Assurance', 'Beta Testing', 'Visual Audit'],
+    },
+    {
+      name: 'Manthan Prajapati',
+      role: 'Frontend Architect',
+      roleTitle: 'Frontend Architect',
+      capsuleColor: '#F6BA2C', // Vibrant warm marigold yellow (Jim Brickton style)
+      roleIcon: Palette,
+      tag: 'FRONTEND',
+      tagColor: '#FACC15',
+      tagText: '#111111',
+      avatar: '/images/contributors/manthan-prajapati.png',
+      imagePosition: 'center bottom',
+      imageScale: 1.0,
+      university: 'Indus University · CE',
+      github: 'https://github.com/Manthan-1503',
+      linkedin: 'https://www.linkedin.com/in/manthan-prajapati-b0b2b9270/',
+      skills: ['React / Vite', 'Lenis Physics', 'Design Systems'],
     },
   ];
 
@@ -600,15 +616,20 @@ export default function About() {
         {/* ══════════════════════════════════════════════════════════════════════════
             4. THE CONTRIBUTOR SQUAD (Project Developers & Contributors)
         ══════════════════════════════════════════════════════════════════════════ */}
-        <section id="squad" className="space-y-6 scroll-mt-28 pt-4">
-          <div className="text-center max-w-3xl mx-auto space-y-3">
-            <span className="inline-block text-[11px] font-black tracking-widest uppercase text-[#2563EB] bg-[#EFF6FF] px-3.5 py-1 rounded-full border border-[#BFDBFE]">
-              CONTRIBUTORS
-            </span>
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tighter text-[#02091D] uppercase font-sans">
+        <section
+          id="squad"
+          className="rounded-[36px] sm:rounded-[44px] bg-[#000000] p-6 sm:p-10 md:p-12 lg:p-14 border-3 border-[#111111] shadow-[8px_8px_0px_#111111] space-y-8 sm:space-y-10 relative overflow-hidden scroll-mt-28"
+        >
+          <div className="text-center max-w-3xl mx-auto space-y-3 relative z-10">
+            <div className="flex justify-center">
+              <span className="inline-block text-[11px] font-black tracking-widest uppercase text-white/90 bg-white/10 px-4 py-1.5 rounded-full border border-white/20 shadow-sm">
+                CONTRIBUTORS
+              </span>
+            </div>
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-white uppercase font-sans">
               THE CREATORS
             </h2>
-            <p className="text-sm sm:text-base font-medium text-gray-600 leading-relaxed max-w-2xl mx-auto px-4">
+            <p className="text-sm sm:text-base font-medium text-neutral-400 leading-relaxed max-w-2xl mx-auto px-4">
               Designing and developing the future of university resource sharing.
             </p>
           </div>

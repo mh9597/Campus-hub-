@@ -214,7 +214,7 @@ function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+        <div className="pt-8 pb-10 sm:pb-2 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
           <p>© {new Date().getFullYear()} CampusHub. All rights reserved.</p>
 
           <div className="flex items-center gap-6">
@@ -222,14 +222,16 @@ function Footer() {
             <a href="#" className="hover:text-amber-400 transition-colors">Terms &amp; Conditions</a>
           </div>
 
-          {/* Back to Top Button */}
-          <button
-            onClick={scrollToTop}
-            aria-label="Back to top"
-            className="w-10 h-10 rounded-2xl bg-amber-400 text-[#111111] hover:bg-amber-300 font-bold flex items-center justify-center border-2 border-[#111111] shadow-[2.5px_2.5px_0px_#111111] transition-transform hover:scale-110 active:scale-95 cursor-pointer"
-          >
-            <ArrowUp className="w-5 h-5 stroke-[2.5]" />
-          </button>
+          {/* Back to Top Button - Positioned with safe right margin so it never collides with fixed Study Suite widget */}
+          <div className="sm:pr-36 md:pr-44 shrink-0">
+            <button
+              onClick={scrollToTop}
+              aria-label="Back to top"
+              className="w-10 h-10 rounded-2xl bg-amber-400 text-[#111111] hover:bg-amber-300 font-bold flex items-center justify-center border-2 border-[#111111] shadow-[2.5px_2.5px_0px_#111111] transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+            >
+              <ArrowUp className="w-5 h-5 stroke-[2.5]" />
+            </button>
+          </div>
         </div>
 
       </div>
