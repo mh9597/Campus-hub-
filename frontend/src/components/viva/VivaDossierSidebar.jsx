@@ -1,5 +1,5 @@
 // frontend/src/components/viva/VivaDossierSidebar.jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 /**
  * Sticky Left Question Navigator for the Viva Dossier
@@ -14,6 +14,35 @@ export default function VivaDossierSidebar({
   onSelectSection,
 }) {
   const [activeId, setActiveId] = useState(activeQuestionId);
+  const cardRef = useRef(null);
+  const navRef = useRef(null);
+
+  // Reset scroll of question index when switching units
+  useEffect(() => {
+    if (navRef.current) {
+      navRef.current.scrollTop = 0;
+    }
+  }, [activeSectionId]);
+
+  // Ensure scrolling over the Questions Index box scrolls the question list without Lenis hijacking
+  useEffect(() => {
+    const cardEl = cardRef.current;
+    const navEl = navRef.current;
+    if (!cardEl || !navEl) return;
+
+    const handleWheel = (e) => {
+      // Prevent parent Lenis smooth-scroll from hijacking wheel events
+      e.stopPropagation();
+
+      // If wheel event fired on card header, padding, or border outside nav, forward scroll to nav
+      if (!navEl.contains(e.target)) {
+        navEl.scrollTop += e.deltaY;
+      }
+    };
+
+    cardEl.addEventListener('wheel', handleWheel, { passive: true });
+    return () => cardEl.removeEventListener('wheel', handleWheel);
+  }, []);
 
   useEffect(() => {
     if (!questions || questions.length === 0) return;
@@ -53,7 +82,12 @@ export default function VivaDossierSidebar({
   };
 
   return (
-    <aside className="hidden lg:block w-72 shrink-0 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto pr-2 space-y-4 select-none">
+    <aside
+      data-lenis-prevent="true"
+      data-lenis-prevent-wheel="true"
+      data-lenis-prevent-touch="true"
+      className="hidden lg:block w-72 shrink-0 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pr-1 space-y-4 select-none lenis-prevent overscroll-contain"
+    >
       
       {/* Unit Selector Box */}
       <div className="bg-white border-2 border-black rounded-2xl p-3.5 shadow-[3px_3px_0px_#000]">
@@ -84,7 +118,7 @@ export default function VivaDossierSidebar({
                 }`}
               >
                 <span className="truncate pr-1">
-                  {sec.name.split(':')[0] || sec.name}
+                  {typeof sec?.name === 'string' ? (sec.name.split(':')[0] || sec.name) : 'Unit'}
                 </span>
                 <span className="material-symbols-outlined text-sm shrink-0">
                   {isActive ? 'check_circle' : 'chevron_right'}
@@ -96,7 +130,13 @@ export default function VivaDossierSidebar({
       </div>
 
       {/* On This Unit Question Navigator */}
-      <div className="bg-white border-2 border-black rounded-2xl p-4 shadow-[4px_4px_0px_#000]">
+      <div
+        ref={cardRef}
+        data-lenis-prevent="true"
+        data-lenis-prevent-wheel="true"
+        data-lenis-prevent-touch="true"
+        className="bg-white border-2 border-black rounded-2xl p-4 shadow-[4px_4px_0px_#000] lenis-prevent"
+      >
         <div className="flex items-center justify-between text-xs font-black uppercase tracking-wider text-black pb-2 mb-2 border-b-2 border-black/10">
           <span className="flex items-center gap-1.5">
             <span className="material-symbols-outlined text-base text-blue-600">format_list_numbered</span>
@@ -107,7 +147,14 @@ export default function VivaDossierSidebar({
           </span>
         </div>
 
-        <nav className="space-y-1.5 max-h-[50vh] overflow-y-auto pr-1">
+        <nav
+          ref={navRef}
+          data-lenis-prevent="true"
+          data-lenis-prevent-wheel="true"
+          data-lenis-prevent-touch="true"
+          tabIndex={0}
+          className="space-y-1.5 max-h-[50vh] overflow-y-auto no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden pr-1 overscroll-contain focus:outline-none"
+        >
           {questions.map((q, idx) => {
             const isActive = activeId === q.id;
             const qNum = q.questionNumber || `Q.${idx + 1}`;

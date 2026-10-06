@@ -281,8 +281,27 @@ export function useViva(subjectCode) {
     return allQuestions.find((q) => !learnedIds.has(q.id)) || allQuestions[0];
   }, [allQuestions, learnedIds]);
 
+  const normalizedSubject = useMemo(() => {
+    const raw = vivaData || subject;
+    if (!raw) return null;
+    let semNum = 5;
+    if (typeof raw.semester === 'number') {
+      semNum = raw.semester;
+    } else if (typeof raw.semester === 'string') {
+      const match = raw.semester.match(/\d+/);
+      semNum = match ? parseInt(match[0], 10) : 5;
+    } else if (typeof raw.semester === 'object' && raw.semester !== null) {
+      semNum = raw.semester.semesterNumber ?? raw.semester.id ?? 5;
+    }
+    return {
+      ...raw,
+      title: raw.title || raw.subjectName || '',
+      semesterNumber: semNum,
+    };
+  }, [vivaData, subject]);
+
   return {
-    subject: vivaData || subject,
+    subject: normalizedSubject,
     loading: subjectLoading || vivaLoading,
     error: error ? error.message : null,
     refetch,

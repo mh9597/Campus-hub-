@@ -103,8 +103,33 @@ export default function UniversalVivaPage() {
   const prevSection = currentSectionIndex > 0 ? sections[currentSectionIndex - 1] : null;
   const nextSection = currentSectionIndex < (sections?.length || 0) - 1 ? sections[currentSectionIndex + 1] : null;
 
-  const subjectTitle = subject?.title || subject?.subjectName || 'Computer Networks';
-  const semesterNumber = subject?.semester || 5;
+  const subjectTitle =
+    (typeof subject?.title === 'string' && subject.title) ||
+    (typeof subject?.subjectName === 'string' && subject.subjectName) ||
+    'Computer Networks';
+
+  const { semesterNumber, semesterId } = useMemo(() => {
+    const raw = subject?.semester;
+    if (!raw) return { semesterNumber: 5, semesterId: null };
+
+    if (typeof raw === 'number') {
+      return { semesterNumber: raw, semesterId: raw };
+    }
+
+    if (typeof raw === 'string') {
+      const match = raw.match(/\d+/);
+      const parsed = match ? parseInt(match[0], 10) : 5;
+      return { semesterNumber: parsed, semesterId: parsed };
+    }
+
+    if (typeof raw === 'object') {
+      const num = raw.semesterNumber ?? raw.id ?? (typeof raw.name === 'string' ? (raw.name.match(/\d+/) ? parseInt(raw.name.match(/\d+/)[0], 10) : 5) : 5);
+      const id = raw.id ?? raw.semesterNumber ?? null;
+      return { semesterNumber: num, semesterId: id };
+    }
+
+    return { semesterNumber: 5, semesterId: null };
+  }, [subject]);
 
   return (
     <div className="pt-20 min-h-screen bulletin-board-bg text-gray-900 selection:bg-amber-300 selection:text-black">
@@ -124,7 +149,12 @@ export default function UniversalVivaPage() {
           <nav className="flex items-center flex-wrap gap-1.5 text-xs text-gray-600 font-bold mb-4">
             <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <span className="text-gray-400">/</span>
-            <Link to="/semesters" className="hover:text-amber-600 transition-colors">Semester {semesterNumber}</Link>
+            <Link
+              to={semesterId ? `/semesters/${semesterId}` : '/semesters'}
+              className="hover:text-amber-600 transition-colors"
+            >
+              Semester {semesterNumber}
+            </Link>
             <span className="text-gray-400">/</span>
             <Link to={`/subject/${normalizedCode.toLowerCase()}`} className="hover:text-amber-600 transition-colors">
               {subjectTitle}
@@ -182,7 +212,7 @@ export default function UniversalVivaPage() {
 
             {sections.map((sec) => {
               const isActive = activeSectionId === sec.id;
-              const shortName = sec.name.split(':')[0] || sec.name;
+              const shortName = typeof sec.name === 'string' ? (sec.name.split(':')[0] || sec.name) : 'Unit';
 
               return (
                 <button
@@ -208,7 +238,7 @@ export default function UniversalVivaPage() {
         <div className="lg:hidden mb-6 flex items-center justify-between bg-white border-2 border-black rounded-2xl p-3 shadow-[3px_3px_0px_#000]">
           <div className="flex items-center gap-2 truncate">
             <span className="material-symbols-outlined text-amber-500 text-lg">folder</span>
-            <span className="text-xs font-black truncate">{activeSection.name}</span>
+            <span className="text-xs font-black truncate">{typeof activeSection?.name === 'string' ? activeSection.name : 'Unit'}</span>
           </div>
           <button
             onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
@@ -240,7 +270,7 @@ export default function UniversalVivaPage() {
                   Active Syllabus Section
                 </span>
                 <h2 className="text-lg sm:text-xl font-black text-black tracking-tight">
-                  {activeSection.name}
+                  {typeof activeSection?.name === 'string' ? activeSection.name : 'Unit'}
                 </h2>
               </div>
               <span className="bg-[#0F172A] text-[#FBBF24] border-2 border-black px-3 py-1 rounded-xl text-xs font-black font-mono shrink-0 shadow-2xs">
@@ -306,7 +336,9 @@ export default function UniversalVivaPage() {
                   <span className="material-symbols-outlined text-base">arrow_back</span>
                   <div className="text-left">
                     <span className="block text-[10px] text-gray-500 uppercase">Previous Unit</span>
-                    <span className="truncate max-w-[140px] sm:max-w-xs block">{prevSection.name.split(':')[0]}</span>
+                    <span className="truncate max-w-[140px] sm:max-w-xs block">
+                      {typeof prevSection?.name === 'string' ? prevSection.name.split(':')[0] : 'Previous Unit'}
+                    </span>
                   </div>
                 </button>
               ) : <div />}
@@ -321,7 +353,9 @@ export default function UniversalVivaPage() {
                 >
                   <div className="text-right">
                     <span className="block text-[10px] text-amber-300 uppercase">Next Unit</span>
-                    <span className="truncate max-w-[140px] sm:max-w-xs block">{nextSection.name.split(':')[0]}</span>
+                    <span className="truncate max-w-[140px] sm:max-w-xs block">
+                      {typeof nextSection?.name === 'string' ? nextSection.name.split(':')[0] : 'Next Unit'}
+                    </span>
                   </div>
                   <span className="material-symbols-outlined text-base">arrow_forward</span>
                 </button>

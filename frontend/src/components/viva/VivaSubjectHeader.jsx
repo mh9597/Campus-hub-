@@ -14,7 +14,10 @@ export default function VivaSubjectHeader({
   const subjectTitle = subject?.title || subject?.subjectName || 'Subject';
   const subjectCode = (subject?.code || subject?.subjectCode || '').toUpperCase();
   const departmentName = subject?.department?.name || subject?.department || 'Computer Engineering';
-  const semesterNum = subject?.semester?.semesterNumber || subject?.semester || 5;
+  const semesterNum =
+    typeof subject?.semester === 'object' && subject?.semester !== null
+      ? (subject.semester.semesterNumber ?? subject.semester.id ?? 5)
+      : (typeof subject?.semester === 'number' ? subject.semester : 5);
 
   return (
     <header className="mb-8">

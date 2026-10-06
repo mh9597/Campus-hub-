@@ -51,6 +51,8 @@ const AdminCatalogView = lazy(() => import('../pages/Admin/AdminCatalogView'));
 const AdminSubscribersView = lazy(() => import('../pages/Admin/AdminSubscribersView'));
 const AdminPollsView = lazy(() => import('../pages/Admin/AdminPollsView'));
 
+import RouteErrorBoundary from '../components/ui/RouteErrorBoundary';
+
 const UniversalVivaPage = lazy(() => import('../pages/Viva/UniversalVivaPage'));
 
 export const router = createBrowserRouter([
@@ -58,6 +60,7 @@ export const router = createBrowserRouter([
   {
     path: '/',
     element: <AppLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: withSuspense(Home) },
       { path: 'resources', element: withSuspense(Resources) },
@@ -85,6 +88,7 @@ export const router = createBrowserRouter([
   {
     path: '/admin',
     element: <AdminLayout />,
+    errorElement: <RouteErrorBoundary />,
     children: [
       { index: true, element: <Navigate to="/admin/dashboard" replace /> },
       { path: 'dashboard', element: withSuspense(AdminDashboard) },
