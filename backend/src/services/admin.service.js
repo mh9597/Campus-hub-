@@ -48,7 +48,7 @@ async function reviewUpload(id, action, updatedData = {}) {
     const finalResourceType = updatedData.resourceType || upload.resourceType;
 
     // Find the subject by code
-    const subject = await prisma.subject.findUnique({
+    const subject = await prisma.subject.findFirst({
       where: { code: finalSubjectCode },
       include: { semester: { include: { department: true } } },
     });

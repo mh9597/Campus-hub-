@@ -21,6 +21,7 @@ const DEFAULT_PALETTE = [
   '#BDD5D0', // Soft dusty sage / celadon (Chris Mezy style)
   '#E7DED3', // Warm oatmeal / ivory sand (Leslie Schnider style)
   '#F6BA2C', // Vibrant warm marigold yellow (Jim Brickton style)
+  '#C8B6FF', // Soft pastel lavender / lilac (Vraj Mehta style)
 ];
 
 export default function ContributorTicker({ squad = [] }) {
@@ -29,9 +30,9 @@ export default function ContributorTicker({ squad = [] }) {
   return (
     <div className="w-full relative select-none">
       {/* ── Desktop & Mobile Responsive Container ── */}
-      {/* On desktop: 4 centered columns with alternating vertical stagger. */}
+      {/* On desktop: centered 5-column wave grid with alternating vertical stagger. */}
       {/* On mobile / tablet: smoothly scrollable row with snap points so cards never squish. */}
-      <div className="flex lg:grid lg:grid-cols-4 justify-start lg:justify-center items-start gap-6 lg:gap-6 xl:gap-8 overflow-x-auto pb-16 pt-4 px-4 sm:px-6 snap-x snap-mandatory scrollbar-none">
+      <div className="flex xl:grid xl:grid-cols-5 lg:flex lg:justify-center justify-start items-start gap-4 sm:gap-6 lg:gap-4 xl:gap-5 overflow-x-auto xl:overflow-visible pb-16 pt-4 px-4 sm:px-6 snap-x snap-mandatory scrollbar-none">
         {squad.map((m, idx) => {
           const isStaggered = idx % 2 === 1; // 2nd and 4th cards offset lower down
           const capsuleBg = m.capsuleColor || DEFAULT_PALETTE[idx % DEFAULT_PALETTE.length];
@@ -40,8 +41,9 @@ export default function ContributorTicker({ squad = [] }) {
           return (
             <div
               key={m.name || idx}
-              className={`snap-center shrink-0 w-[240px] sm:w-[255px] lg:w-full max-w-[275px] mx-auto flex flex-col items-center transition-transform duration-500 ${isStaggered ? 'lg:translate-y-14' : 'lg:translate-y-0'
-                }`}
+              className={`snap-center shrink-0 w-[230px] sm:w-[240px] xl:w-full max-w-[245px] xl:max-w-[255px] mx-auto flex flex-col items-center transition-transform duration-500 ${
+                isStaggered ? 'lg:translate-y-12 xl:translate-y-14' : 'lg:translate-y-0'
+              }`}
             >
               {/* ── The Capsule Pill Card ── */}
               <motion.div
@@ -157,7 +159,7 @@ export default function ContributorTicker({ squad = [] }) {
                     }}
                     animate={{
                       scale: isHovered ? (m.imageScale || 1.0) * 1.04 : m.imageScale || 1.0,
-                      y: isHovered ? -6 : 0,
+                      y: isHovered ? (m.imageY || 0) - 6 : (m.imageY || 0),
                       filter: isHovered
                         ? 'grayscale(0%) contrast(1.02) brightness(1.01) saturate(1.12)'
                         : 'grayscale(100%) contrast(1.08) brightness(1.03) saturate(1)',
@@ -168,6 +170,7 @@ export default function ContributorTicker({ squad = [] }) {
                     }}
                     style={{
                       objectPosition: m.imagePosition || 'center bottom',
+                      transformOrigin: m.transformOrigin || 'center bottom',
                     }}
                     className="w-full h-full object-cover object-bottom select-none pointer-events-none relative z-10"
                     loading="lazy"

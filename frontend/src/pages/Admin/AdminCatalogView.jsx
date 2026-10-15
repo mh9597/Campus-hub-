@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   getAdminDepartments,
-  createDepartment, updateDepartment, deleteDepartment,
+  createDepartment, updateDepartment, deleteDepartment, deleteDepartmentCascade,
   createSemester,  updateSemester,  deleteSemester, deleteSemesterCascade,
   createSubject,   updateSubject,   deleteSubject,
 } from '../../services/admin/catalogApi';
@@ -757,12 +757,22 @@ export default function AdminCatalogView() {
   };
 
   const handleDeleteDept = (dept) => {
+    const semCount = dept.semesters?.length || dept._count?.semesters || 0;
+    const message = semCount > 0
+      ? `Permanently delete branch "${dept.name}" (${dept.code}) and ALL its ${semCount} semester(s), subjects, and resources? This action cannot be undone.`
+      : `Delete branch "${dept.name}" (${dept.code})? This is permanent.`;
+
     setConfirm({
-      message: `Delete branch "${dept.name}" (${dept.code})? This is permanent and only works if it has no semesters.`,
+      message,
       onConfirm: async () => {
         try {
-          await deleteDepartment(dept.id);
-          showToast(`Branch "${dept.name}" deleted`);
+          if (semCount > 0) {
+            await deleteDepartmentCascade(dept.id);
+            showToast(`Branch "${dept.name}" and all semesters deleted`);
+          } else {
+            await deleteDepartment(dept.id);
+            showToast(`Branch "${dept.name}" deleted`);
+          }
           fetchDepts();
         } catch (err) {
           showToast(err.message, 'error');

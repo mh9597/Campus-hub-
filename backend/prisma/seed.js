@@ -261,7 +261,12 @@ async function main() {
       styleIdx++;
 
       await prisma.subject.upsert({
-        where: { code: subj.code },
+        where: {
+          semesterId_code: {
+            semesterId: semester.id,
+            code: subj.code,
+          },
+        },
         update: {
           title: subj.title,
           shortForm: subj.shortForm ?? null,

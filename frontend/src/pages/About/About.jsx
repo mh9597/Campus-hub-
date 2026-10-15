@@ -223,6 +223,23 @@ export default function About() {
       linkedin: 'https://www.linkedin.com/in/manthan-prajapati-b0b2b9270/',
       skills: ['React / Vite', 'Lenis Physics', 'Design Systems'],
     },
+    {
+      name: 'Vraj Mehta',
+      role: 'Contributor',
+      roleTitle: 'Contributor',
+      capsuleColor: '#C8B6FF', // Soft pastel lavender / lilac
+      roleIcon: Sparkles,
+      tag: 'CONTRIBUTOR',
+      tagColor: '#10B981',
+      tagText: '#FFFFFF',
+      avatar: '/images/contributors/vraj-pookie.png',
+      imagePosition: 'center bottom',
+      imageScale: 1.0,
+      university: 'Indus University · CSE',
+      linkedin: 'https://www.linkedin.com/in/vraj-mehta-895a78335/',
+      github: 'https://github.com/vrajmehta0407',
+      skills: ['Resource Curation', 'Open Source', 'Community Ops'],
+    },
   ];
 
   // 3 Essential FAQs

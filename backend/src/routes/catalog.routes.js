@@ -20,6 +20,9 @@ router.post('/departments', requireRole('ADMIN', 'MODERATOR'), catalogController
 // PUT  /api/admin/catalog/departments/:id
 router.put('/departments/:id', requireRole('ADMIN', 'MODERATOR'), catalogController.updateDepartment);
 
+// DELETE /api/admin/catalog/departments/:id/cascade  — ADMIN only (must be before /:id to avoid param match)
+router.delete('/departments/:id/cascade', requireRole('ADMIN'), catalogController.deleteDepartmentCascade);
+
 // DELETE /api/admin/catalog/departments/:id  — ADMIN only (destructive)
 router.delete('/departments/:id', requireRole('ADMIN'), catalogController.deleteDepartment);
 

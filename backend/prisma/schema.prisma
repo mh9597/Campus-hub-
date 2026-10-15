@@ -61,7 +61,7 @@ model Semester {
 model Subject {
   id          String     @id @default(uuid())
   semesterId  Int
-  code        String     @unique @db.VarChar(30)
+  code        String     @db.VarChar(30)
   title       String
   shortForm   String?    @db.VarChar(100)
   description String?    @db.Text
@@ -76,7 +76,9 @@ model Subject {
   vivaQuestions VivaQuestion[]
   semester    Semester   @relation(fields: [semesterId], references: [id], onDelete: Cascade)
 
+  @@unique([semesterId, code])
   @@index([semesterId])
+  @@index([code])
   @@map("subjects")
 }
 

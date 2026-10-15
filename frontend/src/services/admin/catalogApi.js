@@ -43,6 +43,13 @@ export async function deleteDepartment(id) {
   return result;
 }
 
+/** Cascade-delete a department along with all its semesters, subjects, and resources. */
+export async function deleteDepartmentCascade(id) {
+  const result = await fetchFromApi(`admin/catalog/departments/${id}/cascade`, { method: 'DELETE' });
+  invalidateCatalog();
+  return result;
+}
+
 // ─── Semesters ────────────────────────────────────────────────
 
 /** Create a semester under a given department. */

@@ -53,6 +53,18 @@ async function deleteDepartment(req, res, next) {
   }
 }
 
+// DELETE /api/admin/catalog/departments/:id/cascade
+async function deleteDepartmentCascade(req, res, next) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id)) return sendError(res, 'Invalid department id', 400);
+    const result = await catalogService.deleteDepartmentCascade(id);
+    return sendSuccess(res, result, 200, 'Department and all associated records deleted');
+  } catch (err) {
+    return next(err);
+  }
+}
+
 // ─── Semesters ────────────────────────────────────────────────
 
 // POST /api/admin/catalog/semesters
@@ -153,6 +165,7 @@ module.exports = {
   createDepartment,
   updateDepartment,
   deleteDepartment,
+  deleteDepartmentCascade,
   createSemester,
   updateSemester,
   deleteSemester,

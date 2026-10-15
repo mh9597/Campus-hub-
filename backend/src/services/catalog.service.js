@@ -123,6 +123,70 @@ async function deleteDepartment(id) {
   return deleted;
 }
 
+/**
+ * Cascade-delete a department along with ALL its semesters, subjects, and resources.
+ * Also removes every associated Google Drive file (404-tolerant).
+ * @param {number} id Department PK
+ * @returns {{ departmentId: number, semestersDeleted: number, subjectsDeleted: number, resourcesDeleted: number }}
+ */
+async function deleteDepartmentCascade(id) {
+  const numId = Number(id);
+
+  // 1. Load department and all nested hierarchy
+  const dept = await prisma.department.findUnique({
+    where: { id: numId },
+    include: {
+      semesters: {
+        include: {
+          subjects: {
+            include: {
+              resources: { select: { id: true, driveFileId: true } },
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!dept) throw notFound('Department', id);
+
+  const allSemesters = dept.semesters;
+  const allSubjects = allSemesters.flatMap(s => s.subjects);
+  const allResources = allSubjects.flatMap(sub => sub.resources);
+
+  const semesterIds = allSemesters.map(s => s.id);
+  const subjectIds = allSubjects.map(sub => sub.id);
+
+  // 2. Best-effort Drive cleanup
+  await Promise.allSettled(
+    allResources
+      .filter(r => r.driveFileId)
+      .map(r =>
+        driveService.deleteFromDrive(r.driveFileId).catch(err =>
+          console.error(`[catalog.service] cascade dept: Drive delete failed for ${r.driveFileId}:`, err.message)
+        )
+      )
+  );
+
+  // 3. Transactional DB cleanup: resources -> viva questions -> subjects -> semesters -> department
+  await prisma.$transaction([
+    prisma.resource.deleteMany({ where: { subjectId: { in: subjectIds } } }),
+    prisma.vivaQuestion.deleteMany({ where: { subjectId: { in: subjectIds } } }),
+    prisma.subject.deleteMany({ where: { semesterId: { in: semesterIds } } }),
+    prisma.semester.deleteMany({ where: { departmentId: numId } }),
+    prisma.department.delete({ where: { id: numId } }),
+  ]);
+
+  clearPublicCache('catalog');
+  clearPublicCache('resources');
+
+  return {
+    departmentId: numId,
+    semestersDeleted: allSemesters.length,
+    subjectsDeleted: allSubjects.length,
+    resourcesDeleted: allResources.length,
+  };
+}
+
 // ─── Semesters ────────────────────────────────────────────────
 
 /**
@@ -262,8 +326,10 @@ async function createSubject({ semesterId, code, title, shortForm, description, 
   if (!sem) throw notFound('Semester', semesterId);
 
   const upper = code.toUpperCase().trim();
-  const dup = await prisma.subject.findUnique({ where: { code: upper } });
-  if (dup) throw conflict(`Subject code "${upper}" is already taken`);
+  const dup = await prisma.subject.findFirst({
+    where: { semesterId: Number(semesterId), code: upper },
+  });
+  if (dup) throw conflict(`Subject code "${upper}" is already used in this semester`);
 
   const created = await prisma.subject.create({
     data: {
@@ -306,8 +372,10 @@ async function updateSubject(id, { code, title, shortForm, description, icon, bg
   if (code !== undefined) {
     const upper = code.toUpperCase().trim();
     if (upper !== subject.code) {
-      const taken = await prisma.subject.findUnique({ where: { code: upper } });
-      if (taken) throw conflict(`Subject code "${upper}" is already taken`);
+      const taken = await prisma.subject.findFirst({
+        where: { semesterId: subject.semesterId, code: upper, NOT: { id } },
+      });
+      if (taken) throw conflict(`Subject code "${upper}" is already used in this semester`);
     }
     updateData.code = upper;
   }
@@ -343,6 +411,7 @@ module.exports = {
   createDepartment,
   updateDepartment,
   deleteDepartment,
+  deleteDepartmentCascade,
   createSemester,
   updateSemester,
   deleteSemester,
